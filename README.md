@@ -1,13 +1,13 @@
-Manbil
+K1LL
 ======
 
-A free, open-source 3D game engine in C++/OpenGL. Currently undergoing refactoring and [documentation](https://github.com/heyx3/ManbilDocumentation) to turn it into an educational resource for anybody who wants to learn how to write a basic game engine.
+A simple, arcadey FPS with a level editorm bots and local multiplayer
 
-Uses some libraries here and there -- tinyXML for serialization, OVR for Oculus Rift support, SFML for window management and loading textures, FreeType for loading font glyphs, etc. These plugins are in the "Plugins" folder in the repo.
+Uses some libraries here and there -- tinyXML for serialization, SFML for window management and loading textures, FreeType for loading font glyphs, etc. These plugins are in the "Plugins" folder in the repo.
 
 ##Documentation##
 
-The documentation is available in [another Git repo](https://github.com/heyx3/ManbilDocumentation).
+The engine used is [Manbil](https://github.com/heyx3/Manbil), available here on Git. The documentation for the engine is available in [another Git repo](https://github.com/heyx3/ManbilDocumentation).
 
 ##Licensing##
 
@@ -18,8 +18,6 @@ Portions of this software (including but not limited to the "world" system and a
 Portions of this software (including but not limited to the "AssImpTestWorld" class) make use of the Open Asset Import Library (http://assimp.sourceforge.net/main_license.html).  All rights reserved.
 
 Portions of this software (including but not limited to the "world" system and anything that uses it) make use of the GLEW library (http://glew.sourceforge.net/credits.html). All rights reserved.
-
-Portions of this software (including but not limited to the "RiftTestWorld" class) make use of the Oculus Rift SDK (https://developer.oculus.com/licenses/license-3.2/). All rights reserved.
 
 Portions of this software (including but not limited to the "Serialization" system and anything that uses it) make use of the TinyXML library (https://github.com/leethomason/tinyxml2). All rights reserved.
 
