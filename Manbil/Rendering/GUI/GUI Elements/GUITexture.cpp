@@ -18,13 +18,16 @@ Box2D GUITexture::GetBounds(void) const
 #pragma warning(disable: 4100)
 void GUITexture::Render(float elapsed, const RenderInfo& info)
 {
-    if (tex == 0 || Mat == 0)
+    if (Mat == 0)
     {
         return;
     }
 
     SetUpQuad();
-    Params.Texture2Ds[GUIMaterials::QuadDraw_Texture2D].Texture = tex->GetTextureHandle();
+    if (tex != 0)
+    {
+        Params.Texture2Ds[GUIMaterials::QuadDraw_Texture2D].Texture = tex->GetTextureHandle();
+    }
     GetQuad()->Render(info, Params, *Mat);
 }
 #pragma warning(default: 4100)

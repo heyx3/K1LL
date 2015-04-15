@@ -84,44 +84,11 @@
     <ClCompile Include="Rendering\GUI\FreeTypeHandler.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Tests\GUITestWorld.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Water\Water.cpp">
       <Filter>Rendering\Water</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Water\WaterRendering.cpp">
       <Filter>Rendering\Water</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\PlanetSim\PlanetSimCamera.cpp">
-      <Filter>Toys\PlanetSim</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\PlanetSim\PlanetSimWorld.cpp">
-      <Filter>Toys\PlanetSim</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\PlanetSim\PlanetSimWorldGen.cpp">
-      <Filter>Toys\PlanetSim</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\Voxel\ChunkMesh.cpp">
-      <Filter>Toys\Voxels</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\Voxel\VoxelCamera.cpp">
-      <Filter>Toys\Voxels</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\Voxel\VoxelChunk.cpp">
-      <Filter>Toys\Voxels</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\Voxel\VoxelChunkManager.cpp">
-      <Filter>Toys\Voxels</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\Voxel\VoxelPlayer.cpp">
-      <Filter>Toys\Voxels</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\Voxel\VoxelWorld.cpp">
-      <Filter>Toys\Voxels</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\Voxel\VoxelWorldPPC.cpp">
-      <Filter>Toys\Voxels</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\GUI\GUIElement.cpp">
       <Filter>Rendering\GUI\GUI Elements</Filter>
@@ -195,12 +162,6 @@
     <ClCompile Include="Oculus Rift\OculusDevice.cpp">
       <Filter>Oculus Rift</Filter>
     </ClCompile>
-    <ClCompile Include="Tests\RiftTestWorld.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
-    <ClCompile Include="Tests\AssImpTestWorld.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
     <ClCompile Include="Math\Lower Math\Mathf.cpp">
       <Filter>Math\Lower Math</Filter>
     </ClCompile>
@@ -227,12 +188,6 @@
     </ClCompile>
     <ClCompile Include="Game Loop\SFMLWorld.cpp">
       <Filter>Game Loop</Filter>
-    </ClCompile>
-    <ClCompile Include="Toys\TwoTrianglesWorld.cpp">
-      <Filter>Toys\Two Triangles</Filter>
-    </ClCompile>
-    <ClCompile Include="Sample Worlds\OpenGLTestWorld.cpp">
-      <Filter>Tests</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Basic Rendering\Material.cpp">
       <Filter>Rendering\Basic Rendering</Filter>
@@ -272,9 +227,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Textures\TextureSettings.cpp">
       <Filter>Rendering\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="Sample Worlds\NoiseTest.cpp">
-      <Filter>Tests</Filter>
     </ClCompile>
     <ClCompile Include="Input\MovingCamera.cpp">
       <Filter>Input</Filter>
@@ -477,6 +429,24 @@
     <ClCompile Include="Sample Worlds\TerrainWorld.cpp">
       <Filter>Sample Worlds</Filter>
     </ClCompile>
+    <ClCompile Include="K1LL\Room.cpp">
+      <Filter>K1LL\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\RoomInfo.cpp">
+      <Filter>K1LL\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\LevelGraph.cpp">
+      <Filter>K1LL\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\LineSegment.cpp">
+      <Filter>K1LL\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Room Editor\RoomEditor.cpp">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Room Editor\EditorView.cpp">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input\Input Objects\KeyboardBoolInput.h">
@@ -613,9 +583,6 @@
     <ClInclude Include="Rendering\GUI\TextRenderer.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Tests\GUITestWorld.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Water\Water.h">
       <Filter>Rendering\Water</Filter>
     </ClInclude>
@@ -624,36 +591,6 @@
     </ClInclude>
     <ClInclude Include="IO\DataSerialization.h">
       <Filter>IO</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\PlanetSim\PlanetSimCamera.h">
-      <Filter>Toys\PlanetSim</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\PlanetSim\PlanetSimWorld.h">
-      <Filter>Toys\PlanetSim</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\PlanetSim\PlanetSimWorldGen.h">
-      <Filter>Toys\PlanetSim</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\Voxel\ChunkMesh.h">
-      <Filter>Toys\Voxels</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\Voxel\VoxelCamera.h">
-      <Filter>Toys\Voxels</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\Voxel\VoxelChunk.h">
-      <Filter>Toys\Voxels</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\Voxel\VoxelChunkManager.h">
-      <Filter>Toys\Voxels</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\Voxel\VoxelPlayer.h">
-      <Filter>Toys\Voxels</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\Voxel\VoxelWorld.h">
-      <Filter>Toys\Voxels</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\Voxel\VoxelWorldPPC.h">
-      <Filter>Toys\Voxels</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\GUI\GUIElement.h">
       <Filter>Rendering\GUI\GUI Elements</Filter>
@@ -745,12 +682,6 @@
     <ClInclude Include="Oculus Rift\OculusDevice.h">
       <Filter>Oculus Rift</Filter>
     </ClInclude>
-    <ClInclude Include="Tests\RiftTestWorld.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Tests\AssImpTestWorld.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
     <ClInclude Include="Math\Lower Math\Mathf.h">
       <Filter>Math\Lower Math</Filter>
     </ClInclude>
@@ -777,12 +708,6 @@
     </ClInclude>
     <ClInclude Include="Game Loop\SFMLWorld.h">
       <Filter>Game Loop</Filter>
-    </ClInclude>
-    <ClInclude Include="Toys\TwoTrianglesWorld.h">
-      <Filter>Toys\Two Triangles</Filter>
-    </ClInclude>
-    <ClInclude Include="Sample Worlds\OpenGLTestWorld.h">
-      <Filter>Tests</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Basic Rendering\Material.h">
       <Filter>Rendering\Basic Rendering</Filter>
@@ -828,9 +753,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Textures\TextureSettings.h">
       <Filter>Rendering\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="Sample Worlds\NoiseTest.h">
-      <Filter>Tests</Filter>
     </ClInclude>
     <ClInclude Include="Input\MovingCamera.h">
       <Filter>Input</Filter>
@@ -1072,6 +994,27 @@
     <ClInclude Include="Sample Worlds\TerrainWorld.h">
       <Filter>Sample Worlds</Filter>
     </ClInclude>
+    <ClInclude Include="K1LL\Room.h">
+      <Filter>K1LL\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\RoomInfo.h">
+      <Filter>K1LL\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\LevelGraph.h">
+      <Filter>K1LL\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\LineSegment.h">
+      <Filter>K1LL\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Weapons.h">
+      <Filter>K1LL</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Room Editor\RoomEditor.h">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Room Editor\EditorView.h">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Math">
@@ -1107,9 +1050,6 @@
     <Filter Include="Rendering">
       <UniqueIdentifier>{077822c2-7114-45a1-9e61-f6a8b548b692}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tests">
-      <UniqueIdentifier>{3418affd-fce4-41be-84fa-6388382bbf75}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Events">
       <UniqueIdentifier>{95bef7da-4bab-4a10-9f0f-306b3c80aa15}</UniqueIdentifier>
     </Filter>
@@ -1128,15 +1068,6 @@
     <Filter Include="IO\tinyxml Library">
       <UniqueIdentifier>{e4f7dc4f-85f9-4536-b6db-5f9c56013c8a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Toys">
-      <UniqueIdentifier>{052fb4db-3157-48e3-806e-100b8c831aa1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Toys\Voxels">
-      <UniqueIdentifier>{8ab7af21-70a9-4b01-b23e-8ef373245d7d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Toys\PlanetSim">
-      <UniqueIdentifier>{9e62b9a7-1a62-464d-b3bc-9729f3923e0b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\GUI\GUI Elements">
       <UniqueIdentifier>{ec92b068-e8ad-47a7-befa-6d2057a7ab49}</UniqueIdentifier>
     </Filter>
@@ -1148,12 +1079,6 @@
     </Filter>
     <Filter Include="Oculus Rift">
       <UniqueIdentifier>{b2f214a1-17d3-4baa-adc6-64d16b442ad0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Toys\Two Triangles">
-      <UniqueIdentifier>{3508bde8-92db-4455-83bd-8647a08958b7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Toys\Two Triangles\Shaders">
-      <UniqueIdentifier>{6abf4684-7d9c-450f-9987-6f4cbe1a09b8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Basic Rendering">
       <UniqueIdentifier>{8ad55c55-4ca2-43dd-bfea-912c2bee8b5c}</UniqueIdentifier>
@@ -1203,34 +1128,17 @@
     <Filter Include="IO\Serializers">
       <UniqueIdentifier>{952e8ef2-61c0-4da5-9ffc-de31d8f4f3cd}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="water2d.txt">
-      <Filter>Toys\Two Triangles\Shaders</Filter>
-    </Text>
-    <Text Include="raymarcheddistancefunc.txt">
-      <Filter>Toys\Two Triangles\Shaders</Filter>
-    </Text>
-    <Text Include="raymarchedterrain.txt">
-      <Filter>Toys\Two Triangles\Shaders</Filter>
-    </Text>
-    <Text Include="fbm.txt">
-      <Filter>Toys\Two Triangles\Shaders</Filter>
-    </Text>
-    <Text Include="mandlebrot.txt">
-      <Filter>Toys\Two Triangles\Shaders</Filter>
-    </Text>
-    <Text Include="Test.txt">
-      <Filter>Toys\Two Triangles\Shaders</Filter>
-    </Text>
-    <Text Include="RMDFFun.txt">
-      <Filter>Toys\Two Triangles\Shaders</Filter>
-    </Text>
-    <Text Include="t.txt">
-      <Filter>Toys\Two Triangles\Shaders</Filter>
-    </Text>
-    <Text Include="Perlin.txt">
-      <Filter>Toys\Two Triangles\Shaders</Filter>
-    </Text>
+    <Filter Include="K1LL">
+      <UniqueIdentifier>{f2d16223-563f-49ed-a8b9-f1ad2934b566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Level">
+      <UniqueIdentifier>{f535a645-5e70-4da5-a78a-4784229eb3ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Player">
+      <UniqueIdentifier>{58e86321-7eb3-42a9-9502-d412cb374a78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Room Editor">
+      <UniqueIdentifier>{3b9f408f-2cb8-4da0-8991-5b534cf82822}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
