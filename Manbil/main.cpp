@@ -5,36 +5,11 @@
 #include "Sample Worlds/SerializationWorld.h"
 #include "Sample Worlds/GUIWorld.h"
 
-#include "Sample Worlds/OpenGLTestWorld.h"
-#include "Tests/AssImpTestWorld.h"
-#include "Tests/GUITestWorld.h"
-#include "Sample Worlds/NoiseTest.h"
-#include "Toys/TwoTrianglesWorld.h"
-#include "Toys/Voxel/VoxelWorld.h"
-#include "Toys/PlanetSim/PlanetSimWorld.h"
-
 
 //TODO: Add a "Skybox" class in "Rendering/Helper Classes" that simplifies creation/modification/rendering of a cubemapped skybox.
 
 
 int main()
 {
-    SimpleRenderWorld().RunWorld();
-    DataNodeRenderWorld().RunWorld();
-    WaterWorld().RunWorld();
-    TerrainWorld().RunWorld();
-    SerializationWorld().RunWorld();
-    GUIWorld().RunWorld();
 
-    //OpenGLTestWorld().RunWorld();
-    //AssImpTestWorld().RunWorld();
-    //GUITestWorld().RunWorld();
-    
-
-    //NoiseTest().RunWorld();
-
-
-    //TwoTrianglesWorld().RunWorld();
-    //VoxelWorld().RunWorld();
-    //PlanetSimWorld().RunWorld();
 }
