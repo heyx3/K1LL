@@ -22,6 +22,10 @@ public:
 
     virtual Box2D GetBounds(void) const override;
 
+    virtual void ScaleBy(Vector2f scaleAmount) override;
+    virtual void SetScale(Vector2f newScale) override;
+
+
     virtual void Render(float elapsedTime, const RenderInfo& info) override;
 
     virtual void OnMouseClick(Vector2f relativeMousePos) override;
@@ -63,13 +67,17 @@ private:
     UniformDictionary lineMatParams;
 
     Material *backgroundMat;
+    MTexture2D backgroundTex;
     GUITexture GUIBackground;
 
 
-    Vector2f GetWorldPos(Vector2f relativeMousePos) { return worldPosCenter + (relativeMousePos / viewScale); }
-    Vector2f GetRelativePos(Vector2f worldPos) { return ((worldPos - worldPosCenter) * viewScale); }
+    Vector2f GetWorldPos(Vector2f relativeGUIPos) const;
+    Vector2f GetRelativePos(Vector2f worldPos) const;
 
-    Box2D GetWorldBounds(Box2D screenBounds) { return Box2D(GetWorldPos(screenBounds.GetPosition()), screenBounds.GetDimensions() / viewScale); }
+    Vector2f GetClosestGridPos(Vector2f worldPos) const;
 
-    void RenderLine(Vector2f worldStart, Vector2f worldEnd, float elapsedSeconds, const RenderInfo& info);
+    Box2D GetWorldBounds(Box2D screenBounds) const;
+
+    void RenderLine(Vector2f worldStart, Vector2f worldEnd, Vector4f color,
+                    float elapsedSeconds, const RenderInfo& info);
 };
