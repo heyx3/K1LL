@@ -28,6 +28,8 @@ protected:
     virtual void UpdateWorld(float elapsedSeconds) override;
     virtual void RenderOpenGL(float elapsedSeconds) override;
 
+    virtual void OnOtherWindowEvent(sf::Event& windowEvent) override;
+
 private:
 
     bool Assert(bool test, std::string errorIntro, const std::string& error);

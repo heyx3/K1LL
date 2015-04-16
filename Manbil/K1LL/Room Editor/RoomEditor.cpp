@@ -2,14 +2,31 @@
 
 #include "../../Rendering/GUI/GUI Elements/GUISlider.h"
 #include "../../Rendering/GUI/GUI Elements/GUISelectionBox.h"
+#include "EditorView.h"
 
 
 #include <iostream>
-void PauseConsole(void)
+namespace
 {
-    char dummy;
-    std::cin >> dummy;
+    void PauseConsole(void)
+    {
+        char dummy;
+        std::cin >> dummy;
+    }
+
+    //The GUI's camera is positioned so the origin is at the bottom-left of the window,
+    //    and the width/height of the view is equal to the pixel width/height.
+    Camera GetGUICam(Vector2u windowSize)
+    {
+        Camera cam(Vector3f(), Vector3f(0.0f, 0.0f, -1.0f), Vector3f(0.0f, -1.0f, 0.0f));
+        cam.MinOrthoBounds = Vector3f(0.0f, 0.0f, -10.0f);
+        cam.MaxOrthoBounds = Vector3f((float)windowSize.x, (float)windowSize.y, 10.0f);
+        cam.PerspectiveInfo.Width = windowSize.x;
+        cam.PerspectiveInfo.Height = windowSize.y;
+        return cam;
+    }
 }
+
 
 
 RoomEditor::RoomEditor(void)
@@ -51,9 +68,22 @@ void RoomEditor::InitializeWorld(void)
 
     textRenderer = new TextRenderer();
     editorMaterials = new EditorMaterialSet(*textRenderer);
+
+    std::string err;
+    EditorView* view = new EditorView(err);
+    if (!Assert(err.empty(), "Error creating editor view", err))
+    {
+        return;
+    }
+    manager.RootElement = GUIElementPtr(view);
+
+    manager.RootElement->SetBounds(Box2D(0.0f, (float)windowSize.x,
+                                         -(float)windowSize.y, 0.0f));
 }
 void RoomEditor::OnWorldEnd(void)
 {
+    manager.RootElement.reset();
+
     if (editorMaterials != 0)
     {
         delete editorMaterials;
@@ -67,13 +97,16 @@ void RoomEditor::OnWorldEnd(void)
 
     TextRenderer::DestroySystem();
     DrawingQuad::DestroyQuad();
-
-
 }
 
 void RoomEditor::UpdateWorld(float elapsedSeconds)
 {
+    sf::Vector2i mPos = sf::Mouse::getPosition();
+    sf::Vector2i mPosFinal = mPos - GetWindow()->getPosition() - sf::Vector2i(5, 30);
+    mPosFinal.y -= windowSize.y;
 
+    manager.Update(elapsedSeconds, Vector2i(mPosFinal.x, mPosFinal.y),
+                   sf::Mouse::isButtonPressed(sf::Mouse::Left));
 }
 void RoomEditor::RenderOpenGL(float elapsedSeconds)
 {
@@ -86,8 +119,12 @@ void RoomEditor::RenderOpenGL(float elapsedSeconds)
     if (manager.RootElement.get() != 0)
     {
         //Build the camera info.
+        Camera cam = GetGUICam(windowSize);
+        Matrix4f viewM, projM;
+        cam.GetViewTransform(viewM);
+        cam.GetOrthoProjection(projM);
 
-
+        RenderInfo info(GetTotalElapsedSeconds(), &cam, &viewM, &projM);
         manager.Render(elapsedSeconds, info);
     }
 }
@@ -102,6 +139,14 @@ void RoomEditor::OnWindowResized(unsigned int newWidth, unsigned int newHeight)
     windowSize.y = newHeight;
 }
 
+void RoomEditor::OnOtherWindowEvent(sf::Event& windowEvent)
+{
+    if (windowEvent.type == sf::Event::MouseWheelMoved)
+    {
+        ((EditorView*)manager.RootElement.get())->MouseWheelDelta += windowEvent.mouseWheel.delta;
+    }
+}
+
 bool RoomEditor::Assert(bool test, std::string errorIntro, const std::string& error)
 {
     if (!test)
@@ -109,6 +154,8 @@ bool RoomEditor::Assert(bool test, std::string errorIntro, const std::string& er
         std::cout << errorIntro << ": " << error << "\n";
         PauseConsole();
         EndWorld();
-        return;
+        return false;
     }
+
+    return true;
 }
