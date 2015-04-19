@@ -8,17 +8,17 @@
 struct LevelNode
 {
     unsigned int ID;
-    Vector2f Pos;
+    Vector2f GridPos;
 
-    LevelNode(unsigned int id, Vector2f pos) : ID(id), Pos(pos) { }
+    LevelNode(unsigned int id, Vector2f gridPos) : ID(id), GridPos(gridPos) { }
 };
 
 
 class LevelGraph;
 
-struct LevelEdge : Edge<LevelNode, const LevelGraph*>
+struct LevelEdge : Edge<LevelNode>
 {
-    LevelEdge(LevelNode start, LevelNode end, const LevelGraph* graph) : Edge(start, end, graph) { }
+    LevelEdge(LevelNode start, LevelNode end, void* graph) : Edge(start, end, graph) { }
     
     virtual float GetTraversalCost(GraphSearchGoal<LevelNode>& goal) override;
     virtual float GetSearchCost(GraphSearchGoal<LevelNode>& goal) override;
@@ -36,4 +36,4 @@ public:
 };
 
 
-typedef AStarSearch<LevelNode, LevelEdge, GraphSearchGoal<LevelNode>, LevelGraph*> LevelGraphPather;
+typedef AStarSearch<LevelNode, LevelEdge> LevelGraphPather;

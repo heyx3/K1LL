@@ -4,11 +4,11 @@
 
 float LevelEdge::GetTraversalCost(GraphSearchGoal<LevelNode>& goal)
 {
-    float dist = Start.Pos.Distance(End.Pos);
+    float dist = Start.GridPos.Distance(End.GridPos);
 
     if (goal.SpecificEnd.HasValue())
     {
-        return dist + End.Pos.Distance(goal.SpecificEnd.GetValue().Pos);
+        return dist + End.GridPos.Distance(goal.SpecificEnd.GetValue().GridPos);
     }
     else
     {
@@ -17,7 +17,7 @@ float LevelEdge::GetTraversalCost(GraphSearchGoal<LevelNode>& goal)
 }
 float LevelEdge::GetSearchCost(GraphSearchGoal<LevelNode>& goal)
 {
-    return Start.Pos.Distance(End.Pos);
+    return Start.GridPos.Distance(End.GridPos);
 }
 
 void LevelGraph::GetConnectedEdges(LevelNode startNode, std::vector<LevelEdge>& outConnections)

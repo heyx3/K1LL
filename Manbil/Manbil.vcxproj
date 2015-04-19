@@ -134,7 +134,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="IO\tinyxml2.cpp" />
     <ClCompile Include="IO\XmlSerialization.cpp" />
     <ClCompile Include="K1LL\LevelGraph.cpp" />
-    <ClCompile Include="K1LL\LineSegment.cpp" />
+    <ClCompile Include="K1LL\LevelInfo.cpp" />
     <ClCompile Include="K1LL\Room Editor\EditorView.cpp" />
     <ClCompile Include="K1LL\Room Editor\RoomEditor.cpp" />
     <ClCompile Include="K1LL\Room.cpp" />
@@ -305,7 +305,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="IO\tinyxml2.h" />
     <ClInclude Include="IO\XmlSerialization.h" />
     <ClInclude Include="K1LL\LevelGraph.h" />
-    <ClInclude Include="K1LL\LineSegment.h" />
+    <ClInclude Include="K1LL\LevelInfo.h" />
     <ClInclude Include="K1LL\Room Editor\EditorView.h" />
     <ClInclude Include="K1LL\Room Editor\RoomEditor.h" />
     <ClInclude Include="K1LL\Room.h" />

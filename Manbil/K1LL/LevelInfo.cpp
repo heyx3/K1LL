@@ -1,0 +1,115 @@
+#include "LevelInfo.h"
+
+#include "../IO/Serialization.h"
+
+
+bool LevelInfo::BoxesTouching(Vector2u min1, Vector2u max1, Vector2u min2, Vector2u max2)
+{
+    return (((min1.x >= min2.x && min1.x <= max2.x) || (max1.x >= min2.x && max1.x <= max2.x)) &&
+            ((min1.y >= min2.y && min1.y <= max2.y) || (max1.y >= min2.y && max1.y <= max2.y))) ||
+           (((min2.x >= min1.x && min2.x <= max1.x) || (max2.x >= min1.x && max2.x <= max1.x)) &&
+            ((min2.y >= min1.y && min2.y <= max1.y) || (max2.y >= min1.y && max2.y <= max1.y)));
+}
+bool LevelInfo::BoxesBorder(Vector2u min1, Vector2u max1, Vector2u min2, Vector2u max2)
+{
+    assert(!BoxesTouching(min1, max1, min2, max2));
+    return (min1.x == max2.x + 1 || max1.x == min2.x - 1 ||
+            min1.y == max2.y + 1 || max1.y == min2.y - 1);
+}
+
+bool LevelInfo::IsAreaFree(Vector2u start, Vector2u end) const
+{
+    for (unsigned int i = 0; i < Rooms.size(); ++i)
+    {
+        Vector2u min = RoomOffsets[i],
+                 max = min + Rooms[i].RoomGrid.GetDimensions();
+
+        if (BoxesTouching(start, end, min, max))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+const RoomInfo* LevelInfo::GetRoom(Vector2u worldGridPos) const
+{
+    for (unsigned int i = 0; i < Rooms.size(); ++i)
+    {
+        Vector2u min = RoomOffsets[i],
+                 max = min + Rooms[i].RoomGrid.GetDimensions();
+        if (worldGridPos.x >= min.x && worldGridPos.x <= max.x &&
+            worldGridPos.y >= min.y && worldGridPos.y <= max.y)
+        {
+            return &Rooms[i];
+        }
+    }
+
+    return 0;
+}
+
+void LevelInfo::GetBorderingRooms(unsigned int room, std::vector<unsigned int>& outRooms) const
+{
+    Vector2u myMin = RoomOffsets[room],
+             myMax = myMin + Rooms[room].RoomGrid.GetDimensions();
+
+    for (unsigned int i = 0; i < Rooms.size(); ++i)
+    {
+        if (i != room)
+        {
+            Vector2u hisMin = RoomOffsets[i],
+                     hisMax = hisMin + Rooms[i].RoomGrid.GetDimensions();
+
+            if (BoxesBorder(myMin, myMax, hisMin, hisMax))
+            {
+                outRooms.push_back(i);
+            }
+        }
+    }
+}
+
+
+void LevelInfo::WriteData(DataWriter* writer) const
+{
+    writer->WriteDataStructure(Vector2f_Writable(TeamOneCenter), "Team one's center");
+    writer->WriteDataStructure(Vector2f_Writable(TeamTwoCenter), "Team two's center");
+
+    writer->WriteCollection([](DataWriter* writer, const void* toWrite, unsigned int i, void* p)
+                            {
+                                writer->WriteDataStructure(*(const RoomInfo*)toWrite, "Room");
+                            }, "Rooms", sizeof(RoomInfo), Rooms.data(), Rooms.size());
+    writer->WriteCollection([](DataWriter* writer, const void* toWrite, unsigned int i, void* p)
+                            {
+                                writer->WriteDataStructure(Vector2u_Writable(*(const Vector2u*)toWrite),
+                                                           "Room offset");
+                            }, "Room offsets", sizeof(Vector2u), RoomOffsets.data(), RoomOffsets.size());
+}
+void LevelInfo::ReadData(DataReader* reader)
+{
+    reader->ReadDataStructure(Vector2f_Readable(TeamOneCenter));
+    reader->ReadDataStructure(Vector2f_Readable(TeamTwoCenter));
+    
+    reader->ReadCollection([](DataReader* reader, void* pCollection, unsigned int i, void* p)
+                           {
+                               std::vector<RoomInfo>& infos = *(std::vector<RoomInfo>*)pCollection;
+                               reader->ReadDataStructure(infos[i]);
+                           },
+                           [](void* pCollection, unsigned int newSize)
+                           {
+                               std::vector<RoomInfo>& infos = *(std::vector<RoomInfo>*)pCollection;
+                               infos.resize(newSize);
+                           },
+                           &Rooms);
+    reader->ReadCollection([](DataReader* reader, void* pCollection, unsigned int i, void* p)
+                           {
+                               std::vector<Vector2u>& offs = *(std::vector<Vector2u>*)pCollection;
+                               reader->ReadDataStructure(Vector2u_Readable(offs[i]));
+                           },
+                           [](void* pCollection, unsigned int newSize)
+                           {
+                               std::vector<Vector2u>& infos = *(std::vector<Vector2u>*)pCollection;
+                               infos.resize(newSize);
+                           },
+                           &RoomOffsets);
+}
