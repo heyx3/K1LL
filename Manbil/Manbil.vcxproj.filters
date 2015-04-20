@@ -429,17 +429,8 @@
     <ClCompile Include="Sample Worlds\TerrainWorld.cpp">
       <Filter>Sample Worlds</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\Room.cpp">
-      <Filter>K1LL\Level</Filter>
-    </ClCompile>
     <ClCompile Include="K1LL\RoomInfo.cpp">
-      <Filter>K1LL\Level</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\LevelGraph.cpp">
-      <Filter>K1LL\Level</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\LineSegment.cpp">
-      <Filter>K1LL\Level</Filter>
+      <Filter>K1LL\Level Info</Filter>
     </ClCompile>
     <ClCompile Include="K1LL\Room Editor\RoomEditor.cpp">
       <Filter>K1LL\Room Editor</Filter>
@@ -447,8 +438,35 @@
     <ClCompile Include="K1LL\Room Editor\EditorView.cpp">
       <Filter>K1LL\Room Editor</Filter>
     </ClCompile>
+    <ClCompile Include="K1LL\Content\Constants.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Level.cpp">
+      <Filter>K1LL\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Room.cpp">
+      <Filter>K1LL\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\TeamData.cpp">
+      <Filter>K1LL\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\LevelGraph.cpp">
+      <Filter>K1LL\Game</Filter>
+    </ClCompile>
     <ClCompile Include="K1LL\LevelInfo.cpp">
       <Filter>K1LL\Level Info</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Actors\Player.cpp">
+      <Filter>K1LL\Game\Players</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\ActorContent.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\GameWorld.cpp">
+      <Filter>K1LL\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Actors\HumanPlayer.cpp">
+      <Filter>K1LL\Game\Players</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -997,17 +1015,8 @@
     <ClInclude Include="Sample Worlds\TerrainWorld.h">
       <Filter>Sample Worlds</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\Room.h">
-      <Filter>K1LL\Level</Filter>
-    </ClInclude>
     <ClInclude Include="K1LL\RoomInfo.h">
-      <Filter>K1LL\Level</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\LevelGraph.h">
-      <Filter>K1LL\Level</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Weapons.h">
-      <Filter>K1LL</Filter>
+      <Filter>K1LL\Level Info</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\Room Editor\RoomEditor.h">
       <Filter>K1LL\Room Editor</Filter>
@@ -1015,8 +1024,41 @@
     <ClInclude Include="K1LL\Room Editor\EditorView.h">
       <Filter>K1LL\Room Editor</Filter>
     </ClInclude>
+    <ClInclude Include="K1LL\Actors\Actor.h">
+      <Filter>K1LL\Game\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\ActorContent.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\Constants.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
     <ClInclude Include="K1LL\LevelInfo.h">
       <Filter>K1LL\Level Info</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Level.h">
+      <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Room.h">
+      <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\TeamData.h">
+      <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\LevelGraph.h">
+      <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Weapons.h">
+      <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Actors\Player.h">
+      <Filter>K1LL\Game\Players</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Actors\HumanPlayer.h">
+      <Filter>K1LL\Game\Players</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\GameWorld.h">
+      <Filter>K1LL\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1134,14 +1176,23 @@
     <Filter Include="K1LL">
       <UniqueIdentifier>{f2d16223-563f-49ed-a8b9-f1ad2934b566}</UniqueIdentifier>
     </Filter>
-    <Filter Include="K1LL\Level">
-      <UniqueIdentifier>{f535a645-5e70-4da5-a78a-4784229eb3ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="K1LL\Player">
-      <UniqueIdentifier>{58e86321-7eb3-42a9-9502-d412cb374a78}</UniqueIdentifier>
-    </Filter>
     <Filter Include="K1LL\Room Editor">
       <UniqueIdentifier>{3b9f408f-2cb8-4da0-8991-5b534cf82822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Content">
+      <UniqueIdentifier>{dee9f723-a7b5-4b48-b45a-2a6e1ad9a594}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Level Info">
+      <UniqueIdentifier>{f535a645-5e70-4da5-a78a-4784229eb3ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Game">
+      <UniqueIdentifier>{5459893a-e155-4c3a-bcda-65fbde237048}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Game\Actors">
+      <UniqueIdentifier>{2bc5bbaa-9ca3-4f5b-8495-0b0d7d6ced77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Game\Players">
+      <UniqueIdentifier>{7665b2d8-2d74-4c7f-916a-0880b3b14703}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

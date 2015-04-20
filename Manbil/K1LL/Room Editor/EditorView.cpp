@@ -1,11 +1,12 @@
 #include "EditorView.h"
 
+#include <SFML/Window.hpp>
+#include "../../DebugAssist.h"
+
 #include "../../Rendering/Data Nodes/DataNodes.hpp"
 #include "../../Rendering/Data Nodes/ShaderGenerator.h"
 
 #include "../../Rendering/GUI/GUIMaterials.h"
-
-#include <SFML/Window.hpp>
 
 
 const float ZoomSpeed = 1.1f;
@@ -14,6 +15,7 @@ const std::string uniform_minWorldPos = "u_minWorldPos",
 const std::string uniform_lineStart = "u_lineStart",
                   uniform_lineEnd = "u_lineEnd",
                   uniform_lineThickness = "u_thickness";
+
 
 Vector2f RoundToInt(Vector2f inV)
 {
@@ -91,7 +93,6 @@ EditorView::EditorView(std::string& err)
     GUIBackground.SetColor(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
 
 
-
     DataNode::Ptr lineStart(new ParamNode(2, uniform_lineStart)),
                   lineEnd(new ParamNode(2, uniform_lineEnd)),
                   lineThickness(new ParamNode(1, uniform_lineThickness));
@@ -102,17 +103,14 @@ EditorView::EditorView(std::string& err)
     DataNode::Ptr linePos(new CustomExpressionNode(posExpr, 2,
                                                    lineStart, lineEnd, vIn_Pos, lineThickness,
                                                    "linePos"));
-    DataNode::Ptr linePos3(new CombineVectorNode(linePos, 0.0f, "linePos3"));
+    DataNode::Ptr linePos3(new CombineVectorNode(linePos, 2.0f, "linePos3"));
 
     objToScreen = SpaceConverterNode::ObjPosToScreenPos(linePos3, "linePosToScreen");
-
-    finalCol = DataNode::Ptr(new CustomExpressionNode("min(max('0'.x, '0'.y), 1.0) * '1'", 4,
-                                                      gridStrength, colorUniform, "finalLineCol"));
 
     matData.MaterialOuts.VertexPosOutput = DataLine(objToScreen, 1);
     matData.MaterialOuts.VertexOutputs.erase(matData.MaterialOuts.VertexOutputs.end() - 1);
     matData.MaterialOuts.VertexOutputs[0].Value = linePos;
-    matData.MaterialOuts.FragmentOutputs[0].Value = finalCol;
+    matData.MaterialOuts.FragmentOutputs[0].Value = colorUniform;
 
     genM = ShaderGenerator::GenerateMaterial(matData, lineMatParams, BlendMode::GetOpaque());
     if (!genM.ErrorMessage.empty())
@@ -122,7 +120,7 @@ EditorView::EditorView(std::string& err)
     }
     lineMat = genM.Mat;
 
-    lineMatParams.Floats[uniform_lineThickness].SetValue(0.01f);
+    lineMatParams.Floats[uniform_lineThickness].SetValue(0.02f);
 }
 
 EditorView::~EditorView(void)
@@ -156,7 +154,6 @@ void EditorView::SetScale(Vector2f newScale)
     GUIElement::SetScale(newScale);
 }
 
-#include "../../DebugAssist.h"
 void EditorView::CustomUpdate(float elapsed, Vector2f mousePos)
 {
     if (MouseWheelDelta != 0)
@@ -164,7 +161,8 @@ void EditorView::CustomUpdate(float elapsed, Vector2f mousePos)
         viewScale *= powf(ZoomSpeed, (float)MouseWheelDelta);
         MouseWheelDelta = 0;
     }
-    std::cout << DebugAssist::ToString(GetWorldPos(mousePos)) << "\n";
+
+    mouseDrawWorldPos = GetWorldPos(mousePos);
 }
 
 void EditorView::Render(float elapsedTime, const RenderInfo& info)
@@ -178,21 +176,32 @@ void EditorView::Render(float elapsedTime, const RenderInfo& info)
     RenderChild(&GUIBackground, elapsedTime, info);
 
     //Render the grid spot the mouse is touching.
-    //TODO: Implement. Maybe just render a "line" that spans a tiny space across the grid spot?
+    const Vector2f mouseLineOffset(1.0f, 0.0f);
+    RenderLine(mouseDrawWorldPos - mouseLineOffset, mouseDrawWorldPos + mouseLineOffset,
+               Vector4f(1.0f, 0.0f, 0.0f, 1.0f), GetBounds().GetDimensions(),
+               elapsedTime, info);
 
     //Render each line.
     for (unsigned int i = 0; i < RoomData.Walls.size(); ++i)
     {
         RenderLine(RoomData.Walls[i].Start, RoomData.Walls[i].End,
                    Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
-                   elapsedTime, info);
+                   GetBounds().GetDimensions(), elapsedTime, info);
     }
 }
 void EditorView::RenderLine(Vector2f worldStart, Vector2f worldEnd, Vector4f color,
-                            float elapsedSeconds, const RenderInfo& info)
+                            Vector2f relativeDims, float elapsedSeconds, const RenderInfo& info)
 {
-    lineMatParams.Floats[uniform_lineStart].SetValue(GetRelativePos(worldStart) + GetPos());
-    lineMatParams.Floats[uniform_lineEnd].SetValue(GetRelativePos(worldEnd) + GetPos());
+    Vector2f halfDims = relativeDims * 0.5f,
+             invDims(1.0f / relativeDims.x, 1.0f / relativeDims.y);
+    Vector2f start = (GetRelativePos(worldStart) + GetPos()).ComponentProduct(invDims) - Vector2f(0.5, 0.0f),
+             end = (GetRelativePos(worldEnd) + GetPos()).ComponentProduct(invDims) - Vector2f(0.5, 0.0f);
+
+    std::cout << "From " << DebugAssist::ToString(start) <<
+                 " to " << DebugAssist::ToString(end) << "\n";
+
+    lineMatParams.Floats[uniform_lineStart].SetValue(start);
+    lineMatParams.Floats[uniform_lineEnd].SetValue(end);
     lineMatParams.Floats[GUIMaterials::QuadDraw_Color].SetValue(color);
     DrawingQuad::GetInstance()->Render(info, lineMatParams, *lineMat);
 }
@@ -243,6 +252,10 @@ void EditorView::OnMouseDrag(Vector2f originalPos, Vector2f newPos)
         case MS_DRAGGING_VERTEX:
             //TODO: Move the vertex.
             break;
+
+        default:
+            assert(false);
+            break;
     }
 }
 void EditorView::OnMouseRelease(Vector2f relativeMousePos)
@@ -275,19 +288,7 @@ Vector2f EditorView::GetRelativePos(Vector2f worldPos) const
 
 Vector2f EditorView::GetClosestGridPos(Vector2f worldPos) const
 {
-    Vector2f closestGrid = ToV2f(worldPos.Floored());
-
-    Vector2f dist = (closestGrid - worldPos).Abs();
-    if (dist.x > 0.5f)
-    {
-        closestGrid.x += 2.0f * (worldPos.x - closestGrid.x);
-    }
-    if (dist.y > 0.5f)
-    {
-        closestGrid.y += 2.0f * (worldPos.y - closestGrid.y);
-    }
-
-    return RoundToInt(closestGrid);
+    return ToV2f((worldPos + Vector2f(0.5f, 0.5f)).Floored());
 }
 
 Box2D EditorView::GetWorldBounds(Box2D screenBounds) const

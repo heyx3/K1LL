@@ -12,6 +12,7 @@ enum BlockTypes : unsigned char
 {
     BT_NONE,
     BT_WALL,
+    BT_DOORWAY,
     BT_PLAYER_SPAWN,
     BT_ITEM_SPAWN,
 };
@@ -30,16 +31,21 @@ struct RoomInfo : public ISerializable
     //The layout of this room.
     Array2D<BlockTypes> RoomGrid;
 
+    //The navigation nodes for this room (not counting connections to other rooms).
+    std::vector<Vector2u> NavNodes;
+
 
     inline RoomInfo(RoomInfo&& toMove)
         : RoomGrid(std::move(toMove.RoomGrid))
     {
         Category = std::move(toMove.Category);
+        NavNodes = std::move(toMove.NavNodes);
         NavigationDifficulty = toMove.NavigationDifficulty;
     }
     inline RoomInfo& operator=(RoomInfo&& toMove)
     {
         Category = std::move(toMove.Category);
+        NavNodes = std::move(toMove.NavNodes);
         NavigationDifficulty = toMove.NavigationDifficulty;
         RoomGrid = std::move(toMove.RoomGrid);
 

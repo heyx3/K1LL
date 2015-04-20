@@ -1,5 +1,7 @@
 #include "RoomInfo.h"
 
+#include "../IO/Serialization.h"
+
 
 void RoomInfo::WriteData(DataWriter* writer) const
 {
@@ -17,6 +19,13 @@ void RoomInfo::WriteData(DataWriter* writer) const
                               std::to_string(x) + "x" + std::to_string(y));
         }
     }
+
+    writer->WriteCollection([](DataWriter* writer, const void* toWrite, unsigned int i, void* pDat)
+                            {
+                                const Vector2u& v = *(const Vector2u*)toWrite;
+                                writer->WriteDataStructure(Vector2u_Writable(v), "Node");
+                            },
+                            "Nav nodes", sizeof(Vector2u), NavNodes.data(), NavNodes.size());
 }
 void RoomInfo::ReadData(DataReader* reader)
 {
@@ -35,4 +44,15 @@ void RoomInfo::ReadData(DataReader* reader)
             reader->ReadByte((unsigned char&)RoomGrid[Vector2u(x, y)]);
         }
     }
+
+    reader->ReadCollection([](DataReader* reader, void* collection, unsigned int i, void* pData)
+                           {
+                               auto& coll = *(std::vector<Vector2u>*)collection;
+                               reader->ReadDataStructure(Vector2u_Readable(coll[i]));
+                           },
+                           [](void* collection, unsigned int newSize)
+                           {
+                               ((std::vector<Vector2u>*)collection)->resize(newSize);
+                           },
+                           &NavNodes);
 }

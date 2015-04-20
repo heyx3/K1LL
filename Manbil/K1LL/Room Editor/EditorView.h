@@ -59,6 +59,7 @@ private:
     MouseState mouseState = MS_NONE;
     Vertex vertexBeingDragged = Vertex(-1, false);
 
+    Vector2f mouseDrawWorldPos;
 
     Vector2f worldPosCenter;
     float viewScale;
@@ -79,5 +80,5 @@ private:
     Box2D GetWorldBounds(Box2D screenBounds) const;
 
     void RenderLine(Vector2f worldStart, Vector2f worldEnd, Vector4f color,
-                    float elapsedSeconds, const RenderInfo& info);
+                    Vector2f relativeDims, float elapsedSeconds, const RenderInfo& info);
 };
