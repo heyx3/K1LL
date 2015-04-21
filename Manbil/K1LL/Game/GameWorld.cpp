@@ -5,6 +5,9 @@
 #include "../Actors/HumanPlayer.h"
 #include "../Content/ActorContent.h"
 
+Vector2i GameWorld::mPos = Vector2i();
+sf::RenderWindow* GameWorld::wind = 0;
+
 
 GameWorld::GameWorld(void)
     : windowSize(800, 600),

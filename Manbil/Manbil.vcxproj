@@ -141,8 +141,10 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\Level.cpp" />
     <ClCompile Include="K1LL\LevelGraph.cpp" />
     <ClCompile Include="K1LL\LevelInfo.cpp" />
-    <ClCompile Include="K1LL\Room Editor\EditorView.cpp" />
+    <ClCompile Include="K1LL\Room Editor\RoomEditorView.cpp" />
+    <ClCompile Include="K1LL\Room Editor\RoomCollection.cpp" />
     <ClCompile Include="K1LL\Room Editor\RoomEditor.cpp" />
+    <ClCompile Include="K1LL\Room Editor\RoomEditorPane.cpp" />
     <ClCompile Include="K1LL\Room.cpp" />
     <ClCompile Include="K1LL\RoomInfo.cpp" />
     <ClCompile Include="K1LL\TeamData.cpp" />
@@ -320,8 +322,10 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Level.h" />
     <ClInclude Include="K1LL\LevelGraph.h" />
     <ClInclude Include="K1LL\LevelInfo.h" />
-    <ClInclude Include="K1LL\Room Editor\EditorView.h" />
+    <ClInclude Include="K1LL\Room Editor\RoomEditorView.h" />
     <ClInclude Include="K1LL\Room Editor\RoomEditor.h" />
+    <ClInclude Include="K1LL\Room Editor\RoomCollection.h" />
+    <ClInclude Include="K1LL\Room Editor\RoomEditorPane.h" />
     <ClInclude Include="K1LL\Room.h" />
     <ClInclude Include="K1LL\RoomInfo.h" />
     <ClInclude Include="K1LL\TeamData.h" />

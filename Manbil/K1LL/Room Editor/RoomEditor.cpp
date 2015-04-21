@@ -2,7 +2,8 @@
 
 #include "../../Rendering/GUI/GUI Elements/GUISlider.h"
 #include "../../Rendering/GUI/GUI Elements/GUISelectionBox.h"
-#include "EditorView.h"
+#include "../../Rendering/GUI/GUI Elements/GUIFormattedPanel.h"
+#include "../../Editor/EditorPanel.h"
 
 
 #include <iostream>
@@ -65,17 +66,51 @@ void RoomEditor::InitializeWorld(void)
     
     DrawingQuad::InitializeQuad();
     TextRenderer::InitializeSystem();
+    
+    std::string err;
 
     textRenderer = new TextRenderer();
     editorMaterials = new EditorMaterialSet(*textRenderer);
 
-    std::string err;
-    EditorView* view = new EditorView(err);
+    err = EditorMaterialSet::GenerateDefaultInstance(*editorMaterials);
+    if (!Assert(err.empty(), "Error setting up editor material set", err))
+    {
+        return;
+    }
+    //editorMaterials->TextScale = Vector2f(0.1f, 0.1f);
+
+    //Build the room editor view.
+    editorView = new RoomEditorView(err);
     if (!Assert(err.empty(), "Error creating editor view", err))
     {
         return;
     }
-    manager.RootElement = GUIElementPtr(view);
+
+    //Build the room editor panel.
+    std::vector<EditorObjectPtr> editorObjects;
+    err = editorView->BuildEditorElements(editorObjects, *editorMaterials);
+    if (!Assert(err.empty(), "Error building editor pane elements", err))
+    {
+        return;
+    }
+    EditorPanel* editPane = new EditorPanel(*editorMaterials, 10.0f, 10.0f);
+    err = editPane->AddObjects(editorObjects);
+    if (!Assert(err.empty(), "Error creating editor pane elements", err))
+    {
+        return;
+    }
+    
+    const float spaceBetween = 10.0f;
+    Box2D paneBounds = editPane->GetBounds();
+    editorView->SetBounds(Box2D(Vector2f(),
+                                Vector2f((float)windowSize.x - paneBounds.GetXSize() - spaceBetween,
+                                         paneBounds.GetYSize())));
+    
+
+    GUIFormattedPanel* panel = new GUIFormattedPanel();
+    //panel->AddObject(GUIFormatObject(GUIElementPtr(editorView), true, false, Vector2f(spaceBetween, 0.0f)));
+    panel->AddObject(GUIFormatObject(GUIElementPtr(editPane), true, false));
+    manager.RootElement = GUIElementPtr(panel);
 
     manager.RootElement->SetBounds(Box2D(0.0f, (float)windowSize.x,
                                          -(float)windowSize.y, 0.0f));
@@ -112,7 +147,8 @@ void RoomEditor::RenderOpenGL(float elapsedSeconds)
 {
     //Set up rendering state.
     //Modify these constructors to change various aspects of how rendering is done.
-    ScreenClearer(true, true, false, Vector4f(0.2, 0.2, 0.2f, 0.0f)).ClearScreen();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    ScreenClearer(true, true, false, Vector4f(1.0f, 0.0f, 1.0f, 0.0f)).ClearScreen();
     RenderingState(RenderingState::C_NONE).EnableState();
     glViewport(0, 0, windowSize.x, windowSize.y);
 
@@ -137,13 +173,16 @@ void RoomEditor::OnWindowResized(unsigned int newWidth, unsigned int newHeight)
 {
     windowSize.x = newWidth;
     windowSize.y = newHeight;
+
+    manager.RootElement->SetBounds(Box2D(0.0f, (float)windowSize.x,
+                                         -(float)windowSize.y, 0.0f));
 }
 
 void RoomEditor::OnOtherWindowEvent(sf::Event& windowEvent)
 {
     if (windowEvent.type == sf::Event::MouseWheelMoved)
     {
-        ((EditorView*)manager.RootElement.get())->MouseWheelDelta += windowEvent.mouseWheel.delta;
+        editorView->MouseWheelDelta += windowEvent.mouseWheel.delta;
     }
 }
 

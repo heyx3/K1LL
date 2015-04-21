@@ -2,22 +2,23 @@
 
 #include "../../Rendering/GUI/GUIElement.h"
 #include "../../Rendering/GUI/GUI Elements/GUITexture.h"
+#include "../../Editor/IEditable.h"
 
 #include "../RoomInfo.h"
+#include "RoomEditorPane.h"
 
 
-class EditorView : public GUIElement
+//The GUI element that updates/renders 
+class RoomEditorView : public GUIElement, public RoomEditorPane
 {
 public:
-
-    RoomInfo RoomData;
 
     //Add/subtract this value whenever the mouse wheel changes.
     int MouseWheelDelta;
 
 
-    EditorView(std::string& outError);
-    virtual ~EditorView(void);
+    RoomEditorView(std::string& outError);
+    virtual ~RoomEditorView(void);
 
 
     virtual Box2D GetBounds(void) const override;
@@ -37,39 +38,28 @@ protected:
 
     virtual void CustomUpdate(float elapsed, Vector2f relativeMousePos) override;
 
-
 private:
 
     enum MouseState
     {
+        //Mouse is released.
         MS_NONE,
-        MS_CLICKING,
+        //Mouse is making blocks everywhere it touches.
+        MS_MAKING_BLOCKS,
+        //Mouse is dragging the camera.
         MS_DRAGGING_CAMERA,
-        MS_DRAGGING_VERTEX,
-    };
-
-    struct Vertex
-    {
-        int SegmentIndex;
-        bool IsEnd;
-        Vertex(unsigned int segIndex, bool isEnd) : SegmentIndex(segIndex), IsEnd(isEnd) { }
     };
 
 
     MouseState mouseState = MS_NONE;
-    Vertex vertexBeingDragged = Vertex(-1, false);
 
-    Vector2f mouseDrawWorldPos;
+    Vector2f mouseDrawWorldPos, lastDragWorldPos;
 
     Vector2f worldPosCenter;
     float viewScale;
 
-    Material *lineMat;
-    UniformDictionary lineMatParams;
-
-    Material *backgroundMat;
+    GUITexture GUIBackground, GUIBox;
     MTexture2D backgroundTex;
-    GUITexture GUIBackground;
 
 
     Vector2f GetWorldPos(Vector2f relativeGUIPos) const;
@@ -79,6 +69,14 @@ private:
 
     Box2D GetWorldBounds(Box2D screenBounds) const;
 
-    void RenderLine(Vector2f worldStart, Vector2f worldEnd, Vector4f color,
-                    Vector2f relativeDims, float elapsedSeconds, const RenderInfo& info);
+    Box2D GetGridBounds(void) const;
+
+    bool IsValidGridPos(Vector2f gridPos) const;
+    bool IsNodeAtPos(Vector2u gridPos) const;
+
+
+    void RenderBox(Vector2f worldCenter, Vector2f worldSize, Vector4f color,
+                   float elapsedTime, const RenderInfo& info);
+    void RenderLine(Vector2f worldStart, Vector2f worldEnd, float worldThickness,
+                    Vector4f color, float elapsedTime, const RenderInfo& info);
 };

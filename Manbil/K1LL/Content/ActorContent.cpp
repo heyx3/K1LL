@@ -47,12 +47,12 @@ bool ActorContent::Initialize(std::string& err)
             if (scene == 0)
             {
                 err = "Error loading player mesh '" + file + "': " + importer.GetErrorString();
-                return;
+                return false;
             }
             if (scene->mNumMeshes != 1)
             {
                 err = "Mesh '" + file + "' should only have one mesh!";
-                return;
+                return false;
             }
 
             aiMesh* mesh = scene->mMeshes[0];
@@ -63,7 +63,7 @@ bool ActorContent::Initialize(std::string& err)
             if (!mesh->HasPositions() || !mesh->HasTextureCoords(0) || !mesh->HasNormals())
             {
                 err = "Mesh '" + file + "' is missing positions, normals, or UVs!";
-                return;
+                return false;
             }
 
 
@@ -83,7 +83,7 @@ bool ActorContent::Initialize(std::string& err)
                 {
                     err = "A face in mesh '" + file + "' has a non-tri face with " +
                             std::to_string(fce.mNumIndices) + " indices!";
-                    return;
+                    return false;
                 }
 
                 indices.push_back(fce.mIndices[0]);
@@ -109,7 +109,7 @@ bool ActorContent::Initialize(std::string& err)
         if (!playerTex.SetDataFromFile(file, err))
         {
             err = "Error loading '" + file + "': " + err;
-            return;
+            return false;
         }
     }
 
@@ -155,7 +155,7 @@ bool ActorContent::Initialize(std::string& err)
         if (!genM.ErrorMessage.empty())
         {
             err = "Error generating player material: " + err;
-            return;
+            return false;
         }
 
         playerMeshMat = genM.Mat;
@@ -165,6 +165,8 @@ bool ActorContent::Initialize(std::string& err)
     }
 
     #pragma endregion
+
+    return true;
 }
 void ActorContent::Destroy(void)
 {

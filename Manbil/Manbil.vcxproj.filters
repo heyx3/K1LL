@@ -435,9 +435,6 @@
     <ClCompile Include="K1LL\Room Editor\RoomEditor.cpp">
       <Filter>K1LL\Room Editor</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\Room Editor\EditorView.cpp">
-      <Filter>K1LL\Room Editor</Filter>
-    </ClCompile>
     <ClCompile Include="K1LL\Content\Constants.cpp">
       <Filter>K1LL\Content</Filter>
     </ClCompile>
@@ -467,6 +464,15 @@
     </ClCompile>
     <ClCompile Include="K1LL\Actors\HumanPlayer.cpp">
       <Filter>K1LL\Game\Players</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Room Editor\RoomCollection.cpp">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Room Editor\RoomEditorPane.cpp">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Room Editor\RoomEditorView.cpp">
+      <Filter>K1LL\Room Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1021,9 +1027,6 @@
     <ClInclude Include="K1LL\Room Editor\RoomEditor.h">
       <Filter>K1LL\Room Editor</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\Room Editor\EditorView.h">
-      <Filter>K1LL\Room Editor</Filter>
-    </ClInclude>
     <ClInclude Include="K1LL\Actors\Actor.h">
       <Filter>K1LL\Game\Actors</Filter>
     </ClInclude>
@@ -1059,6 +1062,15 @@
     </ClInclude>
     <ClInclude Include="K1LL\Game\GameWorld.h">
       <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Room Editor\RoomCollection.h">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Room Editor\RoomEditorPane.h">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Room Editor\RoomEditorView.h">
+      <Filter>K1LL\Room Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -35,6 +35,9 @@ struct RoomInfo : public ISerializable
     std::vector<Vector2u> NavNodes;
 
 
+    RoomInfo(void) : RoomGrid(1, 1) { }
+    RoomInfo(const RoomInfo& cpy);
+
     inline RoomInfo(RoomInfo&& toMove)
         : RoomGrid(std::move(toMove.RoomGrid))
     {

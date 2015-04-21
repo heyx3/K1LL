@@ -9,9 +9,6 @@ class Level
 {
 public:
 
-    static Level Instance;
-
-    
     std::vector<RoomPtr> Rooms;
     LevelGraph NavGraph;
 
@@ -23,7 +20,7 @@ public:
     Room* PutInRoom(PlayerPtr player);
 
     //Puts the given actor into the given room.
-    Room* PutInRoom(ActorPtr actor);
+    //Room* PutInRoom(ActorPtr actor);
 
 
     //TODO: Add some block-querying stuff.

@@ -6,12 +6,16 @@
 #include "../../Rendering/GUI/GUIManager.h"
 #include "../../Editor/EditorMaterialSet.h"
 
+#include "RoomEditorView.h"
 
+
+//The editor for creating rooms.
 class RoomEditor : public SFMLOpenGLWorld
 {
 public:
 
     RoomEditor(void);
+
     
 protected:
 
@@ -30,6 +34,7 @@ protected:
 
     virtual void OnOtherWindowEvent(sf::Event& windowEvent) override;
 
+
 private:
 
     bool Assert(bool test, std::string errorIntro, const std::string& error);
@@ -40,4 +45,6 @@ private:
     EditorMaterialSet* editorMaterials;
     TextRenderer* textRenderer;
     GUIManager manager;
+
+    RoomEditorView* editorView;
 };

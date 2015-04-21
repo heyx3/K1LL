@@ -131,7 +131,7 @@ void Room::Update(float elapsedSeconds)
         //If the player has left the bounds of this room, move him into a different room.
         if (!bounds.IsPointInside(players[i]->Pos))
         {
-            Level::Instance.PutInRoom(players[i]);
+            //Level::Instance.PutInRoom(players[i]);
             players.erase(players.begin() + i);
             i -= 1;
         }

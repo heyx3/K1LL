@@ -3,6 +3,13 @@
 #include "../IO/Serialization.h"
 
 
+RoomInfo::RoomInfo(const RoomInfo& cpy)
+    : Category(cpy.Category), NavigationDifficulty(cpy.NavigationDifficulty),
+      NavNodes(cpy.NavNodes), RoomGrid(cpy.RoomGrid.GetWidth(), cpy.RoomGrid.GetHeight())
+{
+    cpy.RoomGrid.MemCopyInto(RoomGrid.GetArray());
+}
+
 void RoomInfo::WriteData(DataWriter* writer) const
 {
     writer->WriteString(Category, "Category");
@@ -35,7 +42,7 @@ void RoomInfo::ReadData(DataReader* reader)
     Vector2u gridSize;
     reader->ReadUInt(gridSize.x);
     reader->ReadUInt(gridSize.y);
-    RoomGrid.Resize(gridSize.x, gridSize.y);
+    RoomGrid.Resize(gridSize.x, gridSize.y, BT_NONE);
 
     for (unsigned int x = 0; x < gridSize.x; ++x)
     {

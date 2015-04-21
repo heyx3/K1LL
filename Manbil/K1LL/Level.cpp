@@ -1,16 +1,14 @@
 #include "Level.h"
 
 
-Level Level::Instance = Level();
-
-void Update(float elapsed)
+void Level::Update(float elapsed)
 {
     for (unsigned int i = 0; i < Rooms.size(); ++i)
     {
         Rooms[i]->Update(elapsed);
     }
 }
-void Render(float elapsed, const RenderInfo& info)
+void Level::Render(float elapsed, const RenderInfo& info)
 {
 
 }
