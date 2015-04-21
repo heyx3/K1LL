@@ -36,7 +36,7 @@ public:
 		}
 	}
 
-    Array2D(Array2D&& toMove) { *this = std::move(toMove); }
+    Array2D(Array2D&& toMove) : arrayVals(0) { *this = std::move(toMove); }
     Array2D& operator=(Array2D&& toMove)
     {
         if (arrayVals != 0)
@@ -309,12 +309,19 @@ public:
     //Gets a pointer to the first element in this array.
     ArrayType* GetArray(void) { return arrayVals; }
 
-    //Copies this array into the given one. Assumes it is the same size as this array.
+    //Copies this array into the given one using the assignment operator for each value.
+    //Assumes the given array is the same size as this one.
 	void CopyInto(ArrayType* outValues) const
 	{
         for (unsigned int i = 0; i < width * height; ++i)
 			outValues[i] = arrayVals[i];
 	}
+    //Copies this array into the given one using "memcpy", which is as fast as possible.
+    //Assumes the given array is the same size as this one.
+    void MemCopyInto(ArrayType* outValues) const
+    {
+        memcpy(outValues, arrayVals, width * height * sizeof(ArrayType));
+    }
 
 
 private:

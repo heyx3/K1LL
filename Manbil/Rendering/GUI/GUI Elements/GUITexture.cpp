@@ -8,11 +8,26 @@ Box2D GUITexture::GetBounds(void) const
     Vector2f dims;
     if (tex != 0)
     {
-        dims = ToV2f(Vector2u(tex->GetWidth(), tex->GetHeight()));
-        dims.MultiplyComponents(GetScale());
+        if (rotation == 0.0f)
+        {
+            dims = ToV2f(Vector2u(tex->GetWidth(), tex->GetHeight()));
+            dims.MultiplyComponents(GetScale());
+        }
+        else
+        {
+            float diameter = 2.0f * ToV2f(Vector2u(tex->GetWidth(), tex->GetHeight())).Length();
+            dims = Vector2f(diameter, diameter);
+        }
     }
 
     return Box2D(Vector2f(), dims);
+}
+
+
+void GUITexture::SetRotation(float r)
+{
+    DidBoundsChange = DidBoundsChange || ((r == 0.0f) != (rotation == 0.0f));
+    rotation = r;
 }
 
 #pragma warning(disable: 4100)
@@ -23,12 +38,15 @@ void GUITexture::Render(float elapsed, const RenderInfo& info)
         return;
     }
 
-    SetUpQuad();
     if (tex != 0)
     {
         Params.Texture2Ds[GUIMaterials::QuadDraw_Texture2D].Texture = tex->GetTextureHandle();
     }
+
+    SetUpQuad();
+    DrawingQuad::GetInstance()->Rotate(rotation);
     GetQuad()->Render(info, Params, *Mat);
+    DrawingQuad::GetInstance()->SetRotation(0.0f);
 }
 #pragma warning(default: 4100)
 
