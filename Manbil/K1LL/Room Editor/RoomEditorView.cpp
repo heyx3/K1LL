@@ -67,7 +67,8 @@ RoomEditorView::RoomEditorView(std::string& err)
     DataNode::Ptr texPtr(new TextureSample2DNode(fIn_UV, GUIMaterials::QuadDraw_Texture2D, "texNode"));
     DataLine texRGBA(texPtr, TextureSample2DNode::GetOutputIndex(CO_AllChannels));
 
-    DataNode::Ptr finalCol(new CustomExpressionNode("min('0' + max('1'.x, '1'.y), 1.0) * '2' * '3'", 4,
+    std::string colExpr = "'2' * '3' * vec4(vec3(min('0' + max('1'.x, '1'.y), 1.0)), 1.0)";
+    DataNode::Ptr finalCol(new CustomExpressionNode(colExpr, 4,
                                                     originStrength, gridStrength, colorUniform, texRGBA,
                                                     "finalCol"));
 
@@ -221,7 +222,7 @@ void RoomEditorView::Render(float elapsedTime, const RenderInfo& info)
     }
     
     //Render the grid spot the mouse is touching.
-    if (IsValidGridPos(mouseDrawWorldPos))
+    if (false && IsValidGridPos(mouseDrawWorldPos))
     {
         GUIBox.Depth = -0.03f;
         Vector4f mouseColor;
@@ -277,7 +278,6 @@ void RoomEditorView::RenderBox(Vector2f worldCenter, Vector2f worldSize, Vector4
     Vector2f relPos = GetRelativePos(worldCenter);
     std::cout << "Rendering box at " << DebugAssist::ToString(worldCenter) << ", size " << DebugAssist::ToString(worldSize) << ", scale: " << std::to_string(scale.x) << ", relative: " << DebugAssist::ToString(relPos) << ", color: " << DebugAssist::ToString(color) << "\n";
     GUIBox.SetPosition(relPos);
-    GUIBox.SetRotation(0.0f);
     GUIBox.ScaleBy(scale);
     GUIBox.SetColor(color);
     RenderChild(&GUIBox, elapsedTime, info);
@@ -292,6 +292,7 @@ void RoomEditorView::RenderLine(Vector2f worldStart, Vector2f worldEnd, float wo
     RenderBox((worldStart + worldEnd) * 0.5f,
               Vector2f(delta.Length(), worldThickness),
               color, elapsedTime, info);
+    GUIBox.SetRotation(0.0f);
 }
 
 void RoomEditorView::OnMouseClick(Vector2f relativeMousePos)

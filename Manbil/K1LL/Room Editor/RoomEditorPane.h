@@ -3,6 +3,8 @@
 #include "../../Editor/IEditable.h"
 #include "RoomCollection.h"
 
+class GUILabel;
+
 
 //Provides the editor pane and editable data for the Room editor.
 struct RoomEditorPane : public IEditable
@@ -32,6 +34,9 @@ public:
     unsigned int CurrentRoom = 0;
     
 
+    virtual ~RoomEditorPane(void) { }
+
+
     //Saves this editor's data to the correct file.
     //If "true" is passed in, it will also save to the same file in the "Dependencies/..." folder.
     std::string SaveData(bool alsoSaveToDependencies) const;
@@ -41,10 +46,18 @@ public:
     RoomInfo& GetCurrentRoom(void) { return Rooms.Rooms[CurrentRoom]; }
     const RoomInfo& GetCurrentRoom(void) const { return Rooms.Rooms[CurrentRoom]; }
 
+    const GUILabel* GetCurrentRoomLabel(void) const { return currentRoomLabel; }
+    GUILabel* GetCurrentRoomLabel(void) { return currentRoomLabel; }
+
     virtual std::string BuildEditorElements(std::vector<EditorObjectPtr>& outElements,
                                             EditorMaterialSet& materialSet) override;
 
 protected:
 
-    unsigned int newGridX, newGridY;
+    unsigned int newGridX = 5,
+                 newGridY = 5;
+
+private:
+
+    GUILabel* currentRoomLabel = 0;
 };

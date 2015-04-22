@@ -3,6 +3,7 @@
 #include "../../Rendering/GUI/GUI Elements/GUISlider.h"
 #include "../../Rendering/GUI/GUI Elements/GUISelectionBox.h"
 #include "../../Rendering/GUI/GUI Elements/GUIFormattedPanel.h"
+#include "../../Rendering/GUI/GUI Elements/GUIPanel.h"
 #include "../../Editor/EditorPanel.h"
 
 
@@ -31,8 +32,8 @@ namespace
 
 
 RoomEditor::RoomEditor(void)
-    : windowSize(800, 600), editorMaterials(0), textRenderer(0),
-      SFMLOpenGLWorld(800, 600, sf::ContextSettings())
+    : windowSize(1500, 600), editorMaterials(0), textRenderer(0),
+      SFMLOpenGLWorld(1500, 600, sf::ContextSettings())
 {
 }
 
@@ -77,7 +78,7 @@ void RoomEditor::InitializeWorld(void)
     {
         return;
     }
-    //editorMaterials->TextScale = Vector2f(0.1f, 0.1f);
+    editorMaterials->TextScale = Vector2f(0.1f, 0.1f);
 
     //Build the room editor view.
     editorView = new RoomEditorView(err);
@@ -91,29 +92,43 @@ void RoomEditor::InitializeWorld(void)
     err = editorView->BuildEditorElements(editorObjects, *editorMaterials);
     if (!Assert(err.empty(), "Error building editor pane elements", err))
     {
+        delete editorView;
         return;
     }
     EditorPanel* editPane = new EditorPanel(*editorMaterials, 10.0f, 10.0f);
     err = editPane->AddObjects(editorObjects);
     if (!Assert(err.empty(), "Error creating editor pane elements", err))
     {
+        delete editorView, editPane;
         return;
     }
-    
-    const float spaceBetween = 10.0f;
-    Box2D paneBounds = editPane->GetBounds();
-    editorView->SetBounds(Box2D(Vector2f(),
-                                Vector2f((float)windowSize.x - paneBounds.GetXSize() - spaceBetween,
-                                         paneBounds.GetYSize())));
+    editPane->ScaleBy(Vector2f(2.0f, 2.0f));
     
 
-    GUIFormattedPanel* panel = new GUIFormattedPanel();
-    //panel->AddObject(GUIFormatObject(GUIElementPtr(editorView), true, false, Vector2f(spaceBetween, 0.0f)));
-    panel->AddObject(GUIFormatObject(GUIElementPtr(editPane), true, false));
+    //Position the panel and editor view.
+
+    const float spaceBetween = 0.0f;
+    Box2D paneBounds = editPane->GetBounds();
+    windowSize.y = (unsigned int)paneBounds.GetYSize();
+    float editorViewRight = (float)windowSize.x - paneBounds.GetXSize() - spaceBetween;
+
+    Box2D newViewBnds(0.0f, editorViewRight,
+                      -(float)windowSize.y, 0.0f);
+    Box2D newPaneBnds(editorViewRight + spaceBetween, (float)windowSize.x,
+                      -(float)windowSize.y, 0.0f);
+    editorView->SetBounds(newViewBnds);
+    editPane->SetBounds(newPaneBnds);
+    
+    //Create the root GUIPanel.
+    GUIPanel* panel = new GUIPanel(GUITexture());
+    panel->AddElement(GUIElementPtr(editorView));
+    panel->AddElement(GUIElementPtr(editPane));
     manager.RootElement = GUIElementPtr(panel);
 
-    manager.RootElement->SetBounds(Box2D(0.0f, (float)windowSize.x,
-                                         -(float)windowSize.y, 0.0f));
+    //Resize the window to fit.
+    GetWindow()->setSize(sf::Vector2u(windowSize.x, windowSize.y));
+    //manager.RootElement->SetBounds(Box2D(0.0f, (float)windowSize.x,
+    //                                     -(float)windowSize.y, 0.0f));
 }
 void RoomEditor::OnWorldEnd(void)
 {
@@ -147,9 +162,9 @@ void RoomEditor::RenderOpenGL(float elapsedSeconds)
 {
     //Set up rendering state.
     //Modify these constructors to change various aspects of how rendering is done.
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     ScreenClearer(true, true, false, Vector4f(1.0f, 0.0f, 1.0f, 0.0f)).ClearScreen();
-    RenderingState(RenderingState::C_NONE).EnableState();
+    RenderingState(RenderingState::C_NONE, true, true,
+                   RenderingState::AT_GREATER, 0.0f).EnableState();
     glViewport(0, 0, windowSize.x, windowSize.y);
 
     if (manager.RootElement.get() != 0)
@@ -162,6 +177,7 @@ void RoomEditor::RenderOpenGL(float elapsedSeconds)
 
         RenderInfo info(GetTotalElapsedSeconds(), &cam, &viewM, &projM);
         manager.Render(elapsedSeconds, info);
+        std::cout << "\n\n\n\n";
     }
 }
 
