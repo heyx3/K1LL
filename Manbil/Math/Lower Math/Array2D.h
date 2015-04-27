@@ -36,12 +36,15 @@ public:
 		}
 	}
 
-    Array2D(Array2D&& toMove) : arrayVals(0) { *this = std::move(toMove); }
+    Array2D(Array2D&& toMove) : arrayVals(0)
+    {
+        *this = std::move(toMove);
+    }
     Array2D& operator=(Array2D&& toMove)
     {
         if (arrayVals != 0)
         {
-            delete arrayVals;
+            delete[] arrayVals;
         }
 
         width = toMove.width;
@@ -61,7 +64,10 @@ public:
 
 	~Array2D(void)
 	{
-		delete[] arrayVals;
+        if (arrayVals != 0)
+        {
+		    delete[] arrayVals;
+        }
 	}
 
 
@@ -85,6 +91,7 @@ public:
         //Only resize if the current array does not have the same number of elements.
         if ((width * height) != (_width * _height))
         {
+            assert(arrayVals != 0);
             delete[] arrayVals;
             arrayVals = new ArrayType[_width * _height];
         }
@@ -93,10 +100,10 @@ public:
         height = _height;
 	}
     //Resets this array to the given size and initializes all elements to the given value.
-    void Reset(unsigned int _width, unsigned int _height, const ArrayType& defaultValue)
+    void Reset(unsigned int _width, unsigned int _height, const ArrayType& newValues)
 	{
 		Reset(_width, _height);
-        Fill(defaultValue);
+        Fill(newValues);
 	}
 
 
