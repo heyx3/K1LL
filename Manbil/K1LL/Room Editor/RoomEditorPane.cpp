@@ -1,5 +1,7 @@
 #include "RoomEditorPane.h"
 
+#include <iostream>
+
 #include "../../Editor/EditorObjects.h"
 #include "../../IO/BinarySerialization.h"
 
@@ -34,7 +36,7 @@ std::string RoomEditorPane::LoadData(void)
     BinaryReader reader(useBinaryErrorChecking, roomsFile);
     if (!reader.ErrorMessage.empty())
     {
-        return "Error opening file: " + reader.ErrorMessage;
+        return "Error opening file '" + roomsFile + "': " + reader.ErrorMessage;
     }
 
     try
@@ -82,27 +84,6 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
                                                     256, onBlockSelected, this);
     blockTypes->ItemBackgroundScale = Vector2f(0.378f, 0.5f);
 
-
-    std::vector<std::string> placeTypeValues;
-    placeTypeValues.push_back("Add Blocks");
-    placeTypeValues.push_back("Add Nodes");
-    placeTypeValues.push_back("Remove Nodes");
-    auto onModeSelected = [](GUISelectionBox* dropdownBox, const std::string& item,
-                             unsigned int index, void* pData)
-    {
-        RoomEditorPane* editor = (RoomEditorPane*)pData;
-        if (item == "Add Blocks") {
-            editor->PlacingStatus = PS_BLOCK;
-        } else if (item == "Add Nodes") {
-            editor->PlacingStatus = PS_NODE_ADD;
-        } else if (item == "Remove Nodes") {
-            editor->PlacingStatus = PS_NODE_REMOVE;
-        }
-    };
-    DropdownValues* placeModes = new DropdownValues(placeTypeValues, Vector2f(0.0f, 30.0f),
-                                                    EditorObject::DescriptionData("Mouse Mode:", true, 30.0f, 512),
-                                                    256, onModeSelected, this);
-    placeModes->ItemBackgroundScale = Vector2f(0.378f, 0.5f);
     
     typedef TextBoxUInt<unsigned int*> MyTBUI;
     auto onGridValChanged = [](GUITextBox* box, unsigned int newVal, unsigned int* pData)
@@ -133,12 +114,12 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
         for (unsigned int x = 0; x < *data.NewGridX; ++x)
         {
             rm.RoomGrid[Vector2u(x, 0)] = BT_WALL;
-            rm.RoomGrid[Vector2u(x, rm.RoomGrid.GetHeight())] = BT_WALL;
+            rm.RoomGrid[Vector2u(x, rm.RoomGrid.GetHeight() - 1)] = BT_WALL;
         }
         for (unsigned int y = 0; y < *data.NewGridY; ++y)
         {
             rm.RoomGrid[Vector2u(0, y)] = BT_WALL;
-            rm.RoomGrid[Vector2u(rm.RoomGrid.GetWidth(), y)] = BT_WALL;
+            rm.RoomGrid[Vector2u(rm.RoomGrid.GetWidth() - 1, y)] = BT_WALL;
         }
     };
 
@@ -147,7 +128,7 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
                                            OnResizeButtonClicked, resizeData, 0, Vector2f(0.0f, 15.0f));
 
     //The label continually tells this editor pane which label displays the current room.
-    EditorLabel* currentRoom = new EditorLabel("Room " + std::to_string(CurrentRoom),
+    EditorLabel* currentRoom = new EditorLabel("Room " + std::to_string(CurrentRoom + 1),
                                                512, Vector2f(0.0f, 50.0f));
     currentRoom->OnUpdate = [](GUILabel* label, float elapsed, void* pData)
     {
@@ -157,7 +138,7 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
     
 
     std::vector<EditorButtonData> buttons;
-    buttons.push_back(EditorButtonData("<", 0, Vector2f(0.5f, 0.25f),
+    buttons.push_back(EditorButtonData("<", 0, Vector2f(0.1f, 0.09f),
                                        [](GUITexture* clicked, Vector2f mouse, void* pData)
                                        {
                                            RoomEditorPane& p = *(RoomEditorPane*)pData;
@@ -170,31 +151,79 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
                                                p.CurrentRoom -= 1;
                                            }
                                            
-                                           std::string roomVal = "Room " + std::to_string(p.CurrentRoom);
-                                           bool tryL = p.GetCurrentRoomLabel()->SetText(roomVal);
-                                           assert(tryL);
+                                           p.UpdateCurrentRoomLabel();
                                        }, this));
-    buttons.push_back(EditorButtonData(">", 0, Vector2f(0.5f, 0.25f),
+    buttons.push_back(EditorButtonData(">", 0, Vector2f(0.1f, 0.09f),
                                        [](GUITexture* clicked, Vector2f mouse, void* pData)
                                        {
                                            RoomEditorPane& p = *(RoomEditorPane*)pData;
                                            p.CurrentRoom = (p.CurrentRoom + 1) % p.Rooms.Rooms.size();
                                            
-                                           std::string roomVal = "Room " + std::to_string(p.CurrentRoom);
-                                           bool tryL = p.GetCurrentRoomLabel()->SetText(roomVal);
-                                           assert(tryL);
+                                           p.UpdateCurrentRoomLabel();
                                        }, this));
     EditorButtonList* changeRoomButtons = new EditorButtonList(buttons, EditorObject::DescriptionData(),
-                                                               5.0f);
+                                                               5.0f, Vector2f(0.0f, 6.0f));
+
+    buttons.clear();
+    buttons.push_back(EditorButtonData("-", 0, Vector2f(0.1f, 0.09f),
+                                       [](GUITexture* clicked, Vector2f mouse, void* pData)
+                                       {
+                                           RoomEditorPane& p = *(RoomEditorPane*)pData;
+                                           if (p.Rooms.Rooms.size() == 1)
+                                           {
+                                               return;
+                                           }
+
+                                           p.Rooms.Rooms.erase(p.Rooms.Rooms.begin() + p.CurrentRoom);
+                                           if (p.CurrentRoom == p.Rooms.Rooms.size())
+                                           {
+                                               p.CurrentRoom -= 1;
+
+                                           p.UpdateCurrentRoomLabel();
+                                           }
+                                       }, this));
+    buttons.push_back(EditorButtonData("+", 0, Vector2f(0.1f, 0.09f),
+                                       [](GUITexture* clicked, Vector2f mouse, void* pData)
+                                       {
+                                           RoomEditorPane& p = *(RoomEditorPane*)pData;
+                                           p.Rooms.Rooms.insert(p.Rooms.Rooms.begin() + p.CurrentRoom + 1,
+                                                                RoomInfo());
+                                           p.CurrentRoom += 1;
+                                           
+                                           p.UpdateCurrentRoomLabel();
+                                       }, this));
+    EditorButtonList* addRemoveButtons = new EditorButtonList(buttons, EditorObject::DescriptionData(),
+                                                              5.0f, Vector2f(0.0f, 20.0f));
+
+    
+    auto onSaveButton = [](GUITexture* tex, Vector2f mouse, RoomEditorPane* pData)
+    {
+        std::string err = pData->SaveData(true);
+        if (!err.empty())
+        {
+            std::cout << "Error saving data: " << err << "\n";
+        }
+    };
+    typedef EditorButton<RoomEditorPane*> SaveButtonType;
+    SaveButtonType* saveButton = new SaveButtonType("Save", Vector2f(100.0f, 25.0f),
+                                                    onSaveButton, this);
 
 
     outElements.push_back(EditorObjectPtr(blockTypes));
-    outElements.push_back(EditorObjectPtr(placeModes));
     outElements.push_back(EditorObjectPtr(gridX));
     outElements.push_back(EditorObjectPtr(gridY));
     outElements.push_back(EditorObjectPtr(createGridBtn));
     outElements.push_back(EditorObjectPtr(currentRoom));
     outElements.push_back(EditorObjectPtr(changeRoomButtons));
+    outElements.push_back(EditorObjectPtr(addRemoveButtons));
+    outElements.push_back(EditorObjectPtr(saveButton));
 
     return "";
+}
+
+void RoomEditorPane::UpdateCurrentRoomLabel(void)
+{
+    std::string roomVal = "Room " + std::to_string(CurrentRoom + 1);
+    bool tryL = currentRoomLabel->SetText(roomVal);
+    assert(tryL);
 }

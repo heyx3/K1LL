@@ -1,7 +1,6 @@
 #include "RoomEditorView.h"
 
 #include <SFML/Window.hpp>
-#include "../../DebugAssist.h"
 
 #include "../../Rendering/Data Nodes/DataNodes.hpp"
 #include "../../Rendering/Data Nodes/ShaderGenerator.h"
@@ -88,12 +87,10 @@ RoomEditorView::RoomEditorView(std::string& err)
     //Box material.
 
     matData.MaterialOuts.VertexOutputs.clear();
-    matData.MaterialOuts.VertexOutputs.push_back(ShaderOutput("fIn_UV", vIn_UV));
-
     matData.MaterialOuts.FragmentOutputs.clear();
     matData.MaterialOuts.FragmentOutputs.push_back(ShaderOutput("fOut_Color", colorUniform));
 
-    genM = ShaderGenerator::GenerateMaterial(matData, GUIBox.Params, BlendMode::GetOpaque());
+    genM = ShaderGenerator::GenerateMaterial(matData, GUIBox.Params, BlendMode::GetTransparent());
     if (!genM.ErrorMessage.empty())
     {
         err = "Error creating box GUI material: " + genM.ErrorMessage;
@@ -114,10 +111,15 @@ RoomEditorView::RoomEditorView(std::string& err)
     GUIBackground.SetColor(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
 
 
-    //There always has to be at least one room.
-    Rooms.Rooms.push_back(RoomInfo());
-    Rooms.Rooms[0].RoomGrid.Resize(5, 5, BT_NONE);
-    Rooms.Rooms[0].RoomGrid.Fill(BT_NONE);
+    err = LoadData();
+    if (!err.empty())
+    {
+        err.clear();
+        Rooms.Rooms.clear();
+        Rooms.Rooms.push_back(RoomInfo());
+        Rooms.Rooms[0].RoomGrid.Reset(5, 5, BT_WALL);
+    }
+    assert(Rooms.Rooms.size() > 0);
 }
 
 RoomEditorView::~RoomEditorView(void)
@@ -177,7 +179,7 @@ void RoomEditorView::Render(float elapsedTime, const RenderInfo& info)
     RoomInfo& rm = GetCurrentRoom();
 
     //Render each grid square.
-    GUIBox.Depth = -0.01f;
+    GUIBox.Depth = 0.01f;
     for (unsigned int x = 0; x < rm.RoomGrid.GetWidth(); ++x)
     {
         for (unsigned int y = 0; y < rm.RoomGrid.GetHeight(); ++y)
@@ -192,79 +194,53 @@ void RoomEditorView::Render(float elapsedTime, const RenderInfo& info)
             switch (rm.RoomGrid[Vector2u(x, y)])
             {
                 case BT_WALL:
-                    color = Vector4f(0.5f, 0.5f, 0.5f, 1.0f);
+                    color = Vector4f(0.5f, 0.5f, 0.5f, 0.7f);
                     break;
                 case BT_DOORWAY:
-                    color = Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
+                    color = Vector4f(0.0f, 1.0f, 0.0f, 0.7f);
                     break;
                 case BT_ITEM_SPAWN:
-                    color = Vector4f(0.0f, 0.0f, 1.0f, 1.0f);
+                    color = Vector4f(0.0f, 0.0f, 1.0f, 0.7f);
                     break;
                 case BT_PLAYER_SPAWN:
-                    color = Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+                    color = Vector4f(1.0f, 0.0f, 0.0f, 0.7f);
                     break;
                 default:
                     assert(false);
                     break;
             }
             RenderBox(Vector2f((float)x + 0.5f, (float)y + 0.5f),
-                      Vector2f(1.0f, 1.0f), color, elapsedTime, info);
+                      Vector2f(0.9f, 0.9f), color, elapsedTime, info);
         }
-    }
-
-    //Render each nav node.
-    GUIBox.Depth = -0.02f;
-    for (unsigned int i = 0; i < rm.NavNodes.size(); ++i)
-    {
-        RenderBox(Vector2f((float)rm.NavNodes[i].x, (float)rm.NavNodes[i].y),
-                  Vector2f(0.5f, 0.5f), Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
-                  elapsedTime, info);
     }
     
     //Render the grid spot the mouse is touching.
-    if (false && IsValidGridPos(mouseDrawWorldPos))
+    if (IsValidGridPos(mouseDrawWorldPos))
     {
-        GUIBox.Depth = -0.03f;
         Vector4f mouseColor;
-        float mouseScale;
-        switch (PlacingStatus)
+        float mouseScale = 0.9f;
+        switch (TypeBeingPlaced)
         {
-            case PS_NODE_ADD:
-                mouseScale = 0.5f;
-                mouseColor = Vector4f(1.0f, 1.0f, 1.0f, 0.5f);
+            case BT_NONE:
+                mouseColor = Vector4f(0.2f, 0.2f, 0.2f, 0.8f);
                 break;
-            case PS_NODE_REMOVE:
-                mouseScale = 0.5f;
-                mouseColor = Vector4f(0.1f, 0.1f, 0.1f, 0.5f);
+            case BT_WALL:
+                mouseColor = Vector4f(0.8f, 0.8f, 0.8f, 0.5f);
                 break;
-            case PS_BLOCK:
-                mouseScale = 1.0f;
-                switch (TypeBeingPlaced)
-                {
-                    case BT_NONE:
-                        mouseColor = Vector4f(0.2f, 0.2f, 0.2f, 0.8f);
-                        break;
-                    case BT_WALL:
-                        mouseColor = Vector4f(0.8f, 0.8f, 0.8f, 0.5f);
-                        break;
-                    case BT_DOORWAY:
-                        mouseColor = Vector4f(0.0f, 1.0f, 0.0f, 0.5f);
-                        break;
-                    case BT_ITEM_SPAWN:
-                        mouseColor = Vector4f(0.0f, 0.0f, 1.0f, 0.5f);
-                        break;
-                    case BT_PLAYER_SPAWN:
-                        mouseColor = Vector4f(1.0f, 0.0f, 0.0f, 0.5f);
-                        break;
-                    default:
-                        assert(false);
-                        break;
-                }
+            case BT_DOORWAY:
+                mouseColor = Vector4f(0.0f, 1.0f, 0.0f, 0.5f);
+                break;
+            case BT_ITEM_SPAWN:
+                mouseColor = Vector4f(0.0f, 0.0f, 1.0f, 0.5f);
+                break;
+            case BT_PLAYER_SPAWN:
+                mouseColor = Vector4f(1.0f, 0.0f, 0.0f, 0.5f);
                 break;
             default:
                 assert(false);
                 break;
         }
+        GUIBox.Depth = 0.03f;
         RenderBox(mouseDrawWorldPos + Vector2f(0.5f, 0.5f),
                   Vector2f(mouseScale, mouseScale), mouseColor,
                   elapsedTime, info);
@@ -273,12 +249,12 @@ void RoomEditorView::Render(float elapsedTime, const RenderInfo& info)
 void RoomEditorView::RenderBox(Vector2f worldCenter, Vector2f worldSize, Vector4f color,
                                float elapsedTime, const RenderInfo& info)
 {
-    Vector2f scale = worldSize * 0.5f * viewScale;
+    Vector2f scale = worldSize * 0.5f * viewScale,
+             boundsSize = GetBounds().GetDimensions();
     Vector2f oldScale = GUIBox.GetScale();
     Vector2f relPos = GetRelativePos(worldCenter);
-    std::cout << "Rendering box at " << DebugAssist::ToString(worldCenter) << ", size " << DebugAssist::ToString(worldSize) << ", scale: " << std::to_string(scale.x) << ", relative: " << DebugAssist::ToString(relPos) << ", color: " << DebugAssist::ToString(color) << "\n";
     GUIBox.SetPosition(relPos);
-    GUIBox.ScaleBy(scale);
+    GUIBox.ScaleBy(Vector2f(scale.x, scale.y * boundsSize.x / boundsSize.y));
     GUIBox.SetColor(color);
     RenderChild(&GUIBox, elapsedTime, info);
     GUIBox.SetScale(oldScale);
@@ -320,39 +296,9 @@ void RoomEditorView::OnMouseDrag(Vector2f originalPos, Vector2f newPos)
     switch (mouseState)
     {
         case MS_MAKING_BLOCKS:
-            switch (PlacingStatus)
+            if (IsValidGridPos(mouseDrawWorldPos))
             {
-                case PS_NODE_ADD:
-                    //Only add a node if this is a valid grid position,
-                    //    and a node doesn't exist there yet.
-                    if (IsValidGridPos(mouseDrawWorldPos) &&
-                        rm.RoomGrid[ToV2u(mouseDrawWorldPos)] != BT_WALL &&
-                        !IsNodeAtPos(ToV2u(mouseDrawWorldPos)))
-                    {
-                        rm.NavNodes.push_back(ToV2u(mouseDrawWorldPos));
-                    }
-                    break;
-                case PS_NODE_REMOVE:
-                    //Only add a node if this is a valid grid position, and a node exists there already.
-                    if (IsValidGridPos(mouseDrawWorldPos) && IsNodeAtPos(ToV2u(mouseDrawWorldPos)))
-                    {
-                        rm.NavNodes.erase(std::find(rm.NavNodes.begin(),
-                                                          rm.NavNodes.end(),
-                                                          ToV2u(mouseDrawWorldPos)));
-                    }
-                    break;
-                case PS_BLOCK:
-                    //Only add a block if this is a valid grid position,
-                    //    and we're not going to block a node.
-                    if (IsValidGridPos(mouseDrawWorldPos) &&
-                        (TypeBeingPlaced != BT_WALL || !IsNodeAtPos(ToV2u(mouseDrawWorldPos))))
-                    {
-                        rm.RoomGrid[ToV2u(mouseDrawWorldPos)] = TypeBeingPlaced;
-                    }
-                    break;
-                default:
-                    assert(false);
-                    break;
+                rm.RoomGrid[ToV2u(mouseDrawWorldPos)] = TypeBeingPlaced;
             }
             break;
 
@@ -405,10 +351,4 @@ bool RoomEditorView::IsValidGridPos(Vector2f gridPos) const
     return gridPos.x >= 0.0f && gridPos.y >= 0.0f &&
            gridPos.x < rm.RoomGrid.GetWidth() &&
            gridPos.y < rm.RoomGrid.GetHeight();
-}
-bool RoomEditorView::IsNodeAtPos(Vector2u gridPos) const
-{
-    const RoomInfo& rm = GetCurrentRoom();
-    return std::find(rm.NavNodes.begin(), rm.NavNodes.end(), gridPos) !=
-           rm.NavNodes.end();
 }

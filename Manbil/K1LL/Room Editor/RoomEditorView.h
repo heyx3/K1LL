@@ -72,7 +72,6 @@ private:
     Box2D GetGridBounds(void) const;
 
     bool IsValidGridPos(Vector2f gridPos) const;
-    bool IsNodeAtPos(Vector2u gridPos) const;
 
 
     void RenderBox(Vector2f worldCenter, Vector2f worldSize, Vector4f color,

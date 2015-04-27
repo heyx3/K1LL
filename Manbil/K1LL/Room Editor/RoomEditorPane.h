@@ -11,22 +11,8 @@ struct RoomEditorPane : public IEditable
 {
 public:
 
-    //The different modes the player can be in (in terms of placing things on the map).
-    enum PlacingStatuses
-    {
-        //Adding blocks to the map. The type of block is stored in "TypeBeingPlaced".
-        PS_BLOCK,
-        //Adding nav nodes to the map.
-        PS_NODE_ADD,
-        //Removing nav nodes from the map.
-        PS_NODE_REMOVE,
-    };
-    
-
-    PlacingStatuses PlacingStatus = PS_BLOCK;
-
-    //The type of block being placed down. Only applies when "PlacingStatus" is PS_BLOCK.
-    BlockTypes TypeBeingPlaced = BT_WALL;
+    //The type of block being placed down.
+    BlockTypes TypeBeingPlaced = BT_NONE;
 
     //The rooms being edited.
     RoomCollection Rooms;
@@ -48,6 +34,8 @@ public:
 
     const GUILabel* GetCurrentRoomLabel(void) const { return currentRoomLabel; }
     GUILabel* GetCurrentRoomLabel(void) { return currentRoomLabel; }
+
+    void UpdateCurrentRoomLabel(void);
 
     virtual std::string BuildEditorElements(std::vector<EditorObjectPtr>& outElements,
                                             EditorMaterialSet& materialSet) override;
