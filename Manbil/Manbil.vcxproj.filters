@@ -447,9 +447,6 @@
     <ClCompile Include="K1LL\TeamData.cpp">
       <Filter>K1LL\Game</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\LevelGraph.cpp">
-      <Filter>K1LL\Game</Filter>
-    </ClCompile>
     <ClCompile Include="K1LL\LevelInfo.cpp">
       <Filter>K1LL\Level Info</Filter>
     </ClCompile>
@@ -473,6 +470,12 @@
     </ClCompile>
     <ClCompile Include="K1LL\Room Editor\RoomEditorView.cpp">
       <Filter>K1LL\Room Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\RoomsGraph.cpp">
+      <Filter>K1LL\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\LevelGraph.cpp">
+      <Filter>K1LL\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1048,9 +1051,6 @@
     <ClInclude Include="K1LL\TeamData.h">
       <Filter>K1LL\Game</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\LevelGraph.h">
-      <Filter>K1LL\Game</Filter>
-    </ClInclude>
     <ClInclude Include="K1LL\Weapons.h">
       <Filter>K1LL\Game</Filter>
     </ClInclude>
@@ -1071,6 +1071,12 @@
     </ClInclude>
     <ClInclude Include="K1LL\Room Editor\RoomEditorView.h">
       <Filter>K1LL\Room Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\RoomsGraph.h">
+      <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\LevelGraph.h">
+      <Filter>K1LL\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

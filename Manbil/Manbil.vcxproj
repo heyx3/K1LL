@@ -138,8 +138,9 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\Content\ActorContent.cpp" />
     <ClCompile Include="K1LL\Content\Constants.cpp" />
     <ClCompile Include="K1LL\Game\GameWorld.cpp" />
+    <ClCompile Include="K1LL\Game\LevelGraph.cpp" />
     <ClCompile Include="K1LL\Level.cpp" />
-    <ClCompile Include="K1LL\LevelGraph.cpp" />
+    <ClCompile Include="K1LL\RoomsGraph.cpp" />
     <ClCompile Include="K1LL\LevelInfo.cpp" />
     <ClCompile Include="K1LL\Room Editor\RoomEditorView.cpp" />
     <ClCompile Include="K1LL\Room Editor\RoomCollection.cpp" />
@@ -319,8 +320,9 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Content\ActorContent.h" />
     <ClInclude Include="K1LL\Content\Constants.h" />
     <ClInclude Include="K1LL\Game\GameWorld.h" />
+    <ClInclude Include="K1LL\Game\LevelGraph.h" />
     <ClInclude Include="K1LL\Level.h" />
-    <ClInclude Include="K1LL\LevelGraph.h" />
+    <ClInclude Include="K1LL\RoomsGraph.h" />
     <ClInclude Include="K1LL\LevelInfo.h" />
     <ClInclude Include="K1LL\Room Editor\RoomEditorView.h" />
     <ClInclude Include="K1LL\Room Editor\RoomEditor.h" />
