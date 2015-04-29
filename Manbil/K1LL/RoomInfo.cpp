@@ -4,7 +4,7 @@
 
 
 RoomInfo::RoomInfo(const RoomInfo& cpy)
-    : Category(cpy.Category), NavigationDifficulty(cpy.NavigationDifficulty),
+    : NavigationDifficulty(cpy.NavigationDifficulty),
       RoomGrid(cpy.RoomGrid.GetWidth(), cpy.RoomGrid.GetHeight())
 {
     cpy.RoomGrid.MemCopyInto(RoomGrid.GetArray());
@@ -12,7 +12,6 @@ RoomInfo::RoomInfo(const RoomInfo& cpy)
 
 void RoomInfo::WriteData(DataWriter* writer) const
 {
-    writer->WriteString(Category, "Category");
     writer->WriteFloat(NavigationDifficulty, "Navigation difficulty (0-1)");
 
     writer->WriteUInt(RoomGrid.GetWidth(), "Grid width");
@@ -29,7 +28,6 @@ void RoomInfo::WriteData(DataWriter* writer) const
 }
 void RoomInfo::ReadData(DataReader* reader)
 {
-    reader->ReadString(Category);
     reader->ReadFloat(NavigationDifficulty);
 
     Vector2u gridSize;

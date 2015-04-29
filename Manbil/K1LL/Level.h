@@ -1,17 +1,23 @@
 #pragma once
 
 #include "Room.h"
-#include "LevelGraph.h"
+#include "LevelInfo.h"
+#include "Game\LevelGraph.h"
+#include "RoomsGraph.h"
 
 
-//The game level. Only one may exist at a time.
+//The game level.
 class Level
 {
 public:
 
-    std::vector<RoomPtr> Rooms;
+    Array2D<BlockTypes> BlockGrid;
     LevelGraph NavGraph;
+    RoomsGraph RoomGraph;
 
+
+    //If there was an error initializing the level, outputs an error message to the given string.
+    Level(const LevelInfo& level, std::string& errorMsg);
 
     void Update(float elapsed);
     void Render(float elapsed, const RenderInfo& info);
@@ -24,9 +30,4 @@ public:
 
 
     //TODO: Add some block-querying stuff.
-
-
-private:
-
-    Level(void) { }
 };

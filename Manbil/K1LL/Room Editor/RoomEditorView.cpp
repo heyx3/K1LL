@@ -199,11 +199,8 @@ void RoomEditorView::Render(float elapsedTime, const RenderInfo& info)
                 case BT_DOORWAY:
                     color = Vector4f(0.0f, 1.0f, 0.0f, 0.7f);
                     break;
-                case BT_ITEM_SPAWN:
+                case BT_SPAWN:
                     color = Vector4f(0.0f, 0.0f, 1.0f, 0.7f);
-                    break;
-                case BT_PLAYER_SPAWN:
-                    color = Vector4f(1.0f, 0.0f, 0.0f, 0.7f);
                     break;
                 default:
                     assert(false);
@@ -230,11 +227,8 @@ void RoomEditorView::Render(float elapsedTime, const RenderInfo& info)
             case BT_DOORWAY:
                 mouseColor = Vector4f(0.0f, 1.0f, 0.0f, 0.5f);
                 break;
-            case BT_ITEM_SPAWN:
+            case BT_SPAWN:
                 mouseColor = Vector4f(0.0f, 0.0f, 1.0f, 0.5f);
-                break;
-            case BT_PLAYER_SPAWN:
-                mouseColor = Vector4f(1.0f, 0.0f, 0.0f, 0.5f);
                 break;
             default:
                 assert(false);
@@ -273,14 +267,17 @@ void RoomEditorView::RenderLine(Vector2f worldStart, Vector2f worldEnd, float wo
 
 void RoomEditorView::OnMouseClick(Vector2f relativeMousePos)
 {
-    lastDragWorldPos = GetWorldPos(relativeMousePos);
-    if (GetGridBounds().PointTouches(lastDragWorldPos))
+    if (GetBounds().IsPointInside(relativeMousePos))
     {
-        mouseState = MS_MAKING_BLOCKS;
-    }
-    else
-    {
-        mouseState = MS_DRAGGING_CAMERA;
+        lastDragWorldPos = GetWorldPos(relativeMousePos);
+        if (GetGridBounds().PointTouches(lastDragWorldPos))
+        {
+            mouseState = MS_MAKING_BLOCKS;
+        }
+        else
+        {
+            mouseState = MS_DRAGGING_CAMERA;
+        }
     }
 }
 void RoomEditorView::OnMouseDrag(Vector2f originalPos, Vector2f newPos)
@@ -307,8 +304,7 @@ void RoomEditorView::OnMouseDrag(Vector2f originalPos, Vector2f newPos)
             break;
 
         default:
-            assert(false);
-            break;
+            return;
     }
 
     lastDragWorldPos = GetWorldPos(newPos);;

@@ -13,20 +13,15 @@ enum BlockTypes : unsigned char
     BT_NONE,
     BT_WALL,
     BT_DOORWAY,
-    BT_PLAYER_SPAWN,
-    BT_ITEM_SPAWN,
+    BT_SPAWN,
 };
 
 
 //Information about a room.
 struct RoomInfo : public ISerializable
 {
-    //The categorization of this room. Sub-categories can be specified like a file hierarchy --
-    //    e.x. "Small/Open".
-    std::string Category;
-
     //How complex, from 0 to 1, is this room in terms of navigation?
-    float NavigationDifficulty;
+    float NavigationDifficulty = 0.5f;
 
     //The layout of this room.
     Array2D<BlockTypes> RoomGrid;
@@ -38,12 +33,10 @@ struct RoomInfo : public ISerializable
     inline RoomInfo(RoomInfo&& toMove)
         : RoomGrid(std::move(toMove.RoomGrid))
     {
-        Category = std::move(toMove.Category);
         NavigationDifficulty = toMove.NavigationDifficulty;
     }
     inline RoomInfo& operator=(RoomInfo&& toMove)
     {
-        Category = std::move(toMove.Category);
         NavigationDifficulty = toMove.NavigationDifficulty;
         RoomGrid = std::move(toMove.RoomGrid);
 

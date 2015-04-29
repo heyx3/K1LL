@@ -24,7 +24,7 @@ enum ItemTypes
 struct RoomNode
 {
     //Enables this class to be used in std collections that use hashes.
-    unsigned int operator()(const RoomNode& r) const { return r.RoomCenter.GetHashCode(); }
+    size_t operator()(const RoomNode& r) const { return r.RoomCenter.GetHashCode(); }
     bool operator==(const RoomNode& r) const { return r.RoomCenter == RoomCenter; }
     bool operator!=(const RoomNode& r) const { return r.RoomCenter != RoomCenter; }
 
@@ -32,6 +32,8 @@ struct RoomNode
     Vector2u RoomCenter;
     ItemTypes ContainedItem;
 
+
+    RoomNode(void) { }
 
     RoomNode(Vector2u roomCenter, ItemTypes containedItem)
         : RoomCenter(roomCenter), ContainedItem(containedItem) { }
@@ -55,7 +57,7 @@ class RoomsGraph : public Graph<RoomNode, RoomEdge>
 public:
 
     //Indexes each room into a set of connected rooms.
-    std::unordered_map<RoomNode, std::vector<RoomNode>> Connections;
+    std::unordered_map<RoomNode, std::vector<RoomNode>, RoomNode> Connections;
 
     virtual void GetConnectedEdges(RoomNode startNode, std::vector<RoomEdge>& outConnections) override;
 };

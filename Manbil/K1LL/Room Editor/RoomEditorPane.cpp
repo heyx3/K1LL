@@ -52,6 +52,31 @@ std::string RoomEditorPane::LoadData(void)
     return "";
 }
 
+void RoomEditorPane::ResetCurrentRoom(Vector2u newSize)
+{
+    Vector2u max = newSize - Vector2u(1, 1);
+
+    RoomInfo& rm = GetCurrentRoom();
+    rm.RoomGrid.Resize(newSize.x, newSize.y, BT_NONE);
+    rm.RoomGrid.Fill(BT_NONE);
+
+    rm.RoomGrid[Vector2u(0, 0)] = BT_WALL;
+    rm.RoomGrid[Vector2u(max.x, 0)] = BT_WALL;
+    rm.RoomGrid[Vector2u(0, max.y)] = BT_WALL;
+    rm.RoomGrid[max] = BT_WALL;
+        
+    for (unsigned int x = 1; x < max.x; ++x)
+    {
+        rm.RoomGrid[Vector2u(x, 0)] = BT_DOORWAY;
+        rm.RoomGrid[Vector2u(x, max.y)] = BT_DOORWAY;
+    }
+    for (unsigned int y = 1; y < max.y; ++y)
+    {
+        rm.RoomGrid[Vector2u(0, y)] = BT_DOORWAY;
+        rm.RoomGrid[Vector2u(max.x, y)] = BT_DOORWAY;
+    }
+}
+
 std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& outElements,
                                             EditorMaterialSet& materialSet)
 {
@@ -59,8 +84,7 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
     blockTypeValues.push_back("Empty");
     blockTypeValues.push_back("Wall");
     blockTypeValues.push_back("Doorway");
-    blockTypeValues.push_back("Player Spawn");
-    blockTypeValues.push_back("Item Spawn");
+    blockTypeValues.push_back("Spawn");
     auto onBlockSelected = [](GUISelectionBox* dropdownBox, const std::string& item,
                               unsigned int index, void* pData)
     {
@@ -71,10 +95,8 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
             editor->TypeBeingPlaced = BT_WALL;
         } else if (item == "Doorway") {
             editor->TypeBeingPlaced = BT_DOORWAY;
-        } else if (item == "Player Spawn") {
-            editor->TypeBeingPlaced = BT_PLAYER_SPAWN;
-        } else if (item == "Item Spawn") {
-            editor->TypeBeingPlaced = BT_ITEM_SPAWN;
+        } else if (item == "Spawn") {
+            editor->TypeBeingPlaced = BT_SPAWN;
         } else {
             assert(false);
         }
@@ -85,47 +107,68 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
     blockTypes->ItemBackgroundScale = Vector2f(0.378f, 0.5f);
 
     
-    typedef TextBoxUInt<unsigned int*> MyTBUI;
-    auto onGridValChanged = [](GUITextBox* box, unsigned int newVal, unsigned int* pData)
+    //Buttons for changing the size of the room.
+    auto onSmallerWidth = [](GUITexture* btn, Vector2f mouseP, void* pData)
     {
-        *pData = newVal;
-    };
-    MyTBUI *gridX = new MyTBUI(GetCurrentRoom().RoomGrid.GetWidth(), 50.0f, Vector2f(0.0f, 5.0f),
-                               EditorObject::DescriptionData("New Grid Width"),
-                               onGridValChanged, &newGridX),
-           *gridY = new MyTBUI(GetCurrentRoom().RoomGrid.GetHeight(), 50.0f, Vector2f(0.0f, 5.0f),
-                               EditorObject::DescriptionData("New Grid Height"),
-                               onGridValChanged, &newGridY);
-
-    struct ResizeRoomData
-    {
-        RoomEditorPane* Editor;
-        unsigned int *NewGridX, *NewGridY;
-        ResizeRoomData(RoomEditorPane* editor, unsigned int *newGridX, unsigned int* newGridY)
-            : Editor(editor), NewGridX(newGridX), NewGridY(newGridY) { }
-    };
-    ResizeRoomData resizeData(this, &newGridX, &newGridY);
-
-    auto OnResizeButtonClicked = [](GUITexture* buttonTex, Vector2f mouse, ResizeRoomData data)
-    {
-        RoomInfo& rm = data.Editor->GetCurrentRoom();
-        rm.RoomGrid.Resize(*data.NewGridX, *data.NewGridY, BT_NONE);
-        rm.RoomGrid.Fill(BT_NONE);
-        for (unsigned int x = 0; x < *data.NewGridX; ++x)
+        RoomEditorPane* pne = (RoomEditorPane*)pData;
+        Vector2u size = pne->GetCurrentRoom().RoomGrid.GetDimensions();
+        if (size.x > 1)
         {
-            rm.RoomGrid[Vector2u(x, 0)] = BT_WALL;
-            rm.RoomGrid[Vector2u(x, rm.RoomGrid.GetHeight() - 1)] = BT_WALL;
-        }
-        for (unsigned int y = 0; y < *data.NewGridY; ++y)
-        {
-            rm.RoomGrid[Vector2u(0, y)] = BT_WALL;
-            rm.RoomGrid[Vector2u(rm.RoomGrid.GetWidth() - 1, y)] = BT_WALL;
+            pne->ResetCurrentRoom(Vector2u(size.x - 1, size.y));
         }
     };
-
-    typedef EditorButton<ResizeRoomData> MyButton;
-    MyButton* createGridBtn = new MyButton("Regenerate Grid", Vector2f(100.0f, 25.0f),
-                                           OnResizeButtonClicked, resizeData, 0, Vector2f(0.0f, 15.0f));
+    auto onBiggerWidth = [](GUITexture* btn, Vector2f mouseP, void* pData)
+    {
+        RoomEditorPane* pne = (RoomEditorPane*)pData;
+        Vector2u size = pne->GetCurrentRoom().RoomGrid.GetDimensions();
+        pne->ResetCurrentRoom(Vector2u(size.x + 1, size.y));
+    };
+    auto onSmallerHeight = [](GUITexture* btn, Vector2f mouseP, void* pData)
+    {
+        RoomEditorPane* pne = (RoomEditorPane*)pData;
+        Vector2u size = pne->GetCurrentRoom().RoomGrid.GetDimensions();
+        if (size.y > 1)
+        {
+            pne->ResetCurrentRoom(Vector2u(size.x, size.y - 1));
+        }
+    };
+    auto onBiggerHeight = [](GUITexture* btn, Vector2f mouseP, void* pData)
+    {
+        RoomEditorPane* pne = (RoomEditorPane*)pData;
+        Vector2u size = pne->GetCurrentRoom().RoomGrid.GetDimensions();
+        pne->ResetCurrentRoom(Vector2u(size.x, size.y + 1));
+    };
+    std::vector<EditorButtonData> gridXBtns, gridYBtns;
+    gridXBtns.push_back(EditorButtonData("-", 0, Vector2f(0.1f, 0.09f),
+                                         onSmallerWidth, this));
+    gridXBtns.push_back(EditorButtonData("+", 0, Vector2f(0.1f, 0.09f),
+                                         onBiggerWidth, this));
+    gridYBtns.push_back(EditorButtonData("-", 0, Vector2f(0.1f, 0.09f),
+                                         onSmallerHeight, this));
+    gridYBtns.push_back(EditorButtonData("+", 0, Vector2f(0.1f, 0.09f),
+                                         onBiggerHeight, this));
+    EditorButtonList *gridXBtnList = new EditorButtonList(gridXBtns,
+                                                          EditorObject::DescriptionData("Width:"),
+                                                          10.0f, Vector2f(0.0f, 10.0f)),
+                     *gridYBtnList = new EditorButtonList(gridYBtns,
+                                                          EditorObject::DescriptionData("Height:"),
+                                                          10.0f, Vector2f(0.0f, 10.0f));
+    
+    //The slider continually tells this editor pane which slider displays the navigation difficulty.
+    typedef SlidingBarFloat<RoomEditorPane*> MySliderF;
+    auto onNavDifficultyChanged = [](GUISlider* slider, float newVal, RoomEditorPane* pne)
+    {
+        pne->GetCurrentRoom().NavigationDifficulty = newVal;
+    };
+    auto onNavDifficultyUpdate = [](GUISlider* slider, float elapsed, Vector2f mPos, RoomEditorPane* pne)
+    {
+        pne->SetNavDifficultySlider(slider);
+    };
+    MySliderF *navDifficulty = new MySliderF(0.0f, 1.0f, Vector2f(0.0f, 20.0f),
+                                             EditorObject::DescriptionData("Nav Difficulty: "),
+                                             onNavDifficultyChanged, 0.5f, 1.0f, this);
+    navDifficulty->OnUpdate = onNavDifficultyUpdate;
+    navDifficulty->OnUpdate_Data = this;
 
     //The label continually tells this editor pane which label displays the current room.
     EditorLabel* currentRoom = new EditorLabel("Room " + std::to_string(CurrentRoom + 1),
@@ -210,9 +253,9 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
 
 
     outElements.push_back(EditorObjectPtr(blockTypes));
-    outElements.push_back(EditorObjectPtr(gridX));
-    outElements.push_back(EditorObjectPtr(gridY));
-    outElements.push_back(EditorObjectPtr(createGridBtn));
+    outElements.push_back(EditorObjectPtr(gridXBtnList));
+    outElements.push_back(EditorObjectPtr(gridYBtnList));
+    outElements.push_back(EditorObjectPtr(navDifficulty));
     outElements.push_back(EditorObjectPtr(currentRoom));
     outElements.push_back(EditorObjectPtr(changeRoomButtons));
     outElements.push_back(EditorObjectPtr(addRemoveButtons));
@@ -226,4 +269,7 @@ void RoomEditorPane::UpdateCurrentRoomLabel(void)
     std::string roomVal = "Room " + std::to_string(CurrentRoom + 1);
     bool tryL = currentRoomLabel->SetText(roomVal);
     assert(tryL);
+
+    //Also update the current difficulty slider.
+    navDifficultySlider->Value = GetCurrentRoom().NavigationDifficulty;
 }

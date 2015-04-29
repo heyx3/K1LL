@@ -3,6 +3,7 @@
 #include "../../Editor/IEditable.h"
 #include "RoomCollection.h"
 
+class GUISlider;
 class GUILabel;
 
 
@@ -35,6 +36,10 @@ public:
     const GUILabel* GetCurrentRoomLabel(void) const { return currentRoomLabel; }
     GUILabel* GetCurrentRoomLabel(void) { return currentRoomLabel; }
 
+    void SetNavDifficultySlider(GUISlider* slider) { navDifficultySlider = slider; }
+
+    void ResetCurrentRoom(Vector2u newSize);
+
     void UpdateCurrentRoomLabel(void);
 
     virtual std::string BuildEditorElements(std::vector<EditorObjectPtr>& outElements,
@@ -48,4 +53,5 @@ protected:
 private:
 
     GUILabel* currentRoomLabel = 0;
+    GUISlider* navDifficultySlider = 0;
 };
