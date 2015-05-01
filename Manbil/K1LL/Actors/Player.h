@@ -10,13 +10,12 @@ class Player
 public:
     
     Team MyTeam;
-    Room* CurrentRoom;
 
     Vector2f Pos, Velocity;
     Vector3f LookDir;
 
 
-    Player(Vector2f pos, Room* startingRoom);
+    Player(Vector2f pos);
 
 
     inline Capsule GetCollision3D(void) const
@@ -30,6 +29,11 @@ public:
     {
         return Circle(Pos, Constants::Instance.PlayerCollisionRadius);
     }
+
+
+    //Tells this player to push back against the given wall it intersects with.
+    //Takes in the elapsed time this frame.
+    void PushOffWall(const Box2D& wall, float elapsedSeconds);
 
 
     //Child classes should call this AFTER doing their own update logic.

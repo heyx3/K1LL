@@ -9,22 +9,23 @@
 #include "../Content/ActorContent.h"
 
 
-class Room;
+class Level;
 
 //A non-player entity that can update and render itself.
 class Actor
 {
 public:
 
-    Room* CurrentRoom;
     Vector3f Pos;
 
 
-    Actor(Vector3f pos, Room* startingRoom) : Pos(pos), CurrentRoom(startingRoom) { }
+    Actor(Vector3f pos) : Pos(pos) { }
     virtual ~Actor(void) { }
     
     
-    virtual void Update(float elapsedSeconds) = 0;
+    //Returns whether this actor should be destroyed.
+    virtual bool Update(Level* theLevel, float elapsedSeconds) = 0;
+
     virtual void Render(float elapsedSeconds, const RenderInfo& info) = 0;
 };
 

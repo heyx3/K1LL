@@ -28,6 +28,10 @@ public:
     virtual void ReadData(DataReader* reader) override;
 
 
+    void SaveToFile(std::string& outError) const;
+    void ReadFromFile(std::string& outError);
+
+
 private:
 
     Constants(void) { }

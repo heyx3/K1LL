@@ -11,7 +11,7 @@ public:
     float RotSpeedLerp = 0.5f;
 
 
-    HumanPlayer(Vector2f pos, Room* startingRoom);
+    HumanPlayer(Vector2f pos);
 
 
     virtual void Update(float elapsedSeconds) override;

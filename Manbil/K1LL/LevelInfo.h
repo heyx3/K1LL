@@ -6,7 +6,7 @@
 #include "RoomsGraph.h"
 
 
-//Information about a level. Always assumes that its rooms do not intersect each other.
+//Information about a level, defined as a collection of rooms plus some meta-data.
 struct LevelInfo : public ISerializable
 {
     //A bounding box using unsigned ints.

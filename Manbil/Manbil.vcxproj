@@ -146,7 +146,6 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\Room Editor\RoomCollection.cpp" />
     <ClCompile Include="K1LL\Room Editor\RoomEditor.cpp" />
     <ClCompile Include="K1LL\Room Editor\RoomEditorPane.cpp" />
-    <ClCompile Include="K1LL\Room.cpp" />
     <ClCompile Include="K1LL\RoomInfo.cpp" />
     <ClCompile Include="K1LL\TeamData.cpp" />
     <ClCompile Include="Math\Higher Math\BumpmapToNormalmap.cpp" />
@@ -328,7 +327,6 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Room Editor\RoomEditor.h" />
     <ClInclude Include="K1LL\Room Editor\RoomCollection.h" />
     <ClInclude Include="K1LL\Room Editor\RoomEditorPane.h" />
-    <ClInclude Include="K1LL\Room.h" />
     <ClInclude Include="K1LL\RoomInfo.h" />
     <ClInclude Include="K1LL\TeamData.h" />
     <ClInclude Include="K1LL\Weapons.h" />

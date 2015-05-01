@@ -441,9 +441,6 @@
     <ClCompile Include="K1LL\Level.cpp">
       <Filter>K1LL\Game</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\Room.cpp">
-      <Filter>K1LL\Game</Filter>
-    </ClCompile>
     <ClCompile Include="K1LL\TeamData.cpp">
       <Filter>K1LL\Game</Filter>
     </ClCompile>
@@ -1043,9 +1040,6 @@
       <Filter>K1LL\Level Info</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\Level.h">
-      <Filter>K1LL\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Room.h">
       <Filter>K1LL\Game</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\TeamData.h">

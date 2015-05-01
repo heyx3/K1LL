@@ -1,6 +1,9 @@
 #include "Constants.h"
 
 
+#include "../../IO/XmlSerialization.h"
+
+
 Constants Constants::Instance = Constants();
 
 
@@ -32,4 +35,42 @@ void Constants::ReadData(DataReader* reader)
     reader->ReadFloat(MaxMouseRotSpeed);
     reader->ReadFloat(MinJoystickRotSpeed);
     reader->ReadFloat(MaxJoystickRotSpeed);
+}
+
+
+void Constants::SaveToFile(std::string& err) const
+{
+    XmlWriter writer;
+
+    try
+    {
+        writer.WriteDataStructure(*this, "Data");
+        err = writer.SaveData("Content/Constants.xml");
+    }
+    catch (int ex)
+    {
+        assert(ex == DataWriter::EXCEPTION_FAILURE);
+        err = "Error saving data: " + writer.ErrorMessage;
+    }
+}
+void Constants::ReadFromFile(std::string& err)
+{
+    XmlReader reader("Content/Constants.xml");
+
+    err = reader.ErrorMessage;
+    if (!err.empty())
+    {
+        err = "Error reading file: " + err;
+        return;
+    }
+
+    try
+    {
+        reader.ReadDataStructure(*this);
+    }
+    catch (int ex)
+    {
+        assert(ex == DataReader::EXCEPTION_FAILURE);
+        err = "Error reading data: " + reader.ErrorMessage;
+    }
 }

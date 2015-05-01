@@ -12,6 +12,13 @@ namespace
 
 const Vector2i HumanPlayer::baseMPos = Vector2i(50, 50);
 
+
+HumanPlayer::HumanPlayer(Vector2f pos)
+    : Player(pos)
+{
+
+}
+
 void HumanPlayer::Update(float elapsed)
 {
     //First, handle rotation input.
