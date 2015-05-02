@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../Rendering/Basic Rendering/RenderInfo.h"
+#include "../../../Rendering/Basic Rendering/RenderInfo.h"
 
-#include "LevelInfo.h"
-#include "Game\LevelGraph.h"
+#include "../../Level Info/LevelInfo.h"
+#include "LevelGraph.h"
 #include "RoomsGraph.h"
 
-#include "Actors/Player.h"
-#include "Actors/Actor.h"
+#include "../Players/Player.h"
+#include "../Actors/Actor.h"
 
 
 //The game level.

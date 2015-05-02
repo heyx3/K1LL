@@ -1,6 +1,6 @@
 #include "Player.h"
 
-#include "../Content/ActorContent.h"
+#include "../../Content/ActorContent.h"
 
 
 Player::Player(Vector2f pos)

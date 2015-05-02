@@ -3,7 +3,7 @@
 #include "../../IO/DataSerialization.h"
 #include "../../Editor/IEditable.h"
 
-#include "../RoomInfo.h"
+#include "../Level Info/RoomInfo.h"
 
 
 struct RoomCollection : public ISerializable

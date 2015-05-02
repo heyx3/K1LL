@@ -1,6 +1,6 @@
 #include "RoomInfo.h"
 
-#include "../IO/Serialization.h"
+#include "../../IO/Serialization.h"
 
 
 RoomInfo::RoomInfo(const RoomInfo& cpy)

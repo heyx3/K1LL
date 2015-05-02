@@ -1,8 +1,8 @@
 #pragma once
 
 #include <unordered_map>
-#include "../Math/Lower Math/Vectors.h"
-#include "../Graph/AStarSearch.h"
+#include "../../../Math/Lower Math/Vectors.h"
+#include "../../../Graph/AStarSearch.h"
 
 
 //Defines data structures for pathing through rooms in a level.

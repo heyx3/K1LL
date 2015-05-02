@@ -1,6 +1,9 @@
 #pragma once
 
-#include "Actor.h"
+#include "../../../Math/Shapes.hpp"
+#include "../../../Rendering/Basic Rendering/RenderInfo.h"
+
+#include "../../Content/Constants.h"
 #include "../TeamData.h"
 
 

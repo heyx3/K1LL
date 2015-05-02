@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#include "../../Rendering/Basic Rendering/RenderInfo.h"
-#include "../../Math/Shapes.hpp"
+#include "../../../Rendering/Basic Rendering/RenderInfo.h"
+#include "../../../Math/Shapes.hpp"
 
-#include "../Content/Constants.h"
-#include "../Content/ActorContent.h"
+#include "../../Content/Constants.h"
+#include "../../Content/ActorContent.h"
 
 
 class Level;

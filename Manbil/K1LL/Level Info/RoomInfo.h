@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Math/Lower Math/Array2D.h"
-#include "../Math/Shapes/Boxes.h"
-#include "../IO/DataSerialization.h"
+#include "../../Math/Lower Math/Array2D.h"
+#include "../../Math/Shapes/Boxes.h"
+#include "../../IO/DataSerialization.h"
 
 
 //A room is a rectangular grid of "blocks".

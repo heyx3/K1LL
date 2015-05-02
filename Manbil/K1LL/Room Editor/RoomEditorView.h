@@ -4,7 +4,7 @@
 #include "../../Rendering/GUI/GUI Elements/GUITexture.h"
 #include "../../Editor/IEditable.h"
 
-#include "../RoomInfo.h"
+#include "../Level Info/RoomInfo.h"
 #include "RoomEditorPane.h"
 
 

@@ -1,6 +1,6 @@
 #include "HumanPlayer.h"
 
-#include "../Game/GameWorld.h"
+#include "../GameWorld.h"
 
 
 namespace

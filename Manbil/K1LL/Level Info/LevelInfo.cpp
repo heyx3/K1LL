@@ -1,6 +1,6 @@
 #include "LevelInfo.h"
 
-#include "../IO/Serialization.h"
+#include "../../IO/Serialization.h"
 
 
 inline bool IsInBox(Vector2u boxMin, Vector2u boxMax, Vector2u pos)

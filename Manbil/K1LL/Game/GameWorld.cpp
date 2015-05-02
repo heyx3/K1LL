@@ -2,8 +2,9 @@
 
 #include "../../DebugAssist.h"
 
-#include "../Actors/HumanPlayer.h"
+#include "Players/HumanPlayer.h"
 #include "../Content/ActorContent.h"
+
 
 Vector2i GameWorld::mPos = Vector2i();
 sf::RenderWindow* GameWorld::wind = 0;

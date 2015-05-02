@@ -1,7 +1,7 @@
 #include "Level.h"
 
-#include "../Math/Higher Math/Geometryf.h"
-#include "Content/Constants.h"
+#include "../../../Math/Higher Math/Geometryf.h"
+#include "../../Content/Constants.h"
 
 
 namespace
@@ -62,7 +62,8 @@ Level::Level(const LevelInfo& level, std::string& err)
         Vector2u min = level.RoomOffsets[i],
                  max = min + level.Rooms[i].RoomGrid.GetDimensions();
 
-        //Fill in the grid.
+        #pragma region Fill in the grid area this room covers
+
         for (Vector2u counter = min; counter.y <= max.y; ++counter.y)
         {
             for (counter.x = min.x; counter.x <= max.x; ++counter.x)
@@ -90,7 +91,10 @@ Level::Level(const LevelInfo& level, std::string& err)
             }
         }
 
-        //Turn any unused doorways into walls.
+        #pragma endregion
+
+        #pragma region Turn any unused doorways into walls
+
         for (Vector2u counter = min; counter.y <= max.y; ++counter.y)
         {
             for (counter.x = min.x; counter.x <= max.x; ++counter.x)
@@ -102,20 +106,60 @@ Level::Level(const LevelInfo& level, std::string& err)
             }
         }
 
+        #pragma endregion
 
-        //Build the room connections.
-        //TODO: Implement.
+        #pragma region Find all the rooms that connect to this one
+
+        const RoomInfo& thisRoom = level.Rooms[i];
+        Vector2u thisMin = level.RoomOffsets[i],
+                 thisMax = thisMin + level.Rooms[i].RoomGrid.GetDimensions() - Vector2u(1, 1);
+
         RoomNode node(min, max, level.RoomItems[i]);
+        assert(RoomGraph.Connections.find(node) == RoomGraph.Connections.end());
         
+        //Go through all bordering rooms and find which ones have overlapping doorways.
         std::vector<unsigned int> connections;
         level.GetBorderingRooms(i, connections);
-        assert(RoomGraph.Connections.find(node) == RoomGraph.Connections.end());
         for (unsigned int j = 0; j < connections.size(); ++j)
         {
-            const RoomInfo& inf = level.Rooms[i];
+            unsigned int indx = connections[j];
+            const RoomInfo& otherRoom = level.Rooms[indx];
+            Vector2u otherMin = level.RoomOffsets[indx],
+                     otherMax = otherMin + level.Rooms[indx].RoomGrid.GetDimensions();
 
-            //RoomGraph.Connections[node].push_back(level.Rooms[connections[j]]);
+#define SEARCH_EDGE_FOR_DOORWAYS(axisAlongEdge, thisPosX, thisPosY, otherPosX, otherPosY) \
+    for (unsigned int i = Mathf::Max(thisMin.axisAlongEdge, otherMin.axisAlongEdge); \
+         i < Mathf::Min(thisMax.axisAlongEdge, otherMax.axisAlongEdge); \
+         ++i) \
+    { \
+        Vector2u thisPos(thisPosX, thisPosY), \
+                 otherPos(otherPosX, otherPosY); \
+        if (thisRoom.RoomGrid[thisPos] == BT_DOORWAY && \
+            otherRoom.RoomGrid[otherPos] == BT_DOORWAY) \
+        { \
+            RoomGraph.Connections[node].push_back(RoomNode(otherMin, otherMax, level.RoomItems[indx])); \
+            break; \
+        } \
+    }
+            if (thisMin.x == otherMax.x)
+            {
+                SEARCH_EDGE_FOR_DOORWAYS(y, thisMin.x, i - thisMin.y, otherMax.x, i - otherMin.y)
+            }
+            else if (thisMax.x == otherMin.x)
+            {
+                SEARCH_EDGE_FOR_DOORWAYS(y, thisMax.x, i - thisMin.y, otherMin.x, i - otherMin.y)
+            }
+            else if (thisMin.y == otherMax.y)
+            {
+                SEARCH_EDGE_FOR_DOORWAYS(x, i - thisMin.x, thisMin.y, i - otherMin.x, otherMax.y)
+            }
+            else if (thisMax.y == otherMin.y)
+            {
+                SEARCH_EDGE_FOR_DOORWAYS(x, i - thisMin.x, thisMax.y, i - otherMin.x, otherMin.y)
+            }
         }
+
+        #pragma endregion
     }
 }
 

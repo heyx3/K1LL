@@ -1,12 +1,13 @@
 #pragma once
 
-#include "../IO/DataSerialization.h"
+#include "../../IO/DataSerialization.h"
 
 #include "RoomInfo.h"
-#include "RoomsGraph.h"
+#include "../Game/Level/RoomsGraph.h"
 
 
 //Information about a level, defined as a collection of rooms plus some meta-data.
+//Note that room can never pass behind the origin.
 struct LevelInfo : public ISerializable
 {
     //A bounding box using unsigned ints.

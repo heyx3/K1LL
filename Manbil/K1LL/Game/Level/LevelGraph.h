@@ -1,11 +1,11 @@
 #pragma once
 
 #include <unordered_map>
-#include "../../Math/Lower Math/Array2D.h"
-#include "../../Math/Lower Math/Vectors.h"
+#include "../../../Math/Lower Math/Array2D.h"
+#include "../../../Math/Lower Math/Vectors.h"
 
-#include "../../Graph/AStarSearch.h"
-#include "../RoomInfo.h"
+#include "../../../Graph/AStarSearch.h"
+#include "../../Level Info/RoomInfo.h"
 
 
 //Defines data structures for pathing through grid spots in a level.
