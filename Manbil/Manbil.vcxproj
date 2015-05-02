@@ -141,6 +141,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\Game\Level\RoomsGraph.cpp" />
     <ClCompile Include="K1LL\Game\Players\HumanPlayer.cpp" />
     <ClCompile Include="K1LL\Game\Players\Player.cpp" />
+    <ClCompile Include="K1LL\Game\Rendering\LevelGeometry.cpp" />
     <ClCompile Include="K1LL\Game\TeamData.cpp" />
     <ClCompile Include="K1LL\Level Info\LevelInfo.cpp" />
     <ClCompile Include="K1LL\Level Info\RoomInfo.cpp" />
@@ -315,13 +316,14 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="IO\XmlSerialization.h" />
     <ClInclude Include="K1LL\Content\ActorContent.h" />
     <ClInclude Include="K1LL\Content\Constants.h" />
-    <ClInclude Include="K1LL\Game\Actors\Actor.h" />
+    <ClInclude Include="K1LL\Game\Actor.h" />
     <ClInclude Include="K1LL\Game\GameWorld.h" />
     <ClInclude Include="K1LL\Game\Level\Level.h" />
     <ClInclude Include="K1LL\Game\Level\LevelGraph.h" />
     <ClInclude Include="K1LL\Game\Level\RoomsGraph.h" />
     <ClInclude Include="K1LL\Game\Players\HumanPlayer.h" />
     <ClInclude Include="K1LL\Game\Players\Player.h" />
+    <ClInclude Include="K1LL\Game\Rendering\LevelGeometry.h" />
     <ClInclude Include="K1LL\Game\TeamData.h" />
     <ClInclude Include="K1LL\Game\Weapons.h" />
     <ClInclude Include="K1LL\Level Info\LevelInfo.h" />

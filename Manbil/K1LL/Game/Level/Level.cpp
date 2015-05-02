@@ -161,6 +161,13 @@ Level::Level(const LevelInfo& level, std::string& err)
 
         #pragma endregion
     }
+
+
+    #pragma region Set up important Actors
+
+
+
+    #pragma endregion
 }
 
 void Level::Update(float elapsed)
@@ -175,17 +182,17 @@ void Level::Update(float elapsed)
         //Check for any collisions between this player and the walls.
         Vector2f min = player.Pos - playerRadius,
                  max = player.Pos + playerRadius;
-        Vector2u minGrid = ToV2u(min),
-                 maxGrid = ToV2u(max);
-        for (unsigned int x = minGrid.x; x <= maxGrid.x; ++x)
+        Vector2i minGrid = ToV2i(min),
+                 maxGrid = ToV2i(max);
+        for (int x = minGrid.x; x <= maxGrid.x; ++x)
         {
-            for (unsigned int y = minGrid.y; y <= maxGrid.y; ++y)
+            for (int y = minGrid.y; y <= maxGrid.y; ++y)
             {
-                if (BlockGrid[Vector2u(x, y)] == BT_WALL &&
-                    TouchesGridBox(player.GetCollision2D(), Vector2f((float)x, (float)y)))
+                if (x < 0 || y < 0 || x >= BlockGrid.GetWidth() || y >= BlockGrid.GetHeight() ||
+                    (BlockGrid[ToV2u(Vector2i(x, y))] == BT_WALL &&
+                     TouchesGridBox(player.GetCollision2D(), Vector2f((float)x, (float)y))))
                 {
-                    player.PushOffWall(Box2D((float)x, (float)y, Vector2f(1.0f, 1.0f)),
-                                       elapsed);
+                    player.PushOffWall(Box2D((float)x, (float)y, Vector2f(1.0f, 1.0f)), elapsed);
                 }
             }
         }
@@ -202,7 +209,14 @@ void Level::Update(float elapsed)
 }
 void Level::Render(float elapsed, const RenderInfo& info)
 {
-
+    for (unsigned int i = 0; i < Players.size(); ++i)
+    {
+        Players[i]->Render(elapsed, info);
+    }
+    for (unsigned int i = 0; i < Actors.size(); ++i)
+    {
+        Actors[i]->Render(this, elapsed, info);
+    }
 }
 
 Level::RaycastResults Level::CastWallRay(Vector3f start, Vector3f dir, Vector3f& hitPos, float& hitT)

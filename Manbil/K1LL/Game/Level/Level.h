@@ -7,7 +7,7 @@
 #include "RoomsGraph.h"
 
 #include "../Players/Player.h"
-#include "../Actors/Actor.h"
+#include "../Actor.h"
 
 
 //The game level.
