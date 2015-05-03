@@ -135,7 +135,8 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="IO\XmlSerialization.cpp" />
     <ClCompile Include="K1LL\Content\ActorContent.cpp" />
     <ClCompile Include="K1LL\Content\Constants.cpp" />
-    <ClCompile Include="K1LL\Game\GameWorld.cpp" />
+    <ClCompile Include="K1LL\Content\ContentLoader.cpp" />
+    <ClCompile Include="K1LL\Content\MenuContent.cpp" />
     <ClCompile Include="K1LL\Game\Level\Level.cpp" />
     <ClCompile Include="K1LL\Game\Level\LevelGraph.cpp" />
     <ClCompile Include="K1LL\Game\Level\RoomsGraph.cpp" />
@@ -143,6 +144,9 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\Game\Players\Player.cpp" />
     <ClCompile Include="K1LL\Game\Rendering\LevelGeometry.cpp" />
     <ClCompile Include="K1LL\Game\TeamData.cpp" />
+    <ClCompile Include="K1LL\GUI Pages\MainMenu.cpp" />
+    <ClCompile Include="K1LL\GUI Pages\Page.cpp" />
+    <ClCompile Include="K1LL\GUI Pages\PageManager.cpp" />
     <ClCompile Include="K1LL\Level Info\LevelInfo.cpp" />
     <ClCompile Include="K1LL\Level Info\RoomInfo.cpp" />
     <ClCompile Include="K1LL\Room Editor\RoomEditorView.cpp" />
@@ -316,8 +320,9 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="IO\XmlSerialization.h" />
     <ClInclude Include="K1LL\Content\ActorContent.h" />
     <ClInclude Include="K1LL\Content\Constants.h" />
+    <ClInclude Include="K1LL\Content\ContentLoader.h" />
+    <ClInclude Include="K1LL\Content\MenuContent.h" />
     <ClInclude Include="K1LL\Game\Actor.h" />
-    <ClInclude Include="K1LL\Game\GameWorld.h" />
     <ClInclude Include="K1LL\Game\Level\Level.h" />
     <ClInclude Include="K1LL\Game\Level\LevelGraph.h" />
     <ClInclude Include="K1LL\Game\Level\RoomsGraph.h" />
@@ -326,6 +331,9 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Game\Rendering\LevelGeometry.h" />
     <ClInclude Include="K1LL\Game\TeamData.h" />
     <ClInclude Include="K1LL\Game\Weapons.h" />
+    <ClInclude Include="K1LL\GUI Pages\MainMenu.h" />
+    <ClInclude Include="K1LL\GUI Pages\Page.h" />
+    <ClInclude Include="K1LL\GUI Pages\PageManager.h" />
     <ClInclude Include="K1LL\Level Info\LevelInfo.h" />
     <ClInclude Include="K1LL\Level Info\RoomInfo.h" />
     <ClInclude Include="K1LL\Room Editor\RoomEditorView.h" />

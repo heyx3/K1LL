@@ -1,20 +1,11 @@
 #include "HumanPlayer.h"
 
-#include "../GameWorld.h"
-
-
-namespace
-{
-    Vector2i GetMousePos(void) { return GameWorld::GetMousePos(); }
-    sf::RenderWindow* GetGameWindow(void) { return GameWorld::GetWindow(); }
-}
-
 
 const Vector2i HumanPlayer::baseMPos = Vector2i(50, 50);
 
 
-HumanPlayer::HumanPlayer(Vector2f pos)
-    : Player(pos)
+HumanPlayer::HumanPlayer(PageManager* manager, Vector2f pos)
+    : Player(manager, pos)
 {
 
 }
@@ -23,8 +14,8 @@ void HumanPlayer::Update(float elapsed)
 {
     //First, handle rotation input.
 
-	sf::Vector2i mousePos = sf::Mouse::getPosition(*GetGameWindow());
-    sf::Mouse::setPosition(sf::Vector2i(baseMPos.x, baseMPos.y), *GetGameWindow());
+	sf::Vector2i mousePos = sf::Mouse::getPosition(*Manager->GetWindow());
+    sf::Mouse::setPosition(sf::Vector2i(baseMPos.x, baseMPos.y), *Manager->GetWindow());
 
 	Vector2i delta = Vector2i(mousePos.x, mousePos.y) - baseMPos;
     float rotSpeed = Mathf::Lerp(Constants::Instance.MinMouseRotSpeed,

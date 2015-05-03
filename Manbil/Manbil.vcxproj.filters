@@ -438,9 +438,6 @@
     <ClCompile Include="K1LL\Content\ActorContent.cpp">
       <Filter>K1LL\Content</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\Game\GameWorld.cpp">
-      <Filter>K1LL\Game</Filter>
-    </ClCompile>
     <ClCompile Include="K1LL\Room Editor\RoomCollection.cpp">
       <Filter>K1LL\Room Editor</Filter>
     </ClCompile>
@@ -476,6 +473,21 @@
     </ClCompile>
     <ClCompile Include="K1LL\Game\Rendering\LevelGeometry.cpp">
       <Filter>K1LL\Game\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\GUI Pages\PageManager.cpp">
+      <Filter>K1LL\GUI Pages</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\ContentLoader.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\GUI Pages\Page.cpp">
+      <Filter>K1LL\GUI Pages</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\MenuContent.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\GUI Pages\MainMenu.cpp">
+      <Filter>K1LL\GUI Pages</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1033,9 +1045,6 @@
     <ClInclude Include="K1LL\Content\Constants.h">
       <Filter>K1LL\Content</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\Game\GameWorld.h">
-      <Filter>K1LL\Game</Filter>
-    </ClInclude>
     <ClInclude Include="K1LL\Room Editor\RoomCollection.h">
       <Filter>K1LL\Room Editor</Filter>
     </ClInclude>
@@ -1077,6 +1086,21 @@
     </ClInclude>
     <ClInclude Include="K1LL\Game\Actor.h">
       <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\GUI Pages\PageManager.h">
+      <Filter>K1LL\GUI Pages</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\ContentLoader.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\GUI Pages\Page.h">
+      <Filter>K1LL\GUI Pages</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\MenuContent.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\GUI Pages\MainMenu.h">
+      <Filter>K1LL\GUI Pages</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1214,6 +1238,12 @@
     </Filter>
     <Filter Include="K1LL\Game\Rendering">
       <UniqueIdentifier>{d867f14f-fe24-492c-b6b0-bf13702b0c72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Level Editor">
+      <UniqueIdentifier>{891d5344-5529-4c68-8d7f-b10f79ced694}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\GUI Pages">
+      <UniqueIdentifier>{0a0d2409-f4e8-445f-baed-098384fa57ac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

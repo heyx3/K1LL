@@ -5,6 +5,7 @@
 
 #include "../../Content/Constants.h"
 #include "../TeamData.h"
+#include "../../GUI Pages/PageManager.h"
 
 
 //An entity that participates in the game.
@@ -12,13 +13,14 @@ class Player
 {
 public:
     
+    PageManager* Manager;
     Team MyTeam;
 
     Vector2f Pos, Velocity;
     Vector3f LookDir;
 
 
-    Player(Vector2f pos);
+    Player(PageManager* manager, Vector2f pos);
 
 
     inline Capsule GetCollision3D(void) const
