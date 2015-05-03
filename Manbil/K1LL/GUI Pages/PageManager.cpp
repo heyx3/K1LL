@@ -72,6 +72,8 @@ void PageManager::InitializeWorld(void)
 void PageManager::OnWorldEnd(void)
 {
     CurrentPage.reset();
+    TextRenderer::DestroySystem();
+    DrawingQuad::DestroyQuad();
 }
 
 void PageManager::UpdateWorld(float frameSeconds)
