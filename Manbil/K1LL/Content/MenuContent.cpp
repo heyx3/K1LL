@@ -74,9 +74,9 @@ bool MenuContent::Initialize(std::string& err)
     typedef DataNode::Ptr DNP;
     DNP lerpParam(new ParamNode(1, GUIMaterials::DynamicQuadDraw_TimeLerp, "timeLerpParam"));
     DNP lerpColor(new InterpolateNode(Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
-                                      Vector4f(0.5f, 0.5f, 0.5f, 0.5f),
+                                      Vector4f(0.5f, 0.5f, 0.5f, 1.0f),
                                       lerpParam, InterpolateNode::IT_Linear, "lerpColor")),
-        lerpSize(new InterpolateNode(Vector2f(1.0f, 1.0f), Vector2f(1.2f, 1.2f),
+        lerpSize(new InterpolateNode(Vector2f(1.0f, 1.0f), Vector2f(1.1f, 1.1f),
                                      lerpParam, InterpolateNode::IT_Linear, "lerpSize"));
     genM = GUIMaterials::GenerateDynamicQuadDrawMaterial(animatedColorGUIParams,
                                                          GUIMaterials::TextureTypes::TT_COLOR,
@@ -105,7 +105,7 @@ GUITexture MenuContent::CreateGUITexture(MTexture2D* tex, bool isButton)
     assert(tex->IsColorTexture());
     if (isButton)
     {
-        return GUITexture(animatedColorGUIParams, tex, animatedColorGUIMat, true, 4.0f);
+        return GUITexture(animatedColorGUIParams, tex, animatedColorGUIMat, true, 7.5f);
     }
     else
     {

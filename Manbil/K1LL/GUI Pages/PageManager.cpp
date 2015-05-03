@@ -4,6 +4,7 @@
 
 #include "../../Rendering/GUI/GUIMaterials.h"
 #include "../../Rendering/Data Nodes/DataNodes.hpp"
+#include "../../Rendering/GUI/TextRenderer.h"
 
 #include "../Content/ContentLoader.h"
 #include "MainMenu.h"
@@ -11,8 +12,8 @@
 
 
 PageManager::PageManager(void)
-    : windowSize(800, 600),
-    SFMLOpenGLWorld(800, 600, sf::ContextSettings())
+    : windowSize(800, 900),
+      SFMLOpenGLWorld(800, 900, sf::ContextSettings())
 {
 
 }
@@ -41,7 +42,19 @@ void PageManager::InitializeWorld(void)
         return;
     }
 
-    std::string err;
+    DrawingQuad::InitializeQuad();
+
+    std::string err = TextRenderer::InitializeSystem();
+    if (!err.empty())
+    {
+        std::cout << "Error initializing text renderer: " << err << "\n";
+        char dummy;
+        std::cin >> dummy;
+
+        EndWorld();
+        return;
+    }
+
     ContentLoader::LoadContent(err);
     if (!err.empty())
     {

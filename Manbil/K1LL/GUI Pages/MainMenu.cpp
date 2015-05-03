@@ -69,15 +69,25 @@ void MainMenu::OnCloseWindow(void)
     Manager->EndWorld();
 }
 
+#include "../../DebugAssist.h"
 void MainMenu::RePositionGUI(void)
 {
     float halfX = 0.5f * (float)Manager->GetWindowSize().x,
           height = (float)Manager->GetWindowSize().y;
 
-    background->SetPosition(Vector2f(halfX, 0.5f * height));
+    background->SetPosition(Vector2f(halfX, -0.5f * height));
+    background->SetScale(Vector2f(1.0f, (2.0f * halfX) / height));
 
-    playButton->SetPosition(Vector2f(halfX, height * -0.7f));
-    optionsButton->SetPosition(Vector2f(halfX, height * -0.475f));
-    editorButton->SetPosition(Vector2f(halfX, height * -0.25f));
-    quitButton->SetPosition(Vector2f(halfX, -0.125f));
+    std::cout << "Pos: " << DebugAssist::ToString(background->GetPos()) << "; Background: " << DebugAssist::ToString(background->GetScale()) << "\n";
+
+    playButton->SetPosition(Vector2f(halfX, height * -0.635f));
+    optionsButton->SetPosition(Vector2f(halfX, height * -0.45f));
+    editorButton->SetPosition(Vector2f(halfX, height * -0.275f));
+    quitButton->SetPosition(Vector2f(halfX, height * -0.105f));
+
+    const Vector2f scale(0.75f, 0.75f);
+    playButton->SetScale(scale);
+    optionsButton->SetScale(scale);
+    editorButton->SetScale(scale);
+    quitButton->SetScale(scale);
 }
