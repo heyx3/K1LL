@@ -109,6 +109,69 @@ LevelInfo::UIntBox LevelInfo::GetBounds(void) const
     return box;
 }
 
+void LevelInfo::GetConnections(RoomsGraph& outGraph) const
+{
+    outGraph.Connections.clear();
+
+    UIntBox bnds = GetBounds();
+
+    std::vector<RoomNode> tempRooms;
+    for (unsigned int i = 0; i < Rooms.size(); ++i)
+    {
+        Vector2u min = RoomOffsets[i],
+                 max = min + Rooms[i].RoomGrid.GetDimensions();
+
+        const RoomInfo& thisRoom = Rooms[i];
+        Vector2u thisMin = RoomOffsets[i],
+                 thisMax = thisMin + Rooms[i].RoomGrid.GetDimensions() - Vector2u(1, 1);
+
+        RoomNode node(min, max, RoomItems[i]);
+        assert(outGraph.Connections.find(node) == outGraph.Connections.end());
+        
+        //Go through all bordering rooms and find which ones have overlapping doorways.
+        std::vector<unsigned int> connections;
+        GetBorderingRooms(i, connections);
+        for (unsigned int j = 0; j < connections.size(); ++j)
+        {
+            unsigned int indx = connections[j];
+            const RoomInfo& otherRoom = Rooms[indx];
+            Vector2u otherMin = RoomOffsets[indx],
+                     otherMax = otherMin + Rooms[indx].RoomGrid.GetDimensions();
+
+#define SEARCH_EDGE_FOR_DOORWAYS(axisAlongEdge, thisPosX, thisPosY, otherPosX, otherPosY) \
+    for (unsigned int i = Mathf::Max(thisMin.axisAlongEdge, otherMin.axisAlongEdge); \
+         i < Mathf::Min(thisMax.axisAlongEdge, otherMax.axisAlongEdge); \
+         ++i) \
+    { \
+        Vector2u thisPos(thisPosX, thisPosY), \
+                 otherPos(otherPosX, otherPosY); \
+        if (thisRoom.RoomGrid[thisPos] == BT_DOORWAY && \
+            otherRoom.RoomGrid[otherPos] == BT_DOORWAY) \
+        { \
+            outGraph.Connections[node].push_back(RoomNode(otherMin, otherMax, RoomItems[indx])); \
+            break; \
+        } \
+    }
+            if (thisMin.x == otherMax.x)
+            {
+                SEARCH_EDGE_FOR_DOORWAYS(y, thisMin.x, i - thisMin.y, otherMax.x, i - otherMin.y)
+            }
+            else if (thisMax.x == otherMin.x)
+            {
+                SEARCH_EDGE_FOR_DOORWAYS(y, thisMax.x, i - thisMin.y, otherMin.x, i - otherMin.y)
+            }
+            else if (thisMin.y == otherMax.y)
+            {
+                SEARCH_EDGE_FOR_DOORWAYS(x, i - thisMin.x, thisMin.y, i - otherMin.x, otherMax.y)
+            }
+            else if (thisMax.y == otherMin.y)
+            {
+                SEARCH_EDGE_FOR_DOORWAYS(x, i - thisMin.x, thisMax.y, i - otherMin.x, otherMin.y)
+            }
+        }
+    }
+}
+
 void LevelInfo::WriteData(DataWriter* writer) const
 {
     writer->WriteDataStructure(Vector2f_Writable(TeamOneCenter), "Team one's center");

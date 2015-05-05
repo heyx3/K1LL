@@ -48,6 +48,9 @@ struct LevelInfo : public ISerializable
     //Gets the smallest-possible bounding box covering every room in the level.
     UIntBox GetBounds(void) const;
 
+    //Calculates room connections.
+    void GetConnections(RoomsGraph& outGraph) const;
+
 
     virtual void WriteData(DataWriter* writer) const override;
     virtual void ReadData(DataReader* reader) override;
