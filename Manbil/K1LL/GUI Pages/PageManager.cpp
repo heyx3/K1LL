@@ -87,6 +87,8 @@ void PageManager::UpdateWorld(float frameSeconds)
 }
 void PageManager::RenderOpenGL(float frameSeconds)
 {
+    glViewport(0, 0, windowSize.x, windowSize.y);
+
     CurrentPage->Render(frameSeconds);
 }
 
