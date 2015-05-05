@@ -3,6 +3,9 @@
 #include "../../IO/Serialization.h"
 
 
+const std::string LevelInfo::LevelFilesPath = "Content/Levels";
+
+
 inline bool IsInBox(Vector2u boxMin, Vector2u boxMax, Vector2u pos)
 {
     return (pos.x > boxMin.x && pos.x < boxMax.x && pos.y > boxMin.y && pos.y < boxMax.y);

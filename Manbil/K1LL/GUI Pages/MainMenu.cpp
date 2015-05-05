@@ -5,40 +5,43 @@
 
 #include "PageManager.h"
 #include "../Content/MenuContent.h"
+#include "ChooseLevelEditor.h"
 
 
-#define MENU_CONTENT MenuContent::Instance
+#define CREATE_BUTTON(ButtonVarName) \
+            MenuContent::Instance.CreateGUITexture(&MenuContent::Instance.ButtonVarName, true)
+#define CREATE_TEX(ButtonVarName) \
+            MenuContent::Instance.CreateGUITexture(&MenuContent::Instance.ButtonVarName, false)
 
 
 MainMenu::MainMenu(PageManager* manager)
     : Page(manager)
 {
-    playButton = GUIElementPtr(new GUITexture(MENU_CONTENT.CreateGUITexture(&MenuContent::Instance.PlayButton,
-                                                                            true)));
+    playButton = GUIElementPtr(new GUITexture(CREATE_BUTTON(PlayButton)));
     ((GUITexture*)playButton.get())->OnClicked = [](GUITexture* b, Vector2f mPos, void* pData)
     {
         MainMenu* mm = (MainMenu*) pData;
     };
     ((GUITexture*)playButton.get())->OnClicked_pData = this;
 
-    optionsButton = GUIElementPtr(new GUITexture(MENU_CONTENT.CreateGUITexture(&MenuContent::Instance.OptionsButton,
-                                                                               true)));
+    optionsButton = GUIElementPtr(new GUITexture(CREATE_BUTTON(OptionsButton)));
     ((GUITexture*)optionsButton.get())->OnClicked = [](GUITexture* b, Vector2f mPos, void* pData)
     {
         MainMenu* mm = (MainMenu*)pData;
     };
     ((GUITexture*)optionsButton.get())->OnClicked_pData = this;
 
-    editorButton = GUIElementPtr(new GUITexture(MENU_CONTENT.CreateGUITexture(&MenuContent::Instance.EditorButton,
-                                                                              true)));
+    editorButton = GUIElementPtr(new GUITexture(CREATE_BUTTON(EditorButton)));
     ((GUITexture*)editorButton.get())->OnClicked = [](GUITexture* b, Vector2f mPos, void* pData)
     {
         MainMenu* mm = (MainMenu*)pData;
+        std::string err;
+        Page::Ptr newPage(new ChooseLevelEditor(mm->Manager, err));
+        mm->Manager->CurrentPage = Page::Ptr(new ChooseLevelEditor(mm->Manager, err));
     };
     ((GUITexture*)editorButton.get())->OnClicked_pData = this;
 
-    quitButton = GUIElementPtr(new GUITexture(MENU_CONTENT.CreateGUITexture(&MenuContent::Instance.QuitButton,
-                                                                            true)));
+    quitButton = GUIElementPtr(new GUITexture(CREATE_BUTTON(QuitButton)));
     ((GUITexture*)quitButton.get())->OnClicked = [](GUITexture* b, Vector2f mPos, void* pData)
     {
         MainMenu* mm = (MainMenu*)pData;
@@ -46,7 +49,7 @@ MainMenu::MainMenu(PageManager* manager)
     };
     ((GUITexture*)quitButton.get())->OnClicked_pData = this;
 
-    background = GUIElementPtr(new GUITexture(MENU_CONTENT.CreateGUITexture(&MenuContent::Instance.Background, false)));
+    background = GUIElementPtr(new GUITexture(CREATE_TEX(Background)));
 
     RePositionGUI();
 

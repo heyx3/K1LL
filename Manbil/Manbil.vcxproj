@@ -144,6 +144,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\Game\Players\Player.cpp" />
     <ClCompile Include="K1LL\Game\Rendering\LevelGeometry.cpp" />
     <ClCompile Include="K1LL\Game\TeamData.cpp" />
+    <ClCompile Include="K1LL\GUI Pages\ChooseLevelEditor.cpp" />
     <ClCompile Include="K1LL\GUI Pages\MainMenu.cpp" />
     <ClCompile Include="K1LL\GUI Pages\Page.cpp" />
     <ClCompile Include="K1LL\GUI Pages\PageManager.cpp" />
@@ -331,6 +332,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Game\Rendering\LevelGeometry.h" />
     <ClInclude Include="K1LL\Game\TeamData.h" />
     <ClInclude Include="K1LL\Game\Weapons.h" />
+    <ClInclude Include="K1LL\GUI Pages\ChooseLevelEditor.h" />
     <ClInclude Include="K1LL\GUI Pages\MainMenu.h" />
     <ClInclude Include="K1LL\GUI Pages\Page.h" />
     <ClInclude Include="K1LL\GUI Pages\PageManager.h" />
@@ -340,6 +342,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Room Editor\RoomEditor.h" />
     <ClInclude Include="K1LL\Room Editor\RoomCollection.h" />
     <ClInclude Include="K1LL\Room Editor\RoomEditorPane.h" />
+    <ClInclude Include="K1LL\tinydir.h" />
     <ClInclude Include="Math\Lower Math/Array2D.h" />
     <ClInclude Include="Math\Higher Math\BumpmapToNormalmap.h" />
     <ClInclude Include="Math\Higher Math\Camera.h" />

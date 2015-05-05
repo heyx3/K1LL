@@ -13,6 +13,8 @@ struct LevelInfo : public ISerializable
     //A bounding box using unsigned ints.
     struct UIntBox { Vector2u Min, Max; };
 
+    static const std::string LevelFilesPath;
+
 
     //Gets whether the given two boxes (defined by their max and min) touch at all.
     static bool BoxesTouching(Vector2u min1, Vector2u max1, Vector2u min2, Vector2u max2);
