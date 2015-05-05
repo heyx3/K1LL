@@ -69,6 +69,7 @@ void DrawingQuad::DestroyQuad(void)
 {
     assert(instance != 0);
     delete instance;
+    instance = 0;
 }
 
 void DrawingQuad::Render(const RenderInfo& info, const UniformDictionary& params, Material& mat)
