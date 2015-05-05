@@ -69,16 +69,17 @@ void MainMenu::OnCloseWindow(void)
     Manager->EndWorld();
 }
 
-#include "../../DebugAssist.h"
 void MainMenu::RePositionGUI(void)
 {
     float halfX = 0.5f * (float)Manager->GetWindowSize().x,
           height = (float)Manager->GetWindowSize().y;
 
+    MTexture2D* backTex = ((GUITexture*)background.get())->GetTex();
+    Vector2f backTexSize((float)backTex->GetWidth(), (float)backTex->GetHeight());
     background->SetPosition(Vector2f(halfX, -0.5f * height));
-    background->SetScale(Vector2f(1.0f, (2.0f * halfX) / height));
-
-    std::cout << "Pos: " << DebugAssist::ToString(background->GetPos()) << "; Background: " << DebugAssist::ToString(background->GetScale()) << "\n";
+    background->SetScale(Vector2f(halfX / (backTexSize.x * 0.5f),
+                                  (height * 0.5f) / (backTexSize.y * 0.5f)));
+    background->Depth = -0.01f;
 
     playButton->SetPosition(Vector2f(halfX, height * -0.635f));
     optionsButton->SetPosition(Vector2f(halfX, height * -0.45f));

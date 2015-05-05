@@ -1,6 +1,8 @@
 #include "Page.h"
 
 #include <iostream>
+#include "../../Rendering/Basic Rendering/ScreenClearer.h"
+#include "../../Rendering/Basic Rendering/RenderingState.h"
 
 #include "PageManager.h"
 
@@ -24,6 +26,9 @@ void Page::Update(Vector2i mousePos, float frameSeconds)
 }
 void Page::Render(float frameSeconds)
 {
+    ScreenClearer().ClearScreen();
+    RenderingState(RenderingState::C_NONE).EnableState();
+
     Vector2f windowSize = ToV2f(Manager->GetWindowSize());
 
     Camera guiCam;

@@ -36,8 +36,8 @@ public:
 
     bool GetIsWindowInFocus(void) const { return isWindowInFocus; }
 
-    void OnWindowLostFocus(void) { isWindowInFocus = false; }
-    void OnWindowGainedFocus(void) { isWindowInFocus = true; }
+    virtual void OnWindowLostFocus(void) { isWindowInFocus = false; }
+    virtual void OnWindowGainedFocus(void) { isWindowInFocus = true; }
 
 
 protected:
