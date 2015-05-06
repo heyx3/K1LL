@@ -7,58 +7,68 @@
 MenuContent MenuContent::Instance = MenuContent();
 
 MenuContent::MenuContent(void)
-    : PlayButton(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+    : Background(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      BackTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      PlayButton(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       OptionsButton(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       EditorButton(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       QuitButton(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
-      Background(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
-      ButtonScale(1.0f, 1.0f)
+      ConfirmDeletePopup(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      NOTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      YESTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      EditLevelTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      DeleteLevelTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      CreateLevelTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      LevelSelectionBoxHighlight(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      LevelSelectionBoxBackground(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false)
 {
 
 }
 
 bool MenuContent::Initialize(std::string& err)
 {
+    Background.Create();
+    BackTex.Create();
+
     PlayButton.Create();
     OptionsButton.Create();
     EditorButton.Create();
     QuitButton.Create();
-    Background.Create();
 
-    PlayButton.SetDataFromFile("Content/Menu/Play Button.png", err);
-    if (!err.empty())
-    {
-        err = "Error loading Play Button tex: " + err;
-        return false;
-    }
+    ConfirmDeletePopup.Create();
+    NOTex.Create();
+    YESTex.Create();
+    EditLevelTex.Create();
+    DeleteLevelTex.Create();
+    CreateLevelTex.Create();
+    LevelSelectionBoxHighlight.Create();
+    LevelSelectionBoxBackground.Create();
 
-    OptionsButton.SetDataFromFile("Content/Menu/Options Button.png", err);
-    if (!err.empty())
-    {
-        err = "Error loading Options Button tex: " + err;
-        return false;
-    }
 
-    EditorButton.SetDataFromFile("Content/Menu/Editor Button.png", err);
-    if (!err.empty())
-    {
-        err = "Error loading Editor Button tex: " + err;
-        return false;
+#define TRY_LOAD(buttonVar, fileName) \
+    buttonVar.SetDataFromFile(std::string("Content/Menu/") + #fileName, err); \
+    if (!err.empty()) \
+    { \
+        err = std::string("Error loading ") + #fileName + " tex: " + err; \
+        return false; \
     }
+    
+    TRY_LOAD(Background, Background.png)
+    TRY_LOAD(BackTex, BackButton.png)
 
-    QuitButton.SetDataFromFile("Content/Menu/Quit Button.png", err);
-    if (!err.empty())
-    {
-        err = "Error loading Quit Button tex: " + err;
-        return false;
-    }
+    TRY_LOAD(PlayButton, Play Button.png)
+    TRY_LOAD(OptionsButton, Options Button.png)
+    TRY_LOAD(EditorButton, Editor Button.png)
+    TRY_LOAD(QuitButton, Quit Button.png)
 
-    Background.SetDataFromFile("Content/Menu/Background.png", err);
-    if (!err.empty())
-    {
-        err = "Error loading Background tex: " + err;
-        return false;
-    }
+    TRY_LOAD(ConfirmDeletePopup, ConfirmDeletePopup.png)
+    TRY_LOAD(NOTex, NOWithoutBackground.png)
+    TRY_LOAD(YESTex, YESWithoutBackground.png)
+    TRY_LOAD(EditLevelTex, EditLevelButton.png)
+    TRY_LOAD(DeleteLevelTex, DeleteLevelButton.png)
+    TRY_LOAD(CreateLevelTex, CreateButton.png)
+    TRY_LOAD(LevelSelectionBoxHighlight, LevelChoiceHighlight.png)
+    TRY_LOAD(LevelSelectionBoxBackground, LevelChoiceBackground.png)
 
     
     auto genM = GUIMaterials::GenerateStaticQuadDrawMaterial(staticColorGUIParams,
@@ -93,11 +103,22 @@ bool MenuContent::Initialize(std::string& err)
 }
 void MenuContent::Destroy(void)
 {
+    Background.DeleteIfValid();
+    BackTex.DeleteIfValid();
+
     PlayButton.DeleteIfValid();
     OptionsButton.DeleteIfValid();
     EditorButton.DeleteIfValid();
     QuitButton.DeleteIfValid();
-    Background.DeleteIfValid();
+    
+    ConfirmDeletePopup.DeleteIfValid();
+    NOTex.DeleteIfValid();
+    YESTex.DeleteIfValid();
+    EditLevelTex.DeleteIfValid();
+    DeleteLevelTex.DeleteIfValid();
+    CreateLevelTex.DeleteIfValid();
+    LevelSelectionBoxHighlight.DeleteIfValid();
+    LevelSelectionBoxBackground.DeleteIfValid();
 }
 
 GUITexture MenuContent::CreateGUITexture(MTexture2D* tex, bool isButton)

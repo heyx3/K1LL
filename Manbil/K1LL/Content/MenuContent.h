@@ -11,8 +11,16 @@ public:
     static MenuContent Instance;
 
 
-    MTexture2D PlayButton, OptionsButton, EditorButton, QuitButton, Background;
-    Vector2f ButtonScale;
+    MTexture2D Background, BackTex;
+
+    //Main Menu textures.
+    MTexture2D PlayButton, OptionsButton, EditorButton, QuitButton;
+
+    //Level Editor textures.
+    MTexture2D ConfirmDeletePopup, NOTex, YESTex,
+               EditLevelTex, DeleteLevelTex,
+               CreateLevelTex,
+               LevelSelectionBoxHighlight, LevelSelectionBoxBackground;
 
 
     bool Initialize(std::string& outErrorMsg);
