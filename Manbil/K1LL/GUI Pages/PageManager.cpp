@@ -42,18 +42,7 @@ void PageManager::InitializeWorld(void)
         return;
     }
 
-    DrawingQuad::InitializeQuad();
-
-    std::string err = TextRenderer::InitializeSystem();
-    if (!err.empty())
-    {
-        std::cout << "Error initializing text renderer: " << err << "\n";
-        char dummy;
-        std::cin >> dummy;
-
-        EndWorld();
-        return;
-    }
+    std::string err;
 
     ContentLoader::LoadContent(err);
     if (!err.empty())
@@ -72,8 +61,6 @@ void PageManager::InitializeWorld(void)
 void PageManager::OnWorldEnd(void)
 {
     CurrentPage.reset();
-    TextRenderer::DestroySystem();
-    DrawingQuad::DestroyQuad();
 }
 
 void PageManager::UpdateWorld(float frameSeconds)

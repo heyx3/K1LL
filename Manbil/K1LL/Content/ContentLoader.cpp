@@ -7,6 +7,15 @@
 
 void ContentLoader::LoadContent(std::string& err)
 {
+    //Initialize engine systems.
+    DrawingQuad::InitializeQuad();
+    err = TextRenderer::InitializeSystem();
+    if (!err.empty())
+    {
+        err = "Error initializing text rendering system: " + err;
+        return;
+    }
+
     //Constants.
     std::string tryRead;
     Constants::Instance.ReadFromFile(tryRead);
@@ -37,4 +46,8 @@ void ContentLoader::LoadContent(std::string& err)
 void ContentLoader::DestroyContent(void)
 {
     ActorContent::Instance.Destroy();
+    MenuContent::Instance.Destroy();
+
+    TextRenderer::DestroySystem();
+    DrawingQuad::DestroyQuad();
 }
