@@ -7,8 +7,9 @@
 MenuContent MenuContent::Instance = MenuContent();
 
 MenuContent::MenuContent(void)
-    : Background(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
-      BackTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+    : PageBackground(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      BackButton(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      TextBoxBackground(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       PlayButton(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       OptionsButton(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       EditorButton(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
@@ -20,15 +21,19 @@ MenuContent::MenuContent(void)
       DeleteLevelTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       CreateLevelTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       LevelSelectionBoxHighlight(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
-      LevelSelectionBoxBackground(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false)
+      LevelSelectionBoxBackground(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      MainTextFontScale(0.25f, 0.25f), MainTextFontHeight(256)
 {
 
 }
 
 bool MenuContent::Initialize(std::string& err)
 {
-    Background.Create();
-    BackTex.Create();
+    #pragma region Load textures
+
+    PageBackground.Create();
+    BackButton.Create();
+    TextBoxBackground.Create();
 
     PlayButton.Create();
     OptionsButton.Create();
@@ -53,8 +58,9 @@ bool MenuContent::Initialize(std::string& err)
         return false; \
     }
     
-    TRY_LOAD(Background, Background.png)
-    TRY_LOAD(BackTex, BackButton.png)
+    TRY_LOAD(PageBackground, Background.png)
+    TRY_LOAD(BackButton, BackButton.png)
+    TRY_LOAD(TextBoxBackground, TextBoxBackground.png)
 
     TRY_LOAD(PlayButton, Play Button.png)
     TRY_LOAD(OptionsButton, Options Button.png)
@@ -70,15 +76,39 @@ bool MenuContent::Initialize(std::string& err)
     TRY_LOAD(LevelSelectionBoxHighlight, LevelChoiceHighlight.png)
     TRY_LOAD(LevelSelectionBoxBackground, LevelChoiceBackground.png)
 
+    #pragma endregion
+
+    #pragma region Load fonts
+
+    MainTextFont = TextRender.CreateAFont("Content/Menu/BodyFont.ttf", err, 25);
+    MainTextFontScale = Vector2f(1.0f, 1.0f) * 0.25f;
+
+    if (!err.empty())
+    {
+        err = "Error loading 'Menu/BodyFont.ttf': " + err;
+        return false;
+    }
+
+    #pragma endregion
     
+    #pragma region Create materials
+
     auto genM = GUIMaterials::GenerateStaticQuadDrawMaterial(staticColorGUIParams,
-                                                             GUIMaterials::TextureTypes::TT_COLOR);
+                                                             GUIMaterials::TT_COLOR);
     if (!genM.ErrorMessage.empty())
     {
         err = "Error generating static color GUI mat: " + genM.ErrorMessage;
         return false;
     }
     staticColorGUIMat = genM.Mat;
+
+    genM = GUIMaterials::GenerateStaticQuadDrawMaterial(labelGUIParams, GUIMaterials::TT_TEXT);
+    if (!genM.ErrorMessage.empty())
+    {
+        err = "Error generating label GUI mat: " + genM.ErrorMessage;
+        return false;
+    }
+    labelGUIMat = genM.Mat;
 
 
     typedef DataNode::Ptr DNP;
@@ -98,13 +128,26 @@ bool MenuContent::Initialize(std::string& err)
     }
     animatedColorGUIMat = genM.Mat;
 
+    #pragma endregion
+
 
     return true;
 }
 void MenuContent::Destroy(void)
 {
-    Background.DeleteIfValid();
-    BackTex.DeleteIfValid();
+    bool b = TextRender.DeleteFont(MainTextFont);
+    assert(b);
+
+
+    delete staticColorGUIMat, animatedColorGUIMat, labelGUIMat;
+    staticColorGUIParams.ClearUniforms();
+    animatedColorGUIParams.ClearUniforms();
+    labelGUIParams.ClearUniforms();
+
+
+    PageBackground.DeleteIfValid();
+    BackButton.DeleteIfValid();
+    TextBoxBackground.DeleteIfValid();
 
     PlayButton.DeleteIfValid();
     OptionsButton.DeleteIfValid();
@@ -123,7 +166,7 @@ void MenuContent::Destroy(void)
 
 GUITexture MenuContent::CreateGUITexture(MTexture2D* tex, bool isButton)
 {
-    assert(tex->IsColorTexture());
+    assert(tex == 0 || tex->IsColorTexture());
     if (isButton)
     {
         return GUITexture(animatedColorGUIParams, tex, animatedColorGUIMat, true, 7.5f);
@@ -132,4 +175,26 @@ GUITexture MenuContent::CreateGUITexture(MTexture2D* tex, bool isButton)
     {
         return GUITexture(staticColorGUIParams, tex, staticColorGUIMat, false);
     }
+}
+GUILabel MenuContent::CreateGUILabel(FreeTypeHandler::FontID font, unsigned int height, Vector2f scale,
+                                     unsigned int renderWidth, std::string& err,
+                                     GUILabel::HorizontalOffsets horz, GUILabel::VerticalOffsets vert,
+                                     unsigned int slot, Vector3f color)
+{
+    TextRenderer::FontSlot fs(font, slot);
+
+    if (slot == FreeTypeHandler::ERROR_ID)
+    {
+        fs = TextRender.CreateTextRenderSlot(font, err, renderWidth, height, false,
+                                             TextureSampleSettings2D(FT_LINEAR, WT_CLAMP));
+        if (!err.empty())
+        {
+            err = "Error generating font slot: " + err;
+            return GUILabel();
+        }
+    }
+
+    GUILabel retVal(labelGUIParams, &TextRender, fs,  labelGUIMat, 1.0f, horz, vert);
+    retVal.SetColor(Vector4f(color, 1.0f));
+    return retVal;
 }

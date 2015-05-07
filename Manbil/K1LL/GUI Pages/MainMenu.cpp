@@ -49,7 +49,7 @@ MainMenu::MainMenu(PageManager* manager)
     };
     ((GUITexture*)quitButton.get())->OnClicked_pData = this;
 
-    background = GUIElementPtr(new GUITexture(CREATE_TEX(Background)));
+    background = GUIElementPtr(new GUITexture(CREATE_TEX(PageBackground)));
 
     RePositionGUI();
 
