@@ -31,15 +31,19 @@ struct RoomNode
 
     Vector2u RoomCenter;
     ItemTypes ContainedItem;
+    float NavigationDifficulty;
+    unsigned int RoomIndex;
 
 
     RoomNode(void) { }
 
-    RoomNode(Vector2u roomCenter, ItemTypes containedItem)
-        : RoomCenter(roomCenter), ContainedItem(containedItem) { }
+    RoomNode(Vector2u roomCenter, ItemTypes containedItem, float navDifficulty, unsigned int roomIndex)
+        : RoomCenter(roomCenter), ContainedItem(containedItem),
+          NavigationDifficulty(navDifficulty), RoomIndex(roomIndex) { }
 
-    RoomNode(Vector2u minGrid, Vector2u maxGrid, ItemTypes containedItem)
-        : RoomNode((minGrid + maxGrid) / 2, containedItem) { }
+    RoomNode(Vector2u minGrid, Vector2u maxGrid, ItemTypes containedItem,
+             float navDifficulty, unsigned int roomIndex)
+        : RoomNode((minGrid + maxGrid) / 2, containedItem, navDifficulty, roomIndex) { }
 };
 
 

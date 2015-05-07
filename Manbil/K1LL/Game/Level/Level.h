@@ -20,6 +20,7 @@ public:
 
     LevelGraph NavGraph;
     RoomsGraph RoomGraph;
+    std::vector<LevelInfo::UIntBox> RoomBounds;
 
     std::vector<PlayerPtr> Players;
     std::vector<ActorPtr> Actors;

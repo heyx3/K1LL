@@ -128,7 +128,7 @@ void LevelInfo::GetConnections(RoomsGraph& outGraph) const
         Vector2u thisMin = RoomOffsets[i],
                  thisMax = thisMin + Rooms[i].RoomGrid.GetDimensions() - Vector2u(1, 1);
 
-        RoomNode node(min, max, RoomItems[i]);
+        RoomNode node(min, max, RoomItems[i], Rooms[i].NavigationDifficulty, i);
         assert(outGraph.Connections.find(node) == outGraph.Connections.end());
         
         //Go through all bordering rooms and find which ones have overlapping doorways.
@@ -151,7 +151,9 @@ void LevelInfo::GetConnections(RoomsGraph& outGraph) const
         if (thisRoom.RoomGrid[thisPos] == BT_DOORWAY && \
             otherRoom.RoomGrid[otherPos] == BT_DOORWAY) \
         { \
-            outGraph.Connections[node].push_back(RoomNode(otherMin, otherMax, RoomItems[indx])); \
+            outGraph.Connections[node].push_back(RoomNode(otherMin, otherMax, \
+                                                          RoomItems[indx], \
+                                                          Rooms[indx].NavigationDifficulty, indx)); \
             break; \
         } \
     }

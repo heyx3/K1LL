@@ -62,6 +62,11 @@ Level::Level(const LevelInfo& level, std::string& err)
         Vector2u min = level.RoomOffsets[i],
                  max = min + level.Rooms[i].RoomGrid.GetDimensions();
 
+        LevelInfo::UIntBox lvlBnds;
+        lvlBnds.Min = min;
+        lvlBnds.Max = max;
+        RoomBounds.push_back(lvlBnds);
+
         #pragma region Fill in the grid area this room covers
 
         for (Vector2u counter = min; counter.y <= max.y; ++counter.y)
