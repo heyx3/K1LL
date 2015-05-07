@@ -1111,6 +1111,9 @@
     <ClInclude Include="K1LL\tinydir.h">
       <Filter>K1LL</Filter>
     </ClInclude>
+    <ClInclude Include="K1LL\GUI Pages\LevelEditor.h">
+      <Filter>K1LL\GUI Pages</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Math">
@@ -1248,11 +1251,11 @@
     <Filter Include="K1LL\Game\Rendering">
       <UniqueIdentifier>{d867f14f-fe24-492c-b6b0-bf13702b0c72}</UniqueIdentifier>
     </Filter>
-    <Filter Include="K1LL\Level Editor">
-      <UniqueIdentifier>{891d5344-5529-4c68-8d7f-b10f79ced694}</UniqueIdentifier>
-    </Filter>
     <Filter Include="K1LL\GUI Pages">
       <UniqueIdentifier>{0a0d2409-f4e8-445f-baed-098384fa57ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Level Editor">
+      <UniqueIdentifier>{891d5344-5529-4c68-8d7f-b10f79ced694}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

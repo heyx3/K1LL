@@ -333,6 +333,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Game\TeamData.h" />
     <ClInclude Include="K1LL\Game\Weapons.h" />
     <ClInclude Include="K1LL\GUI Pages\ChooseLevelEditor.h" />
+    <ClInclude Include="K1LL\GUI Pages\LevelEditor.h" />
     <ClInclude Include="K1LL\GUI Pages\MainMenu.h" />
     <ClInclude Include="K1LL\GUI Pages\Page.h" />
     <ClInclude Include="K1LL\GUI Pages\PageManager.h" />

@@ -3,27 +3,16 @@
 #include "Page.h"
 
 #include "../../Rendering/GUI/GUI Elements/GUIPanel.h"
+#include "../../Rendering/GUI/GUI Elements/GUIFormattedPanel.h"
 #include "../../Rendering/GUI/GUI Elements/GUISelectionBox.h"
+#include "../../Rendering/GUI/GUI Elements/GUITextBox.h"
 
 
 //Lets the player choose what level to edit, or choose to create a new level.
 class ChooseLevelEditor : public Page
 {
 public:
-
-    //If there was an error creating this page, outputs an error into "outErrorMsg".
-    ChooseLevelEditor(PageManager* manager, std::string& outErrorMsg);
-
-
-    virtual void Update(Vector2i mPos, float frameSeconds) override;
-
-    virtual void OnWindowResized(void) override;
-    virtual void OnCloseWindow(void) override;
-
-    virtual void OnWindowGainedFocus(void) override;
-
-private:
-
+    
     //The different possible states for this page.
     enum PageStates
     {
@@ -35,23 +24,53 @@ private:
         PS_LEVEL_OPTIONS,
     };
 
-    PageStates CurrentState = PS_IDLE;
+
+    //If there was an error creating this page, outputs an error into "outErrorMsg".
+    ChooseLevelEditor(PageManager* manager, std::string& outErrorMsg);
+    ~ChooseLevelEditor(void);
+
+
+    PageStates GetState(void) const { return currentState; }
+    void ChangeState(PageStates newState);
+
+    //Creates a new level file with the name set in the "Enter level name" panel.
+    //Returns the name of the created level (without the extension),
+    //    or an empty string if a level name is invalid.
+    std::string GenerateLevel(void);
+
+
+    virtual void Update(Vector2i mPos, float frameSeconds) override;
+
+    virtual void OnWindowResized(void) override;
+    virtual void OnCloseWindow(void) override;
+
+    virtual void OnWindowGainedFocus(void) override;
+
+
+private:
+
+    PageStates currentState = PS_IDLE;
 
     //A panel that lets the player enter a new level name.
     GUIElementPtr enterLevelName;
+    GUITextBox* enterLevelTextBox;
 
     //A panel that lets the player decide whether to edit, copy, or delete a level.
     GUIElementPtr levelOptionsPanel;
 
     //The "dropdown" panel that displays all the levels.
     GUIElementPtr levelChoicesDropdown;
+    GUIElementPtr idlePanel;
     
     
-    GUIPanel* GetEnterLevelNamePanel(void) { return (GUIPanel*)enterLevelName.get(); }
-    const GUIPanel* GetEnterLevelNamePanel(void) const { return (GUIPanel*)enterLevelName.get(); }
+    GUIFormattedPanel* GetEnterLevelNamePanel(void) { return (GUIFormattedPanel*)enterLevelName.get(); }
+    const GUIFormattedPanel* GetEnterLevelNamePanel(void) const { return (GUIFormattedPanel*)enterLevelName.get(); }
     
     GUIPanel* GetLevelOptionsPanel(void) { return (GUIPanel*)levelOptionsPanel.get(); }
     const GUIPanel* GetLevelOptionsPanel(void) const { return (GUIPanel*)levelOptionsPanel.get(); }
+    
+    GUIPanel* GetIdlePanel(void) { return (GUIPanel*)idlePanel.get(); }
+    const GUIPanel* GetIdlePanel(void) const { return (GUIPanel*)idlePanel.get(); }
     
     GUISelectionBox* GetLevelsDropdown(void) { return (GUISelectionBox*)levelChoicesDropdown.get(); }
     const GUISelectionBox* GetLevelsDropdown(void) const { return (GUISelectionBox*)levelChoicesDropdown.get(); }
