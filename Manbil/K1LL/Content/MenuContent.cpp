@@ -93,22 +93,22 @@ bool MenuContent::Initialize(std::string& err)
     
     #pragma region Create materials
 
-    auto genM = GUIMaterials::GenerateStaticQuadDrawMaterial(staticColorGUIParams,
+    auto genM = GUIMaterials::GenerateStaticQuadDrawMaterial(StaticColorGUIParams,
                                                              GUIMaterials::TT_COLOR);
     if (!genM.ErrorMessage.empty())
     {
         err = "Error generating static color GUI mat: " + genM.ErrorMessage;
         return false;
     }
-    staticColorGUIMat = genM.Mat;
+    StaticColorGUIMat = genM.Mat;
 
-    genM = GUIMaterials::GenerateStaticQuadDrawMaterial(labelGUIParams, GUIMaterials::TT_TEXT);
+    genM = GUIMaterials::GenerateStaticQuadDrawMaterial(LabelGUIParams, GUIMaterials::TT_TEXT);
     if (!genM.ErrorMessage.empty())
     {
         err = "Error generating label GUI mat: " + genM.ErrorMessage;
         return false;
     }
-    labelGUIMat = genM.Mat;
+    LabelGUIMat = genM.Mat;
 
 
     typedef DataNode::Ptr DNP;
@@ -118,7 +118,7 @@ bool MenuContent::Initialize(std::string& err)
                                       lerpParam, InterpolateNode::IT_Linear, "lerpColor")),
         lerpSize(new InterpolateNode(Vector2f(1.0f, 1.0f), Vector2f(1.1f, 1.1f),
                                      lerpParam, InterpolateNode::IT_Linear, "lerpSize"));
-    genM = GUIMaterials::GenerateDynamicQuadDrawMaterial(animatedColorGUIParams,
+    genM = GUIMaterials::GenerateDynamicQuadDrawMaterial(AnimatedColorGUIParams,
                                                          GUIMaterials::TextureTypes::TT_COLOR,
                                                          lerpSize, lerpColor);
     if (!genM.ErrorMessage.empty())
@@ -126,7 +126,7 @@ bool MenuContent::Initialize(std::string& err)
         err = "Error generating static color GUI mat: " + genM.ErrorMessage;
         return false;
     }
-    animatedColorGUIMat = genM.Mat;
+    AnimatedColorGUIMat = genM.Mat;
 
     #pragma endregion
 
@@ -139,10 +139,13 @@ void MenuContent::Destroy(void)
     assert(b);
 
 
-    delete staticColorGUIMat, animatedColorGUIMat, labelGUIMat;
-    staticColorGUIParams.ClearUniforms();
-    animatedColorGUIParams.ClearUniforms();
-    labelGUIParams.ClearUniforms();
+    delete StaticColorGUIMat, AnimatedColorGUIMat, LabelGUIMat;
+    StaticColorGUIMat = 0;
+    AnimatedColorGUIMat = 0;
+    LabelGUIMat = 0;
+    StaticColorGUIParams.ClearUniforms();
+    AnimatedColorGUIParams.ClearUniforms();
+    LabelGUIParams.ClearUniforms();
 
 
     PageBackground.DeleteIfValid();
@@ -169,11 +172,11 @@ GUITexture MenuContent::CreateGUITexture(MTexture2D* tex, bool isButton)
     assert(tex == 0 || tex->IsColorTexture());
     if (isButton)
     {
-        return GUITexture(animatedColorGUIParams, tex, animatedColorGUIMat, true, 7.5f);
+        return GUITexture(AnimatedColorGUIParams, tex, AnimatedColorGUIMat, true, 7.5f);
     }
     else
     {
-        return GUITexture(staticColorGUIParams, tex, staticColorGUIMat, false);
+        return GUITexture(StaticColorGUIParams, tex, StaticColorGUIMat, false);
     }
 }
 GUILabel MenuContent::CreateGUILabel(FreeTypeHandler::FontID font, unsigned int height, Vector2f scale,
@@ -194,7 +197,7 @@ GUILabel MenuContent::CreateGUILabel(FreeTypeHandler::FontID font, unsigned int 
         }
     }
 
-    GUILabel retVal(labelGUIParams, &TextRender, fs,  labelGUIMat, 1.0f, horz, vert);
+    GUILabel retVal(LabelGUIParams, &TextRender, fs,  LabelGUIMat, 1.0f, horz, vert);
     retVal.SetColor(Vector4f(color, 1.0f));
     return retVal;
 }

@@ -12,6 +12,12 @@ public:
     static MenuContent Instance;
 
 
+    //Materials.
+    Material *StaticColorGUIMat = 0,
+             *AnimatedColorGUIMat = 0,
+             *LabelGUIMat = 0;
+    UniformDictionary StaticColorGUIParams, AnimatedColorGUIParams, LabelGUIParams;
+
     //General-purpose textures.
     MTexture2D PageBackground, TextBoxBackground, BackButton;
 
@@ -55,10 +61,4 @@ public:
 private:
 
     MenuContent(void);
-
-
-    Material *staticColorGUIMat = 0,
-             *animatedColorGUIMat = 0,
-             *labelGUIMat = 0;
-    UniformDictionary staticColorGUIParams, animatedColorGUIParams, labelGUIParams;
 };

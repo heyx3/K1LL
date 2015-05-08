@@ -22,6 +22,8 @@ public:
         PS_ENTER_NEW_NAME,
         //Picking what to do to a selected level (edit or delete it).
         PS_LEVEL_OPTIONS,
+        //Confirming whether to delete the selected level.
+        PS_CONFIRM_DELETE,
     };
 
 
@@ -37,6 +39,8 @@ public:
     //Returns the name of the created level (without the extension),
     //    or an empty string if a level name is invalid.
     std::string GenerateLevel(void);
+    //Deletes the currently-selected level.
+    void DeleteLevel(void);
 
 
     virtual void Update(Vector2i mPos, float frameSeconds) override;
@@ -55,12 +59,12 @@ private:
     GUIElementPtr enterLevelName;
     GUITextBox* enterLevelTextBox;
 
-    //A panel that lets the player decide whether to edit, copy, or delete a level.
-    GUIElementPtr levelOptionsPanel;
+    //A panel that lets the player decide whether to edit or delete a level.
+    GUIElementPtr levelOptionsPanel, confirmDelete;
 
     //The "dropdown" panel that displays all the levels.
-    GUIElementPtr levelChoicesDropdown;
     GUIElementPtr idlePanel;
+    GUISelectionBox* levelChoices;
     
     
     GUIFormattedPanel* GetEnterLevelNamePanel(void) { return (GUIFormattedPanel*)enterLevelName.get(); }
@@ -69,11 +73,11 @@ private:
     GUIPanel* GetLevelOptionsPanel(void) { return (GUIPanel*)levelOptionsPanel.get(); }
     const GUIPanel* GetLevelOptionsPanel(void) const { return (GUIPanel*)levelOptionsPanel.get(); }
     
+    GUIPanel* GetConfirmDeletePanel(void) { return (GUIPanel*)confirmDelete.get(); }
+    const GUIPanel* GetConfirmDeletePanel(void) const { return (GUIPanel*)confirmDelete.get(); }
+
     GUIPanel* GetIdlePanel(void) { return (GUIPanel*)idlePanel.get(); }
     const GUIPanel* GetIdlePanel(void) const { return (GUIPanel*)idlePanel.get(); }
-    
-    GUISelectionBox* GetLevelsDropdown(void) { return (GUISelectionBox*)levelChoicesDropdown.get(); }
-    const GUISelectionBox* GetLevelsDropdown(void) const { return (GUISelectionBox*)levelChoicesDropdown.get(); }
 
     void DiscoverLevelFiles(void);
     void RePositionGUI(void);
