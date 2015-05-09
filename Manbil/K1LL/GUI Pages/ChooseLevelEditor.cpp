@@ -17,6 +17,17 @@
 ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
     : Page(manager)
 {
+    LevelInfo lvlData;
+    BinaryWriter writer(true);
+    writer.WriteDataStructure(lvlData, "Data");
+    std::string fullLvlPath = LevelInfo::LevelFilesPath + "Test Level.lvl";
+    err = writer.SaveData(fullLvlPath);
+    if (!err.empty())
+    {
+        err = "Error saving level to file '" + fullLvlPath + "': " + err;
+        return;
+    }
+
     //Build out GUI stuff.
 
     #pragma region The "Enter new level name" panel
@@ -30,7 +41,7 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
     //The textbox.
     GUITexture enterLevelTextboxBackground = MC.CreateGUITexture(&MC.TextBoxBackground, false),
                enterLevelTextboxCursor = MC.CreateGUITexture(0, false);
-    enterLevelTextboxCursor.ScaleBy(Vector2f(3.0f, (float)MC.MainTextFontHeight * MC.MainTextFontScale.y));
+    enterLevelTextboxCursor.ScaleBy(Vector2f(3.0f, (float)MC.MainTextFontHeight * MC.MainTextFontScale.y * 0.75f));
     
     GUILabel enterLevelText = MC.CreateGUILabel(MC.MainTextFont, MC.MainTextFontHeight,
                                                 MC.MainTextFontScale, 1024, err,
@@ -63,6 +74,7 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
         }
     };
     createLevelButton->OnClicked_pData = this;
+    createLevelButton->Depth = 0.01f;
     GetEnterLevelNamePanel()->AddObject(GUIFormatObject(GUIElementPtr(createLevelButton), true, false,
                                                         Vector2f(10.0f, 0.0f)));
 
@@ -75,6 +87,7 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
         cle->ChangeState(ChooseLevelEditor::PS_IDLE);
     };
     backToIdleButton->OnClicked_pData = this;
+    backToIdleButton->Depth = 0.01f;
     GetEnterLevelNamePanel()->AddObject(GUIFormatObject(GUIElementPtr(backToIdleButton), true, false));
 
     #pragma endregion
@@ -84,6 +97,22 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
     //The panel.
     levelOptionsPanel = GUIElementPtr(new GUIPanel(MC.CreateGUITexture(&MC.PageBackground, false),
                                                    Vector2f(10.0f, 10.0f)));
+
+
+    //The "edit" button.
+    GUITexture* editLevelButton = new GUITexture(MC.CreateGUITexture(&MC.EditLevelTex, true));
+    editLevelButton->OnClicked = [](GUITexture* thisTex, Vector2f mousePos, void* pData)
+    {
+        ChooseLevelEditor* cle = (ChooseLevelEditor*)pData;
+        //TODO: Transition to level editor.
+        assert(false);
+        //cle->Manager->UpdateCurrentPage(Page::Ptr(new LevelEditor(cle->enterLevelTextBox->GetText())));
+    };
+    editLevelButton->OnClicked_pData = this;
+    editLevelButton->Depth = 0.01f;
+    editLevelButton->ScaleBy(Vector2f(0.75f, 0.75f));
+    editLevelButton->SetPosition(Vector2f(-175.0f, 20.0f));
+    GetLevelOptionsPanel()->AddElement(GUIElementPtr(editLevelButton));
     
 
     //The "delete" button.
@@ -93,13 +122,16 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
         ((ChooseLevelEditor*)pData)->ChangeState(ChooseLevelEditor::PS_CONFIRM_DELETE);
     };
     deleteLevelButton->OnClicked_pData = this;
-    deleteLevelButton->SetPosition(Vector2f(-50.0f, 20.0f));
+    deleteLevelButton->Depth = 0.01f;
+    deleteLevelButton->ScaleBy(Vector2f(0.75f, 0.75f));
+    deleteLevelButton->SetPosition(Vector2f(-65.0f, 20.0f));
     GetLevelOptionsPanel()->AddElement(GUIElementPtr(deleteLevelButton));
 
 
-    //The "back" button. Just copy the other back button and save its tex.
+    //The "back" button. Just copy the other back button and save its texture.
     GUITexture* backToIdleButton2 = new GUITexture(*backToIdleButton);
-    backToIdleButton2->SetPosition(Vector2f(50.0f, 20.0f));
+    backToIdleButton2->ScaleBy(Vector2f(0.75f, 0.75f));
+    backToIdleButton2->SetPosition(Vector2f(75.0f, 20.0f));
     GetLevelOptionsPanel()->AddElement(GUIElementPtr(backToIdleButton2));
 
 
@@ -108,8 +140,14 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
     #pragma region The "Confirm delete level" panel
 
     //The panel.
-    confirmDelete = GUIElementPtr(new GUIPanel(MC.CreateGUITexture(&MC.ConfirmDeletePopup, false),
-                                               Vector2f(10.0f, 10.0f)));
+    confirmDelete = GUIElementPtr(new GUIPanel());
+
+    //The background.
+    GUITexture* confirmDeleteBack = new GUITexture(MC.CreateGUITexture(&MC.ConfirmDeletePopup, false));
+    confirmDeleteBack->Depth = -0.01f;
+    confirmDeleteBack->SetPosition(Vector2f(0.0f, 0.0f));
+    confirmDeleteBack->SetScale(Vector2f(1.0f, 1.0f));
+    GetConfirmDeletePanel()->AddElement(GUIElementPtr(confirmDeleteBack));
 
     //The "YES" button.
     GUITexture* confirmDeleteButton = new GUITexture(MC.CreateGUITexture(&MC.YESTex, true));
@@ -118,7 +156,9 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
         ((ChooseLevelEditor*)pData)->DeleteLevel();
     };
     confirmDeleteButton->OnClicked_pData = this;
-    confirmDeleteButton->SetPosition(Vector2f(-50.0f, 20.0f));
+    confirmDeleteButton->Depth = 0.01f;
+    confirmDeleteButton->ScaleBy(Vector2f(1.0f, 1.0f));
+    confirmDeleteButton->SetPosition(Vector2f(-100.0f, 25.0f));
     GetConfirmDeletePanel()->AddElement(GUIElementPtr(confirmDeleteButton));
 
     //The "NO" button.
@@ -128,8 +168,12 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
         ((ChooseLevelEditor*)pData)->ChangeState(ChooseLevelEditor::PS_LEVEL_OPTIONS);
     };
     cancelDeleteButton->OnClicked_pData = this;
-    cancelDeleteButton->SetPosition(Vector2f(50.0f, 20.0f));
+    cancelDeleteButton->Depth = 0.01f;
+    cancelDeleteButton->ScaleBy(Vector2f(1.0f, 1.0f));
+    cancelDeleteButton->SetPosition(Vector2f(100.0f, 25.0f));
     GetConfirmDeletePanel()->AddElement(GUIElementPtr(cancelDeleteButton));
+
+    //GetConfirmDeletePanel()->ScaleBy(Vector2f(2.0f, 2.0f));
 
     #pragma endregion
 
@@ -138,31 +182,32 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
     //The panel.
     idlePanel = GUIElementPtr(new GUIPanel(MC.CreateGUITexture(&MC.PageBackground, false)));
 
-    //The dropdown box.
-    levelChoices = 0;
-    DiscoverLevelFiles();
-
     //The "back" button.
-    GUITexture* toMainMenuButton = new GUITexture(MC.CreateGUITexture(&MC.BackButton, true));
-    toMainMenuButton->OnClicked = [](GUITexture* tex, Vector2f mousePos, void* pData)
+    mainBackButton = new GUITexture(MC.CreateGUITexture(&MC.BackButton, true));
+    mainBackButton->OnClicked = [](GUITexture* tex, Vector2f mousePos, void* pData)
     {
         PageManager* mngr = (PageManager*)pData;
-        mngr->CurrentPage = Page::Ptr(new MainMenu(mngr));
+        mngr->UpdateCurrentPage(Page::Ptr(new MainMenu(mngr)));
     };
-    toMainMenuButton->OnClicked_pData = Manager;
-    toMainMenuButton->SetPosition(Vector2f(300.0f, -300.0f));
-    GetIdlePanel()->AddElement(GUIElementPtr(toMainMenuButton));
+    mainBackButton->OnClicked_pData = Manager;
+    mainBackButton->Depth = 0.01f;
+    GetIdlePanel()->AddElement(GUIElementPtr(mainBackButton));
 
     //The "new level" button.
-    GUITexture* newLevelButton = new GUITexture(MC.CreateGUITexture(&MC.CreateLevelTex, true));
-    newLevelButton->OnClicked = [](GUITexture* tex, Vector2f mousePos, void* pData)
+    mainNewButton = new GUITexture(MC.CreateGUITexture(&MC.CreateLevelTex, true));
+    mainNewButton->OnClicked = [](GUITexture* tex, Vector2f mousePos, void* pData)
     {
         ChooseLevelEditor* pge = (ChooseLevelEditor*)pData;
         pge->ChangeState(ChooseLevelEditor::PS_ENTER_NEW_NAME);
     };
-    newLevelButton->OnClicked_pData = this;
-    newLevelButton->SetPosition(Vector2f(-300.0f, -300.0f));
-    GetIdlePanel()->AddElement(GUIElementPtr(newLevelButton));
+    mainNewButton->OnClicked_pData = this;
+    mainNewButton->Depth = 0.01f;
+    GetIdlePanel()->AddElement(GUIElementPtr(mainNewButton));
+
+    //The dropdown box.
+    levelChoices = 0;
+    DiscoverLevelFiles();
+    GetIdlePanel()->AddElement(GUIElementPtr(levelChoices));
 
     #pragma endregion
 
@@ -203,19 +248,19 @@ void ChooseLevelEditor::DiscoverLevelFiles(void)
     std::vector<std::string> items;
 
     tinydir_dir dir;
-    tinydir_open(&dir, LevelInfo::LevelFilesPath.c_str());
+    tinydir_open(&dir, LevelInfo::LevelFilesPath.substr(0, LevelInfo::LevelFilesPath.size() - 1).c_str());
     std::cout << "------------------------------\n";
 
     while (dir.has_next)
     {
         tinydir_file file;
         tinydir_readfile(&dir, &file);
-        std::cout << file.name << "\n";
 
         //Remove the extension from the name and add it to the list.
         std::string levelName = file.name;
-        if (levelName.substr(levelName.size() - 4, 4) == ".lvl")
+        if (levelName.size() > 4 && levelName.substr(levelName.size() - 4, 4) == ".lvl")
         {
+            std::cout << file.name << "\n";
             items.push_back(levelName.substr(0, levelName.size() - 4));
         }
 
@@ -239,14 +284,16 @@ void ChooseLevelEditor::DiscoverLevelFiles(void)
                 pge->ChangeState(ChooseLevelEditor::PS_LEVEL_OPTIONS);
             }
         };
+        GUITexture singleElementBackground = MC.CreateGUITexture(&MC.LevelSelectionSingleElement, false);
+        singleElementBackground.SetScale(Vector2f(600.0f, 20.0f));
         levelChoices = new GUISelectionBox(&MC.TextRender, MC.MainTextFont,
                                            Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
                                            false, FT_LINEAR, Vector2f(1.0f, 1.0f), 10.0f,
                                            MC.LabelGUIMat, MC.LabelGUIParams,
-                                           MC.CreateGUITexture(&MC.LevelSelectionBoxBackground, false),
+                                           singleElementBackground,
                                            MC.CreateGUITexture(&MC.LevelSelectionBoxHighlight, false),
                                            MC.CreateGUITexture(&MC.LevelSelectionBoxBackground, false),
-                                           true, err, items, onOptionSelected, 0, MC.MainTextFontHeight,
+                                           false, err, items, onOptionSelected, 0, MC.MainTextFontHeight,
                                            this);
         if (!Assert(err.empty(), "Error creating level choice boxes", err))
         {
@@ -292,7 +339,7 @@ std::string ChooseLevelEditor::GenerateLevel(void)
     std::string err = writer.SaveData(fullLvlPath);
     if (!err.empty())
     {
-        std::cout << "Error saving level to file '" + fullLvlPath + "': " + err;
+        std::cout << "Error saving level to file '" << fullLvlPath << "': " << err;
         return "";
     }
 
@@ -305,7 +352,7 @@ void ChooseLevelEditor::DeleteLevel(void)
     std::string fullPath = LevelInfo::LevelFilesPath + fileName + ".lvl";
 
     int error = std::remove(fullPath.c_str());
-    if (!Assert(error == 0, "Error deleting file '" + fullPath, std::to_string(error)))
+    if (!Assert(error == 0, "Error deleting file '" + fullPath + "'", std::to_string(error)))
     {
         return;
     }
@@ -342,8 +389,27 @@ void ChooseLevelEditor::ChangeState(PageStates newState)
             assert(false);
             break;
     }
+
+    RePositionGUI();
 }
 void ChooseLevelEditor::RePositionGUI(void)
 {
-    //TODO: Implement.
+    Vector2f fullWindow = ToV2f(Manager->GetWindowSize()),
+             halfWindow = fullWindow * 0.5f;
+    fullWindow.y = -fullWindow.y;
+    halfWindow.y = -halfWindow.y;
+
+    enterLevelName->SetPosition(halfWindow);
+    levelOptionsPanel->SetPosition(halfWindow);
+    confirmDelete->SetPosition(halfWindow);
+
+    Vector2f backButtonSize = mainBackButton->GetBounds().GetDimensions();
+    mainBackButton->SetPosition(Vector2f(fullWindow.x - backButtonSize.x - 10.0f,
+                                         -fullWindow.y + backButtonSize.y + 10.0f));
+    mainNewButton->SetPosition(Vector2f(mainBackButton->GetPos().x - (backButtonSize.x * 0.5f) - 10.0f,
+                                        mainBackButton->GetPos().y));
+    //levelChoices->SetPosition(Vector2f(halfWindow.x, -halfWindow.y));
+                                       //-fullWindow.y + levelChoices->MainBox.GetBounds().GetYSize()));
+    levelChoices->SetIsExtended(true, false);
+    levelChoices->SetBounds(Box2D(0.0f, fullWindow.x, -fullWindow.y, 0.0f));
 }

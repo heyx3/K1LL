@@ -28,7 +28,7 @@ public:
     MTexture2D ConfirmDeletePopup, NOTex, YESTex,
                EditLevelTex, DeleteLevelTex,
                CreateLevelTex,
-               LevelSelectionBoxHighlight, LevelSelectionBoxBackground;
+               LevelSelectionBoxHighlight, LevelSelectionBoxBackground, LevelSelectionSingleElement;
 
 
     //Text-rendering stuff.

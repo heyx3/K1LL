@@ -22,6 +22,7 @@ MenuContent::MenuContent(void)
       CreateLevelTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       LevelSelectionBoxHighlight(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       LevelSelectionBoxBackground(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      LevelSelectionSingleElement(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       MainTextFontScale(0.25f, 0.25f), MainTextFontHeight(256)
 {
 
@@ -48,6 +49,7 @@ bool MenuContent::Initialize(std::string& err)
     CreateLevelTex.Create();
     LevelSelectionBoxHighlight.Create();
     LevelSelectionBoxBackground.Create();
+    LevelSelectionSingleElement.Create();
 
 
 #define TRY_LOAD(buttonVar, fileName) \
@@ -76,12 +78,16 @@ bool MenuContent::Initialize(std::string& err)
     TRY_LOAD(LevelSelectionBoxHighlight, LevelChoiceHighlight.png)
     TRY_LOAD(LevelSelectionBoxBackground, LevelChoiceBackground.png)
 
+    Array2D<Vector4b> colors(1, 1, Vector4b((unsigned char)255, 255, 255, 255));
+    LevelSelectionSingleElement.SetColorData(colors);
+
     #pragma endregion
 
     #pragma region Load fonts
 
     MainTextFont = TextRender.CreateAFont("Content/Menu/BodyFont.ttf", err, 25);
     MainTextFontScale = Vector2f(1.0f, 1.0f) * 0.25f;
+    MainTextFontHeight = 256;
 
     if (!err.empty())
     {
@@ -165,6 +171,7 @@ void MenuContent::Destroy(void)
     CreateLevelTex.DeleteIfValid();
     LevelSelectionBoxHighlight.DeleteIfValid();
     LevelSelectionBoxBackground.DeleteIfValid();
+    LevelSelectionSingleElement.DeleteIfValid();
 }
 
 GUITexture MenuContent::CreateGUITexture(MTexture2D* tex, bool isButton)

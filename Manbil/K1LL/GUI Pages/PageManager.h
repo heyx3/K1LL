@@ -10,13 +10,16 @@ class PageManager : public SFMLOpenGLWorld
 {
 public:
 
-    Page::Ptr CurrentPage;
-
 
     PageManager(void);
 
 
     Vector2u GetWindowSize(void) const { return windowSize; }
+    
+    const Page* GetCurrentPage(void) const { return currentPage.get(); }
+
+    //Sets the given page to become the new page next update step.
+    void UpdateCurrentPage(Page::Ptr newPage) { nextPage = newPage; }
 
 
 protected:
@@ -41,6 +44,8 @@ protected:
 
 
 private:
+    
+    Page::Ptr currentPage, nextPage;
 
     Vector2u windowSize;
 };

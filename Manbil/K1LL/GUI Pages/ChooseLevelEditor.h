@@ -65,6 +65,7 @@ private:
     //The "dropdown" panel that displays all the levels.
     GUIElementPtr idlePanel;
     GUISelectionBox* levelChoices;
+    GUITexture *mainBackButton, *mainNewButton;
     
     
     GUIFormattedPanel* GetEnterLevelNamePanel(void) { return (GUIFormattedPanel*)enterLevelName.get(); }

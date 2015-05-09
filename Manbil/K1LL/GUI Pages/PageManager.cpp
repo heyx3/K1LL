@@ -56,11 +56,12 @@ void PageManager::InitializeWorld(void)
     }
 
 
-    CurrentPage = Page::Ptr(new MainMenu(this));
+    currentPage = Page::Ptr(new MainMenu(this));
 }
 void PageManager::OnWorldEnd(void)
 {
-    CurrentPage.reset();
+    currentPage.reset();
+    ContentLoader::DestroyContent();
 }
 
 void PageManager::UpdateWorld(float frameSeconds)
@@ -70,13 +71,18 @@ void PageManager::UpdateWorld(float frameSeconds)
     sf::Vector2i mPosFinal = screenPos - GetWindow()->getPosition() - sf::Vector2i(5, 30);
     mPosFinal.y -= windowSize.y;
 
-    CurrentPage->Update(Vector2i(mPosFinal.x, mPosFinal.y), frameSeconds);
+    if (nextPage.get() != 0)
+    {
+        currentPage = nextPage;
+        nextPage = 0;
+    }
+    currentPage->Update(Vector2i(mPosFinal.x, mPosFinal.y), frameSeconds);
 }
 void PageManager::RenderOpenGL(float frameSeconds)
 {
     glViewport(0, 0, windowSize.x, windowSize.y);
 
-    CurrentPage->Render(frameSeconds);
+    currentPage->Render(frameSeconds);
 }
 
 void PageManager::OnInitializeError(std::string errorMsg)
@@ -90,21 +96,21 @@ void PageManager::OnWindowResized(unsigned int newWidth, unsigned int newHeight)
     windowSize.x = newWidth;
     windowSize.y = newHeight;
 
-    CurrentPage->OnWindowResized();
+    currentPage->OnWindowResized();
 }
 void PageManager::OnCloseWindow(void)
 {
-    CurrentPage->OnCloseWindow();
+    currentPage->OnCloseWindow();
 }
 void PageManager::OnWindowLostFocus(void)
 {
-    CurrentPage->OnWindowLostFocus();
+    currentPage->OnWindowLostFocus();
 }
 void PageManager::OnWindowGainedFocus(void)
 {
-    CurrentPage->OnWindowGainedFocus();
+    currentPage->OnWindowGainedFocus();
 }
 void PageManager::OnOtherWindowEvent(sf::Event& windowEvent)
 {
-    CurrentPage->OnOtherWindowEvent(windowEvent);
+    currentPage->OnOtherWindowEvent(windowEvent);
 }

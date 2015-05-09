@@ -1,5 +1,7 @@
 #include "MainMenu.h"
 
+#include <iostream>
+
 #include "../../Rendering/GUI/GUI Elements/GUIPanel.h"
 #include "../../Rendering/GUI/GUI Elements/GUITexture.h"
 
@@ -36,8 +38,15 @@ MainMenu::MainMenu(PageManager* manager)
     {
         MainMenu* mm = (MainMenu*)pData;
         std::string err;
-        Page::Ptr newPage(new ChooseLevelEditor(mm->Manager, err));
-        mm->Manager->CurrentPage = Page::Ptr(new ChooseLevelEditor(mm->Manager, err));
+        mm->Manager->UpdateCurrentPage(Page::Ptr(new ChooseLevelEditor(mm->Manager, err)));
+        if (!err.empty())
+        {
+            std::cout << "Error creating 'Choose Level Editor' page: " << err;
+            char dummy;
+            std::cin >> dummy;
+
+            return;
+        }
     };
     ((GUITexture*)editorButton.get())->OnClicked_pData = this;
 
