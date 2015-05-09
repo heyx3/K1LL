@@ -1254,7 +1254,7 @@
     <Filter Include="K1LL\GUI Pages">
       <UniqueIdentifier>{0a0d2409-f4e8-445f-baed-098384fa57ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="K1LL\Level Editor">
+    <Filter Include="K1LL\GUI Pages\Level Editor">
       <UniqueIdentifier>{891d5344-5529-4c68-8d7f-b10f79ced694}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
