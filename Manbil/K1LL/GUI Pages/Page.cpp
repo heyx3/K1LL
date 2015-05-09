@@ -22,11 +22,12 @@ bool Page::Assert(bool test, const std::string& errIntro, const std::string& err
 
 void Page::Update(Vector2i mousePos, float frameSeconds)
 {
-    GUIManager.Update(frameSeconds, mousePos, sf::Mouse::isButtonPressed(sf::Mouse::Left));
+    GUIManager.Update(frameSeconds, mousePos,
+                      GetIsWindowInFocus() && sf::Mouse::isButtonPressed(sf::Mouse::Left));
 }
 void Page::Render(float frameSeconds)
 {
-    ScreenClearer().ClearScreen();
+    ScreenClearer(true, true, false, Vector4f(0.02f, 0.02f, 0.15f, 0.0f)).ClearScreen();
     RenderingState(RenderingState::C_NONE).EnableState();
 
     Vector2f windowSize = ToV2f(Manager->GetWindowSize());

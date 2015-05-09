@@ -87,7 +87,7 @@ bool MenuContent::Initialize(std::string& err)
 
     MainTextFont = TextRender.CreateAFont("Content/Menu/BodyFont.ttf", err, 25);
     MainTextFontScale = Vector2f(1.0f, 1.0f) * 0.25f;
-    MainTextFontHeight = 256;
+    MainTextFontHeight = 128;
 
     if (!err.empty())
     {
