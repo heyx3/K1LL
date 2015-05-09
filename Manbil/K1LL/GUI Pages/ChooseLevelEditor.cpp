@@ -154,6 +154,8 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
     confirmDeleteButton->OnClicked = [](GUITexture* tex, Vector2f mousePos, void* pData)
     {
         ((ChooseLevelEditor*)pData)->DeleteLevel();
+        ((ChooseLevelEditor*)pData)->DiscoverLevelFiles();
+        ((ChooseLevelEditor*)pData)->ChangeState(PS_IDLE);
     };
     confirmDeleteButton->OnClicked_pData = this;
     confirmDeleteButton->Depth = 0.01f;
@@ -173,14 +175,12 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
     cancelDeleteButton->SetPosition(Vector2f(100.0f, 25.0f));
     GetConfirmDeletePanel()->AddElement(GUIElementPtr(cancelDeleteButton));
 
-    //GetConfirmDeletePanel()->ScaleBy(Vector2f(2.0f, 2.0f));
-
     #pragma endregion
 
     #pragma region The idle "Choose level" panel
 
     //The panel.
-    idlePanel = GUIElementPtr(new GUIPanel(MC.CreateGUITexture(&MC.PageBackground, false)));
+    idlePanel = GUIElementPtr(new GUIPanel());
 
     //The "back" button.
     mainBackButton = new GUITexture(MC.CreateGUITexture(&MC.BackButton, true));
@@ -284,16 +284,17 @@ void ChooseLevelEditor::DiscoverLevelFiles(void)
                 pge->ChangeState(ChooseLevelEditor::PS_LEVEL_OPTIONS);
             }
         };
-        GUITexture singleElementBackground = MC.CreateGUITexture(&MC.LevelSelectionSingleElement, false);
-        singleElementBackground.SetScale(Vector2f(600.0f, 20.0f));
+        GUITexture singleElementBackground = MC.CreateGUITexture(&MC.LevelSelectionSingleElement, false),
+                   elementHighlight = MC.CreateGUITexture(&MC.LevelSelectionBoxHighlight, false);
+        singleElementBackground.SetScale(Vector2f(300.0f, 20.0f));
+        elementHighlight.SetBounds(Box2D(Vector2f(), singleElementBackground.GetBounds().GetDimensions().ComponentProduct(Vector2f(1.1f, 1.1f))));
         levelChoices = new GUISelectionBox(&MC.TextRender, MC.MainTextFont,
                                            Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
                                            false, FT_LINEAR, Vector2f(1.0f, 1.0f), 10.0f,
                                            MC.LabelGUIMat, MC.LabelGUIParams,
-                                           singleElementBackground,
-                                           MC.CreateGUITexture(&MC.LevelSelectionBoxHighlight, false),
+                                           singleElementBackground, elementHighlight,
                                            MC.CreateGUITexture(&MC.LevelSelectionBoxBackground, false),
-                                           false, err, items, onOptionSelected, 0, MC.MainTextFontHeight,
+                                           true, err, items, onOptionSelected, 0, MC.MainTextFontHeight,
                                            this);
         if (!Assert(err.empty(), "Error creating level choice boxes", err))
         {
@@ -396,20 +397,28 @@ void ChooseLevelEditor::RePositionGUI(void)
 {
     Vector2f fullWindow = ToV2f(Manager->GetWindowSize()),
              halfWindow = fullWindow * 0.5f;
-    fullWindow.y = -fullWindow.y;
-    halfWindow.y = -halfWindow.y;
 
-    enterLevelName->SetPosition(halfWindow);
-    levelOptionsPanel->SetPosition(halfWindow);
-    confirmDelete->SetPosition(halfWindow);
+    enterLevelName->SetPosition(halfWindow.FlipY());
+    levelOptionsPanel->SetPosition(halfWindow.FlipY());
+    confirmDelete->SetPosition(halfWindow.FlipY());
 
-    Vector2f backButtonSize = mainBackButton->GetBounds().GetDimensions();
-    mainBackButton->SetPosition(Vector2f(fullWindow.x - backButtonSize.x - 10.0f,
-                                         -fullWindow.y + backButtonSize.y + 10.0f));
-    mainNewButton->SetPosition(Vector2f(mainBackButton->GetPos().x - (backButtonSize.x * 0.5f) - 10.0f,
-                                        mainBackButton->GetPos().y));
-    //levelChoices->SetPosition(Vector2f(halfWindow.x, -halfWindow.y));
-                                       //-fullWindow.y + levelChoices->MainBox.GetBounds().GetYSize()));
+    Vector2f backButtonSize = mainBackButton->GetBounds().GetDimensions(),
+             newButtonSize = mainNewButton->GetBounds().GetDimensions();
+    Vector2f backButtonPos(fullWindow.x - backButtonSize.x - 10.0f,
+                           -fullWindow.y + backButtonSize.y + 10.0f);
+    mainBackButton->SetPosition(backButtonPos);
+    mainNewButton->SetPosition(Vector2f(backButtonPos.x - (backButtonSize.x * 0.5f) -
+                                            10.0f - (newButtonSize.x * 0.5f),
+                                        backButtonPos.y));
+    
     levelChoices->SetIsExtended(true, false);
-    levelChoices->SetBounds(Box2D(0.0f, fullWindow.x, -fullWindow.y, 0.0f));
+
+    //Calculate the best scale for the level list, keeping it at the right aspect ratio.
+    Vector2f levelChoicesSize = levelChoices->GetBounds().GetDimensions();
+    float aspectRatio = levelChoicesSize.x / levelChoicesSize.y;
+    Vector2f center = halfWindow.FlipY(),
+             size = (aspectRatio < 1.0f ?
+                        Vector2f(fullWindow.y * aspectRatio, fullWindow.y) :
+                        Vector2f(fullWindow.x, fullWindow.x / aspectRatio));
+    levelChoices->SetBounds(Box2D(center, size));
 }
