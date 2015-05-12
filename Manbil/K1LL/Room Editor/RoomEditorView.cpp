@@ -253,17 +253,6 @@ void RoomEditorView::RenderBox(Vector2f worldCenter, Vector2f worldSize, Vector4
     RenderChild(&GUIBox, elapsedTime, info);
     GUIBox.SetScale(oldScale);
 }
-void RoomEditorView::RenderLine(Vector2f worldStart, Vector2f worldEnd, float worldThickness,
-                                Vector4f color, float elapsedTime, const RenderInfo& info)
-{
-    Vector2f delta = worldEnd - worldStart;
-
-    GUIBox.SetRotation(atan2f(delta.y, delta.x));
-    RenderBox((worldStart + worldEnd) * 0.5f,
-              Vector2f(delta.Length(), worldThickness),
-              color, elapsedTime, info);
-    GUIBox.SetRotation(0.0f);
-}
 
 void RoomEditorView::OnMouseClick(Vector2f relativeMousePos)
 {

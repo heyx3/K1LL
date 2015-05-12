@@ -76,6 +76,4 @@ private:
 
     void RenderBox(Vector2f worldCenter, Vector2f worldSize, Vector4f color,
                    float elapsedTime, const RenderInfo& info);
-    void RenderLine(Vector2f worldStart, Vector2f worldEnd, float worldThickness,
-                    Vector4f color, float elapsedTime, const RenderInfo& info);
 };
