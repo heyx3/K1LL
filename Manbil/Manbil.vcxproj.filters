@@ -492,6 +492,9 @@
     <ClCompile Include="K1LL\GUI Pages\ChooseLevelEditor.cpp">
       <Filter>K1LL\GUI Pages</Filter>
     </ClCompile>
+    <ClCompile Include="K1LL\GUI Pages\Level Editor\LevelEditor.cpp">
+      <Filter>K1LL\GUI Pages\Level Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input\Input Objects\KeyboardBoolInput.h">
@@ -1111,8 +1114,8 @@
     <ClInclude Include="K1LL\tinydir.h">
       <Filter>K1LL</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\GUI Pages\LevelEditor.h">
-      <Filter>K1LL\GUI Pages</Filter>
+    <ClInclude Include="K1LL\GUI Pages\Level Editor\LevelEditor.h">
+      <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

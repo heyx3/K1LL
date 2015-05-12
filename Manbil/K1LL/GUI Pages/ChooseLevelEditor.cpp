@@ -8,7 +8,7 @@
 #include "../Content/MenuContent.h"
 #include "PageManager.h"
 #include "MainMenu.h"
-#include "LevelEditor.h"
+#include "Level Editor/LevelEditor.h"
 
 
 #define MC MenuContent::Instance
@@ -41,7 +41,9 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
     //The textbox.
     GUITexture enterLevelTextboxBackground = MC.CreateGUITexture(&MC.TextBoxBackground, false),
                enterLevelTextboxCursor = MC.CreateGUITexture(0, false);
-    enterLevelTextboxCursor.ScaleBy(Vector2f(3.0f, (float)MC.MainTextFontHeight * MC.MainTextFontScale.y * 0.75f));
+    enterLevelTextboxCursor.ScaleBy(Vector2f(3.0f,
+                                    (float)MC.MainTextFontHeight *
+                                        MC.MainTextFontScale.y * 0.75f));
     
     GUILabel enterLevelText = MC.CreateGUILabel(MC.MainTextFont, MC.MainTextFontHeight,
                                                 MC.MainTextFontScale, 1024, err,
@@ -68,9 +70,7 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
         std::string lvlName = cle->GenerateLevel();
         if (!lvlName.empty())
         {
-            //TODO: Transition to level editor.
-            assert(false);
-            //cle->Manager->CurrentPage = Page::Ptr(new LevelEditor(lvlName, cle->Manager));
+            cle->Manager->UpdateCurrentPage(Page::Ptr(new LevelEditor(lvlName, cle->Manager)));
         }
     };
     createLevelButton->OnClicked_pData = this;
@@ -106,7 +106,8 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
         ChooseLevelEditor* cle = (ChooseLevelEditor*)pData;
         //TODO: Transition to level editor.
         assert(false);
-        //cle->Manager->UpdateCurrentPage(Page::Ptr(new LevelEditor(cle->enterLevelTextBox->GetText())));
+        cle->Manager->UpdateCurrentPage(Page::Ptr(new LevelEditor(cle->enterLevelTextBox->GetText(),
+                                                                  cle->Manager)));
     };
     editLevelButton->OnClicked_pData = this;
     editLevelButton->Depth = 0.01f;
