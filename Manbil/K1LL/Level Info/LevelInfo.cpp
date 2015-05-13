@@ -58,7 +58,7 @@ bool LevelInfo::IsAreaFree(Vector2u start, Vector2u end, bool allowEdges) const
     return true;
 }
 
-const RoomInfo* LevelInfo::GetRoom(Vector2u worldGridPos) const
+unsigned int LevelInfo::GetRoom(Vector2u worldGridPos) const
 {
     for (unsigned int i = 0; i < Rooms.size(); ++i)
     {
@@ -67,11 +67,11 @@ const RoomInfo* LevelInfo::GetRoom(Vector2u worldGridPos) const
         if (worldGridPos.x >= min.x && worldGridPos.x <= max.x &&
             worldGridPos.y >= min.y && worldGridPos.y <= max.y)
         {
-            return &Rooms[i];
+            return i;
         }
     }
 
-    return 0;
+    return Rooms.size();
 }
 
 void LevelInfo::GetBorderingRooms(unsigned int room, std::vector<unsigned int>& outRooms) const

@@ -39,9 +39,9 @@ struct LevelInfo : public ISerializable
     //Gets whether the given area is completely devoid of rooms.
     bool IsAreaFree(Vector2u start, Vector2u end, bool allowRoomEdges) const;
 
-    //Gets the room that the given grid spot is occupied by.
-    //Returns 0 if the given spot isn't occupied.
-    const RoomInfo* GetRoom(Vector2u worldGridPos) const;
+    //Gets the index of the room that the given grid spot is occupied by.
+    //Returns "Rooms.size()" if the given spot isn't occupied.
+    unsigned int GetRoom(Vector2u worldGridPos) const;
 
     //Gets all rooms that border the given one.
     //Rooms are specified as indices into this instance's "Rooms" collection.
