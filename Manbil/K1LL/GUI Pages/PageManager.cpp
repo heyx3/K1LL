@@ -67,16 +67,14 @@ void PageManager::OnWorldEnd(void)
 void PageManager::UpdateWorld(float frameSeconds)
 {
     //Calculate mouse pos.
-    sf::Vector2i screenPos = sf::Mouse::getPosition();
-    sf::Vector2i mPosFinal = screenPos - GetWindow()->getPosition() - sf::Vector2i(5, 30);
-    mPosFinal.y -= windowSize.y;
+    sf::Vector2i screenPos = sf::Mouse::getPosition(*GetWindow());
 
     if (nextPage.get() != 0)
     {
         currentPage = nextPage;
         nextPage = 0;
     }
-    currentPage->Update(Vector2i(mPosFinal.x, mPosFinal.y), frameSeconds);
+    currentPage->Update(Vector2i(screenPos.x, -screenPos.y), frameSeconds);
 }
 void PageManager::RenderOpenGL(float frameSeconds)
 {
