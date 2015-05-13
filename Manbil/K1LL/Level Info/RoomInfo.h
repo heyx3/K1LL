@@ -43,6 +43,16 @@ struct RoomInfo : public ISerializable
         return *this;
     }
 
+
+    inline RoomInfo& operator=(const RoomInfo& cpy)
+    {
+        NavigationDifficulty = cpy.NavigationDifficulty;
+
+        RoomGrid.Resize(cpy.RoomGrid.GetWidth(), cpy.RoomGrid.GetHeight(), BT_NONE);
+        cpy.RoomGrid.MemCopyInto(RoomGrid.GetArray());
+
+        return *this;
+    }
     
     bool operator==(const RoomInfo& other) const { return RoomGrid.GetArray() == other.RoomGrid.GetArray(); }
     bool operator!=(const RoomInfo& other) const { return !operator==(other); }
