@@ -70,7 +70,20 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
         std::string lvlName = cle->GenerateLevel();
         if (!lvlName.empty())
         {
-            cle->Manager->UpdateCurrentPage(Page::Ptr(new LevelEditor(lvlName, cle->Manager)));
+            std::string err;
+            Page::Ptr nextPage(new LevelEditor(lvlName, cle->Manager, err));
+
+            if (!err.empty())
+            {
+                std::cout << "Error creating level editor page: " << err;
+                char dummy;
+                std::cin >> dummy;
+                cle->Manager->EndWorld();
+            }
+            else
+            {
+                cle->Manager->UpdateCurrentPage(nextPage);
+            }
         }
     };
     createLevelButton->OnClicked_pData = this;
@@ -104,10 +117,21 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
     editLevelButton->OnClicked = [](GUITexture* thisTex, Vector2f mousePos, void* pData)
     {
         ChooseLevelEditor* cle = (ChooseLevelEditor*)pData;
-        //TODO: Transition to level editor.
-        assert(false);
-        cle->Manager->UpdateCurrentPage(Page::Ptr(new LevelEditor(cle->enterLevelTextBox->GetText(),
-                                                                  cle->Manager)));
+
+        std::string err;
+        Page::Ptr nextPage(new LevelEditor(cle->enterLevelTextBox->GetText(), cle->Manager, err));
+
+        if (!err.empty())
+        {
+            std::cout << "Error creating level editor page: " << err;
+            char dummy;
+            std::cin >> dummy;
+            cle->Manager->EndWorld();
+        }
+        else
+        {
+            cle->Manager->UpdateCurrentPage(nextPage);
+        }
     };
     editLevelButton->OnClicked_pData = this;
     editLevelButton->Depth = 0.01f;

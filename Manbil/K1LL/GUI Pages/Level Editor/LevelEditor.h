@@ -15,7 +15,8 @@ public:
     };
 
 
-    LevelEditor(const std::string& levelFileName, PageManager* manager);
+    //If something went wrong, a message is output into the given string.
+    LevelEditor(const std::string& levelFileName, PageManager* manager, std::string& outErrorMsg);
     ~LevelEditor(void);
 
 

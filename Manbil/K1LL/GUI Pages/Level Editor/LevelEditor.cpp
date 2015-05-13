@@ -2,7 +2,7 @@
 
 
 
-LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager)
+LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager, std::string& err)
     : Page(manager), worldViewBounds(0.0f, 20.0f, 0.0f, 20.0f)
 {
 
