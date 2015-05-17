@@ -1,11 +1,15 @@
 #include "LevelEditor.h"
 
-#include "../PageManager.h"
 #include "../../../IO/BinarySerialization.h"
+#include "../../../Rendering/GUI/GUI Elements/GUIPanel.h"
+
+#include "../PageManager.h"
+#include "GUIEditorGrid.h"
 
 
 LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager, std::string& err)
-    : Page(manager), worldViewBounds(0.0f, 20.0f, 0.0f, 20.0f)
+    : Page(manager), worldViewBounds(0.0f, 20.0f, 0.0f, 20.0f),
+      noiseTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PS_8U, false)
 {
     //Try to load in the level data.
     std::string fullPath = LevelInfo::LevelFilesPath + levelFileName + ".lvl";
@@ -26,18 +30,81 @@ LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager,
     }
 
 
+    //Load noise texture.
+    noiseTex.Create();
+    if (!Assert(noiseTex.SetDataFromFile("Content/Menu/GridNoise.png", err),
+                "Error loading 'Content/Menu/GridNoise.png", err))
+    {
+        return;
+    }
+
+
     //Generate GUI stuff and initialize state.
 
-    //TODO: Implement.
+    worldViewGrid = GUIElementPtr(new GUIEditorGrid(worldViewBounds, &noiseTex, err));
+    if (!Assert(err.empty(), "Error setting up world view bounds", err))
+    {
+        return;
+    }
+
+    auto onContextMenu = [](ContextMenu::Options clicked, ContextMenu* menu)
+    {
+        switch (clicked)
+        {
+            //Call the corresponding UI event for each case.
+            #define CASE(enumVal, callbackName, callbackArg) \
+                case ContextMenu::Options::O_ ## enumVal: \
+                    menu->Editor->OnButton_ ## callbackName(callbackArg); \
+                    break;
+
+            
+            CASE(CREATE_ROOM, CreateRoom,)
+            CASE(MOVE_ROOM, MoveRoom,)
+            CASE(DELETE_ROOM, DeleteRoom,)
+            CASE(PLACE_TEAM1, PlaceTeam1,)
+            CASE(PLACE_TEAM2, PlaceTeam2,)
+            CASE(SET_LIGHT_AMMO, SetSpawn, IT_AMMO_LIGHT)
+            CASE(SET_HEAVY_AMMO, SetSpawn, IT_AMMO_HEAVY)
+            CASE(SET_SPECIAL_AMMO, SetSpawn, IT_AMMO_SPECIAL)
+            CASE(SET_LIGHT_WEAPON, SetSpawn, IT_WEAPON_LIGHT)
+            CASE(SET_HEAVY_WEAPON, SetSpawn, IT_WEAPON_HEAVY)
+            CASE(SET_SPECIAL_WEAPON, SetSpawn, IT_WEAPON_SPECIAL)
+            CASE(SET_HEALTH, SetSpawn, IT_HEALTH)
+            CASE(SET_NONE, SetSpawn, IT_NONE)
+            CASE(SAVE, Save,)
+            CASE(TEST, Test,)
+            CASE(QUIT, Quit,)
+
+            default:
+                assert(false);
+                break;
+
+
+            #undef CASE
+        }
+    };
+    contextMenu_Menu = GUIElementPtr(new ContextMenu(this, err, onContextMenu));
+    if (!Assert(err.empty(), "Error setting up context menu", err))
+    {
+        return;
+    }
+
+    GUIPanel* contextMenuPanel = new GUIPanel();
+    contextMenuPanel->AddElement(worldViewGrid);
+    contextMenuPanel->AddElement(contextMenu_Menu);
+    contextMenu_MenuPanel = GUIElementPtr(contextMenuPanel);
+
+    //TODO: Create "choose room to create" panel and some kind of Room GUIElement.
 }
 LevelEditor::~LevelEditor(void)
 {
-    //TODO: Implement.
+    //TODO: Implement any necessary cleanup.
 }
 
 
 void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
 {
+    //TODO: Only count a click for menus, etc. if it hasn't been pressed last frame. Maybe update the GUI manager yourself instead of calling Page::Update().
     bool leftMouse = sf::Mouse::isButtonPressed(sf::Mouse::Left),
          rightMouse = sf::Mouse::isButtonPressed(sf::Mouse::Right);
 
@@ -97,7 +164,15 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
             if (!rightMouse)
             {
                 //The player right-clicked on a single spot, so bring up the context menu.
-                //TODO: Set up context menu. Make a class that inherits from GUISelectionBox to handle all context menu stuff. Probably will need an "OnContextMenu_[Option]()" callback for most choices.
+                if (noMousedRoom)
+                {
+                    GetContextMenu().SetUpForEmptySpace();
+                }
+                else
+                {
+                    GetContextMenu().SetUpForRoom(mousedRoom);
+                }
+                //TODO: Position context menu (pick a corner of the menu to center on the mouse based on which corner of the screen the mouse is on) and set its GUIPanel as the current root element.
                 assert(false);
 
                 currentState = ES_CONTEXT_MENU;
@@ -132,7 +207,15 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
             }
         } break;
 
-        //TODO: Implement the "ES_CONTEXT_MENU" and "ES_CREATING_ROOM" cases.
+        case ES_CONTEXT_MENU:
+            //If the context menu was dismissed by the player (by clicking outside it), go back to idling.
+            if (!GetContextMenu().GetIsExtended())
+            {
+                currentState = ES_IDLE;
+            }
+            break;
+
+        //TODO: Implement the "ES_CREATING_ROOM" case.
         default:
             assert(false);
             break;
@@ -148,11 +231,14 @@ void LevelEditor::Render(float frameSeconds)
 
 void LevelEditor::OnWindowResized(void)
 {
-    //TODO: Re-position the GUI.
+    Vector2f windowSize = ToV2f(Manager->GetWindowSize());
+    worldViewGrid->SetBounds(Box2D(0.0f, windowSize.x, -windowSize.y, 0.0f));
+
+    //TODO: Re-position the rest of the GUI elements.
 }
 void LevelEditor::OnCloseWindow(void)
 {
-    //TODO: Ask if the player is sure he wants to quit.
+    //TODO: Ask if the player is sure he wants to quit. Reuse assets from other menus.
     Manager->EndWorld();
 }
 

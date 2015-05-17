@@ -2,6 +2,7 @@
 
 #include "../Page.h"
 #include "../../Level Info/LevelInfo.h"
+#include "ContextMenu.h"
 
 
 //The "level editor" page.
@@ -27,6 +28,18 @@ public:
     virtual void OnOtherWindowEvent(sf::Event& windowEvent) override;
     
 
+    //Callbacks for various UI events.
+    void OnButton_CreateRoom(void),
+         OnButton_MoveRoom(void),
+         OnButton_DeleteRoom(void),
+         OnButton_PlaceTeam1(void),
+         OnButton_PlaceTeam2(void),
+         OnButton_SetSpawn(ItemTypes type),
+         OnButton_Save(void),
+         OnButton_Test(void),
+         OnButton_Quit(void);
+
+
 private:
 
     //The different states this editor can be in.
@@ -48,11 +61,15 @@ private:
 
 
     EditorStates currentState = ES_IDLE;
-
     Box2D worldViewBounds;
+
+    MTexture2D noiseTex;
+    GUIElementPtr worldViewGrid;
 
     //State-specific variables.
     RoomInfo placingRoom_Room; //TODO: Track the offset of the player's mouse when he clicked on the room.
     Vector2i waitingOnRightMouse_StartPos;
     Vector2i panning_LastPos;
+    GUIElementPtr contextMenu_Menu, contextMenu_MenuPanel;
+    ContextMenu& GetContextMenu(void) { return *(ContextMenu*)contextMenu_Menu.get(); }
 };
