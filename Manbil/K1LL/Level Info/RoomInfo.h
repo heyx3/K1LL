@@ -58,6 +58,9 @@ struct RoomInfo : public ISerializable
     bool operator!=(const RoomInfo& other) const { return !operator==(other); }
 
 
+    //Gets whether this room has any spawn blocks.
+    bool GetRoomHasSpawns(void) const;
+
     virtual void WriteData(DataWriter* writer) const override;
     virtual void ReadData(DataReader* reader) override;
 };

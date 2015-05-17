@@ -10,6 +10,22 @@ RoomInfo::RoomInfo(const RoomInfo& cpy)
     cpy.RoomGrid.MemCopyInto(RoomGrid.GetArray());
 }
 
+bool RoomInfo::GetRoomHasSpawns(void) const
+{
+    for (unsigned int y = 0; y < RoomGrid.GetHeight(); ++y)
+    {
+        for (unsigned int x = 0; x < RoomGrid.GetWidth(); ++x)
+        {
+            if (RoomGrid[Vector2u(x, y)] == BT_SPAWN)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 void RoomInfo::WriteData(DataWriter* writer) const
 {
     writer->WriteFloat(NavigationDifficulty, "Navigation difficulty (0-1)");
