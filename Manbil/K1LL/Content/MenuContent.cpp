@@ -23,6 +23,15 @@ MenuContent::MenuContent(void)
       LevelSelectionBoxHighlight(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       LevelSelectionBoxBackground(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       LevelSelectionSingleElement(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      FloorTex(TextureSampleSettings2D(FT_LINEAR, WT_WRAP), PixelSizes::PS_8U, false),
+      WallTex(TextureSampleSettings2D(FT_LINEAR, WT_WRAP), PixelSizes::PS_8U, false),
+      AmmoLightTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      AmmoHeavyTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      AmmoSpecialTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      WeaponLightTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      WeaponHeavyTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      WeaponSpecialTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      HealthTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       MainTextFontScale(0.25f, 0.25f), MainTextFontHeight(256)
 {
 
@@ -77,9 +86,19 @@ bool MenuContent::Initialize(std::string& err)
     TRY_LOAD(CreateLevelTex, CreateButton.png)
     TRY_LOAD(LevelSelectionBoxHighlight, LevelChoiceHighlight.png)
     TRY_LOAD(LevelSelectionBoxBackground, LevelChoiceBackground.png)
-
     Array2D<Vector4b> colors(1, 1, Vector4b((unsigned char)255, 255, 255, 255));
     LevelSelectionSingleElement.SetColorData(colors);
+
+    TRY_LOAD(FloorTex, LevelEditorFloor.png)
+    TRY_LOAD(WallTex, Wall.png)
+    TRY_LOAD(AmmoLightTex, Ammo Light.png)
+    TRY_LOAD(AmmoHeavyTex, Ammo Heavy.png)
+    TRY_LOAD(AmmoSpecialTex, Ammo Special.png)
+    TRY_LOAD(WeaponLightTex, Weapon Light.png)
+    TRY_LOAD(WeaponHeavyTex, Weapon Heavy.png)
+    TRY_LOAD(WeaponSpecialTex, Weapon Special.png)
+    TRY_LOAD(HealthTex, Health.png)
+
 
     #pragma endregion
 
@@ -149,6 +168,7 @@ void MenuContent::Destroy(void)
     StaticColorGUIMat = 0;
     AnimatedColorGUIMat = 0;
     LabelGUIMat = 0;
+
     StaticColorGUIParams.ClearUniforms();
     AnimatedColorGUIParams.ClearUniforms();
     LabelGUIParams.ClearUniforms();
@@ -172,6 +192,16 @@ void MenuContent::Destroy(void)
     LevelSelectionBoxHighlight.DeleteIfValid();
     LevelSelectionBoxBackground.DeleteIfValid();
     LevelSelectionSingleElement.DeleteIfValid();
+
+    FloorTex.DeleteIfValid();
+    WallTex.DeleteIfValid();
+    AmmoLightTex.DeleteIfValid();
+    AmmoHeavyTex.DeleteIfValid();
+    AmmoSpecialTex.DeleteIfValid();
+    WeaponLightTex.DeleteIfValid();
+    WeaponHeavyTex.DeleteIfValid();
+    WeaponSpecialTex.DeleteIfValid();
+    HealthTex.DeleteIfValid();
 }
 
 GUITexture MenuContent::CreateGUITexture(MTexture2D* tex, bool isButton)

@@ -147,6 +147,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\GUI Pages\ChooseLevelEditor.cpp" />
     <ClCompile Include="K1LL\GUI Pages\Level Editor\ContextMenu.cpp" />
     <ClCompile Include="K1LL\GUI Pages\Level Editor\GUIEditorGrid.cpp" />
+    <ClCompile Include="K1LL\GUI Pages\Level Editor\GUIRoom.cpp" />
     <ClCompile Include="K1LL\GUI Pages\Level Editor\LevelEditor.cpp" />
     <ClCompile Include="K1LL\GUI Pages\MainMenu.cpp" />
     <ClCompile Include="K1LL\GUI Pages\Page.cpp" />
@@ -338,6 +339,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\GUI Pages\ChooseLevelEditor.h" />
     <ClInclude Include="K1LL\GUI Pages\Level Editor\ContextMenu.h" />
     <ClInclude Include="K1LL\GUI Pages\Level Editor\GUIEditorGrid.h" />
+    <ClInclude Include="K1LL\GUI Pages\Level Editor\GUIRoom.h" />
     <ClInclude Include="K1LL\GUI Pages\Level Editor\LevelEditor.h" />
     <ClInclude Include="K1LL\GUI Pages\MainMenu.h" />
     <ClInclude Include="K1LL\GUI Pages\Page.h" />

@@ -24,11 +24,19 @@ public:
     //Main Menu textures.
     MTexture2D PlayButton, OptionsButton, EditorButton, QuitButton;
 
-    //Level Editor textures.
+    //"Choose level to edit" textures.
     MTexture2D ConfirmDeletePopup, NOTex, YESTex,
                EditLevelTex, DeleteLevelTex,
-               CreateLevelTex,
-               LevelSelectionBoxHighlight, LevelSelectionBoxBackground, LevelSelectionSingleElement;
+               CreateLevelTex;
+
+    //Level selection textures.
+    MTexture2D LevelSelectionBoxHighlight, LevelSelectionBoxBackground, LevelSelectionSingleElement;
+
+    //2D Room-rendering textures.
+    MTexture2D FloorTex, WallTex,
+               AmmoLightTex, AmmoHeavyTex, AmmoSpecialTex,
+               WeaponLightTex, WeaponHeavyTex, WeaponSpecialTex,
+               HealthTex;
 
 
     //Text-rendering stuff.
