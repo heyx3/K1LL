@@ -50,4 +50,6 @@ protected:
 private:
 
     bool isWindowInFocus = true;
+
+    bool waitForMouseRelease = true;
 };

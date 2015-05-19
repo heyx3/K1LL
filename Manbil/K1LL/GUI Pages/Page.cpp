@@ -22,8 +22,18 @@ bool Page::Assert(bool test, const std::string& errIntro, const std::string& err
 
 void Page::Update(Vector2i mousePos, float frameSeconds)
 {
+    //Wait until the mouse is released before accepting mouse clicks on this page.
+    bool isMousePressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+    if (waitForMouseRelease)
+    {
+        if (!isMousePressed)
+        {
+            waitForMouseRelease = false;
+        }
+    }
+
     GUIManager.Update(frameSeconds, mousePos,
-                      GetIsWindowInFocus() && sf::Mouse::isButtonPressed(sf::Mouse::Left));
+                      GetIsWindowInFocus() && isMousePressed && !waitForMouseRelease);
 }
 void Page::Render(float frameSeconds)
 {
