@@ -3,24 +3,32 @@
 #include "../../../Rendering/Rendering.hpp"
 #include "../../../Rendering/GUI/GUIMaterials.h"
 
+#include "../../Content/MenuContent.h"
 
 
-GUIEditorGrid::GUIEditorGrid(Box2D& worldBnds, MTexture2D* _noiseTex, std::string& err)
-    : WorldViewBounds(worldBnds), noiseTex(_noiseTex)
+Material* GUIEditorGrid::gridMat = 0;
+UniformDictionary GUIEditorGrid::gridMatParams = UniformDictionary();
+unsigned int GUIEditorGrid::nInstances = 0;
+
+
+GUIEditorGrid::GUIEditorGrid(Box2D& worldBnds, std::string& err)
+    : WorldViewBounds(worldBnds)
 {
-    //Vertex shader.
-    RenderIOAttributes vIns = DrawingQuad::GetVertexInputData();
-    std::string vOuts =
+    if (gridMat == 0)
+    {
+        //Vertex shader.
+        RenderIOAttributes vIns = DrawingQuad::GetVertexInputData();
+        std::string vOuts =
 "out vec2 fIn_WorldPos; \n\
 out vec2 fIn_UV;";
-    MaterialUsageFlags vFlags;
-    vFlags.EnableFlag(MaterialUsageFlags::DNF_USES_WVP_MAT);
-    std::string vShaderHeader = MaterialConstants::GetVertexHeader(vOuts, vIns, vFlags);
-    std::string wvp = MaterialConstants::WVPMatName,
-                vIn_Pos = vIns.GetAttribute(0).Name,
-                vIn_UV = vIns.GetAttribute(1).Name;
+        MaterialUsageFlags vFlags;
+        vFlags.EnableFlag(MaterialUsageFlags::DNF_USES_WVP_MAT);
+        std::string vShaderHeader = MaterialConstants::GetVertexHeader(vOuts, vIns, vFlags);
+        std::string wvp = MaterialConstants::WVPMatName,
+                    vIn_Pos = vIns.GetAttribute(0).Name,
+                    vIn_UV = vIns.GetAttribute(1).Name;
 
-    std::string vShader = vShaderHeader + " \n\
+        std::string vShader = vShaderHeader + " \n\
 uniform vec2 u_WorldMin, u_WorldMax; \n\
 \n\
 void main() \n\
@@ -31,15 +39,16 @@ void main() \n\
 }";
 
 
-    //Fragment shader.
-    std::string fIns =
+        //Fragment shader.
+        std::string fIns =
 "in vec2 fIn_WorldPos; \n\
 in vec2 fIn_UV;";
-    std::string fOuts = "out vec4 fOut_Color;";
-    std::string fShaderHeader = MaterialConstants::GetFragmentHeader(fIns, fOuts, MaterialUsageFlags());
-    std::string colorParam = GUIMaterials::QuadDraw_Color;
+        std::string fOuts = "out vec4 fOut_Color;";
+        std::string fShaderHeader = MaterialConstants::GetFragmentHeader(fIns, fOuts,
+                                                                         MaterialUsageFlags());
+        std::string colorParam = GUIMaterials::QuadDraw_Color;
 
-    std::string fShader = fShaderHeader + " \n\
+        std::string fShader = fShaderHeader + " \n\
 uniform sampler2D u_NoiseTex; \n\
 uniform vec4 " + colorParam + "; \n\
 \n\
@@ -51,7 +60,7 @@ void main() \n\
     //Then, map it to a value from 0 to 1 indicating how close to the axis line the fragment is. \n\
     const float originDropoff = 4.5; \n\
     float distToOriginAxis = min(fIn_WorldPos.x, fIn_WorldPos.y), \n\
-          originStrength = max(0.0, pow(1.0 - min(distToOriginAxis, 1.0), \n\
+            originStrength = max(0.0, pow(1.0 - min(distToOriginAxis, 1.0), \n\
                                         originDropoff)); \n\
     \n\
     //Now calculate the same thing but for every grid line (along every integer coordinate). \n\
@@ -64,33 +73,45 @@ void main() \n\
     float finalStrength = min(1.0, originStrength + gridStrength); \n\
     fOut_Color = vec4(vec3(finalStrength), 1.0) * " + colorParam + " * texture2D(u_NoiseTex, fIn_UV); \n\
 }";
-    
 
-    //Compile the material.
+        //Compile the material.
 
-    Params.Floats["u_WorldMin"] = UniformValueF(Vector2f(), "u_WorldMin");
-    Params.Floats["u_WorldMax"] = UniformValueF(Vector2f(1.0f, 1.0f), "u_WorldMax");
-    Params.Texture2Ds["u_NoiseTex"] = UniformValueSampler2D(0, "u_NoiseTex");
-    Params.Floats[colorParam] = UniformValueF(Vector4f(1.0f, 1.0f, 1.0f, 1.0f), colorParam);
+        gridMatParams.Floats["u_WorldMin"] = UniformValueF(Vector2f(), "u_WorldMin");
+        gridMatParams.Floats["u_WorldMax"] = UniformValueF(Vector2f(1.0f, 1.0f), "u_WorldMax");
+        gridMatParams.Texture2Ds["u_NoiseTex"] = UniformValueSampler2D(0, "u_NoiseTex");
+        gridMatParams.Floats[GUIMaterials::QuadDraw_Color] = UniformValueF(Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+                                                                           GUIMaterials::QuadDraw_Color);
 
-    Mat = new Material(vShader, fShader, Params, vIns, BlendMode::GetTransparent(), err);
-    if (!err.empty())
-    {
-        err = "Error creating grid material: " + err;
-        return;
+        gridMat = new Material(vShader, fShader, gridMatParams, vIns, BlendMode::GetTransparent(), err);
+        if (!err.empty())
+        {
+            err = "Error creating grid material: " + err;
+            delete gridMat;
+            return;
+        }
     }
+
+    Params = gridMatParams;
+    Mat = gridMat;
+    nInstances += 1;
 }
 
 GUIEditorGrid::~GUIEditorGrid(void)
 {
-    delete Mat;
+    assert(nInstances > 0);
+    nInstances -= 1;
+    if (nInstances == 0)
+    {
+        delete gridMat;
+        gridMat = 0;
+    }
 }
 
 void GUIEditorGrid::Render(float elapsedTime, const RenderInfo& info)
 {
     Params.Floats["u_WorldMin"].SetValue(WorldViewBounds.GetMinCorner());
     Params.Floats["u_WorldMax"].SetValue(WorldViewBounds.GetMaxCorner());
-    Params.Texture2Ds["u_NoiseTex"].Texture = noiseTex->GetTextureHandle();
+    Params.Texture2Ds["u_NoiseTex"].Texture = MenuContent::Instance.EditorNoiseTex.GetTextureHandle();
 
     GUITexture::Render(elapsedTime, info);
 }

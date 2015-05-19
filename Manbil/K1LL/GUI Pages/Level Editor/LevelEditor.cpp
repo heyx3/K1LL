@@ -1,52 +1,17 @@
 #include "LevelEditor.h"
 
 #include "../../../IO/BinarySerialization.h"
+#include "../../../Rendering/Basic Rendering/ScreenClearer.h"
+#include "../../../Rendering/Basic Rendering/RenderingState.h"
 #include "../../../Rendering/GUI/GUI Elements/GUIPanel.h"
 
 #include "../PageManager.h"
-#include "GUIEditorGrid.h"
+#include "GUIRoom.h"
 
 
-LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager, std::string& err)
-    : Page(manager), worldViewBounds(0.0f, 20.0f, 0.0f, 20.0f),
-      noiseTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PS_8U, false)
+namespace
 {
-    //Try to load in the level data.
-    std::string fullPath = LevelInfo::LevelFilesPath + levelFileName + ".lvl";
-    BinaryReader reader(true, fullPath);
-    if (!Assert(reader.ErrorMessage.empty(), "Error reading in '" + fullPath + "'", reader.ErrorMessage))
-    {
-        return;
-    }
-    try
-    {
-        reader.ReadDataStructure(LevelData);
-    }
-    catch (int ex)
-    {
-        assert(ex == DataReader::EXCEPTION_FAILURE);
-        Assert(false, "Error reading in data structure from level file", reader.ErrorMessage);
-        return;
-    }
-
-
-    //Load noise texture.
-    noiseTex.Create();
-    if (!Assert(noiseTex.SetDataFromFile("Content/Menu/GridNoise.png", err),
-                "Error loading 'Content/Menu/GridNoise.png", err))
-    {
-        return;
-    }
-
-
-    //Generate GUI stuff and initialize state.
-
-    worldViewGrid = GUIElementPtr(new GUIEditorGrid(worldViewBounds, &noiseTex, err));
-    if (!Assert(err.empty(), "Error setting up world view bounds", err))
-    {
-        return;
-    }
-
+    //The callback for when an item on the context menu is clicked.
     auto onContextMenu = [](ContextMenu::Options clicked, ContextMenu* menu)
     {
         switch (clicked)
@@ -83,48 +48,74 @@ LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager,
             #undef CASE
         }
     };
-    contextMenu_Menu = GUIElementPtr(new ContextMenu(this, err, onContextMenu));
-    if (!Assert(err.empty(), "Error setting up context menu", err))
+}
+
+LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager, std::string& err)
+    : Page(manager), worldViewBounds(0.0f, 20.0f, 0.0f, 20.0f),
+      windowSizeF(ToV2f(manager->GetWindowSize())),
+      levelFile(LevelInfo::LevelFilesPath + levelFileName + ".lvl"),
+      worldViewGrid(worldViewBounds, err),
+      contextMenu(this, err, onContextMenu)
+{
+    //See if any fields failed their initialization.
+    if (!Assert(err.empty(), "Error initializing editor fields", err))
     {
         return;
     }
 
-    GUIPanel* contextMenuPanel = new GUIPanel();
-    contextMenuPanel->AddElement(worldViewGrid);
-    contextMenuPanel->AddElement(contextMenu_Menu);
-    contextMenu_MenuPanel = GUIElementPtr(contextMenuPanel);
+    //Try to load in the level data.
+    BinaryReader reader(true, levelFile);
+    if (!Assert(reader.ErrorMessage.empty(), "Error reading in '" + levelFile + "'", reader.ErrorMessage))
+    {
+        return;
+    }
+    try
+    {
+        reader.ReadDataStructure(LevelData);
+    }
+    catch (int ex)
+    {
+        assert(ex == DataReader::EXCEPTION_FAILURE);
+        Assert(false, "Error reading in data structure from level file", reader.ErrorMessage);
+        return;
+    }
 
-    //TODO: Create "choose room to create" panel and some kind of Room GUIElement.
+
+    //Generate GUI stuff and initialize state.
+
+    //TODO: Create "choose room to create" panel.
 }
 LevelEditor::~LevelEditor(void)
 {
-    //TODO: Implement any necessary cleanup.
 }
 
 
 void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
 {
-    //TODO: Only count a click for menus, etc. if it hasn't been pressed last frame. Maybe update the GUI manager yourself instead of calling Page::Update().
     bool leftMouse = sf::Mouse::isButtonPressed(sf::Mouse::Left),
          rightMouse = sf::Mouse::isButtonPressed(sf::Mouse::Right);
+    bool justPressedLeft = (leftMouse && !mouseLastFrame);
+
 
     //Calculate the world grid position of the mouse.
     Vector2f mousePosF = ToV2f(mousePos),
              windowSizeF = ToV2f(Manager->GetWindowSize());
     Vector2f posLerp(mousePosF.x / windowSizeF.x, mousePosF.y / windowSizeF.y);
-    Vector2i gridPosI = Vector2f::Lerp(worldViewBounds.GetMinCorner(), worldViewBounds.GetMaxCorner(),
-                                       posLerp).Floored();
-    Vector2u gridPos = ToV2u(Vector2i(Mathf::Max(gridPosI.x, 0), Mathf::Max(gridPosI.y, 0)));
+    currentMouseWorldPos = Vector2f::Lerp(worldViewBounds.GetMinCorner(),
+                                          worldViewBounds.GetMaxCorner(),
+                                          posLerp);
+    Vector2i gridPosI = currentMouseWorldPos.Floored();
+    currentMouseGridPos = ToV2u(Vector2i(Mathf::Max(gridPosI.x, 0), Mathf::Max(gridPosI.y, 0)));
     
     //Get the room that the mouse is hovering over.
-    unsigned int mousedRoom = LevelData.GetRoom(gridPos);
+    unsigned int mousedRoom = LevelData.GetRoom(currentMouseGridPos);
     bool noMousedRoom = (mousedRoom == LevelData.Rooms.size());
 
     //Update the editor based on its current state.
     switch (currentState)
     {
         case ES_IDLE:
-            if (leftMouse)
+            if (leftMouse && !mouseLastFrame)
             {
                 //If the player clicked on a room, pick it up and let him move it.
                 if (!noMousedRoom)
@@ -145,15 +136,16 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
             break;
 
         case ES_PLACING_ROOM:
-            if (leftMouse)
+            if (leftMouse && !mouseLastFrame)
             {
                 //If this is a valid spot to stick the room, go ahead and place it down.
-                if (LevelData.IsAreaFree(gridPos, gridPos + placingRoom_Room.RoomGrid.GetDimensions(),
+                if (LevelData.IsAreaFree(currentMouseGridPos,
+                                         currentMouseGridPos+ placingRoom_Room.RoomGrid.GetDimensions(),
                                          true))
                 {
                     LevelData.Rooms.push_back(placingRoom_Room);
-                    LevelData.RoomItems.push_back(IT_NONE);
-                    LevelData.RoomOffsets.push_back(gridPos);
+                    LevelData.RoomItems.push_back(placingRoom_Item);
+                    LevelData.RoomOffsets.push_back(currentMouseGridPos);
 
                     currentState = ES_IDLE;
                 }
@@ -163,20 +155,31 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
         case ES_WAITING_ON_RIGHT_MOUSE:
             if (!rightMouse)
             {
-                //The player right-clicked on a single spot, so bring up the context menu.
-                if (noMousedRoom)
+                //If the player was placing a room, remove it.
+                if (placingRoom_IsPlacing)
                 {
-                    GetContextMenu().SetUpForEmptySpace();
+                    placingRoom_IsPlacing = false;
+                    currentState = ES_IDLE;
                 }
+                //Otherwise, see what he right-clicked on.
                 else
                 {
-                    GetContextMenu().SetUpForRoom(mousedRoom);
-                }
-                //TODO: Position context menu (pick a corner of the menu to center on the mouse based on which corner of the screen the mouse is on) and set its GUIPanel as the current root element.
-                assert(false);
+                    //The player right-clicked on a single spot, so bring up the context menu.
+                    if (noMousedRoom)
+                    {
+                        contextMenu.SetUpForEmptySpace();
+                    }
+                    else
+                    {
+                        contextMenu.SetUpForRoom(mousedRoom);
+                    }
+                    //TODO: Position context menu (pick a corner of the menu to center on the mouse based on which corner of the screen the mouse is on) and set its GUIPanel as the current root element.
+                    assert(false);
 
-                currentState = ES_CONTEXT_MENU;
+                    currentState = ES_CONTEXT_MENU;
+                }
             }
+            //Otherwise, if the mouse is still held down, see if it should count as "dragging" yet.
             else
             {
                 const float minDragDist = 5.0f;
@@ -203,13 +206,20 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
 
             if (!rightMouse)
             {
-                currentState = ES_IDLE;
+                if (placingRoom_IsPlacing)
+                {
+                    currentState = ES_PLACING_ROOM;
+                }
+                else
+                {
+                    currentState = ES_IDLE;
+                }
             }
-        } break;
+        }   break;
 
         case ES_CONTEXT_MENU:
             //If the context menu was dismissed by the player (by clicking outside it), go back to idling.
-            if (!GetContextMenu().GetIsExtended())
+            if (contextMenu.GetIsExtended())
             {
                 currentState = ES_IDLE;
             }
@@ -221,18 +231,55 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
             break;
     }
 
+    mouseLastFrame = leftMouse;
+
     Page::Update(mousePos, frameSeconds);
 }
 void LevelEditor::Render(float frameSeconds)
 {
-    Page::Render(frameSeconds);
+    //Set up rendering state.
+
+    ScreenClearer(true, true, false, Vector4f(0.02f, 0.02f, 0.15f, 0.0f)).ClearScreen();
+    RenderingState(RenderingState::C_NONE).EnableState();
+
+    Vector2f windowSize = ToV2f(Manager->GetWindowSize());
+
+    Camera guiCam;
+    guiCam.SetPosition(Vector3f());
+    guiCam.SetRotation(Vector3f(0.0f, 0.0f, -1.0f), Vector3f(0.0f, -1.0f, 0.0f));
+    guiCam.MinOrthoBounds = Vector3f(0.0f, 0.0f, -10.0f);
+    guiCam.MaxOrthoBounds = Vector3f(windowSize, 10.0f);
+    guiCam.PerspectiveInfo.Width = windowSize.x;
+    guiCam.PerspectiveInfo.Height = windowSize.y;
+
+    Matrix4f viewM, projM;
+    guiCam.GetViewTransform(viewM);
+    guiCam.GetOrthoProjection(projM);
+    RenderInfo info(Manager->GetTotalElapsedSeconds(), &guiCam, &viewM, &projM);
+
+
+    //Render the grid.
+    worldViewGrid.SetBounds(Box2D(0.0f, windowSize.x, -windowSize.y, 0.0f));
+    worldViewGrid.Render(frameSeconds, info);
+
+    //Render the rooms.
+    for (unsigned int i = 0; i < LevelData.Rooms.size(); ++i)
+    {
+        RenderRoom(LevelData.Rooms[i], LevelData.RoomItems[i], LevelData.RoomOffsets[i],
+                   false, frameSeconds, info);
+    }
+
+    //Render whatever GUI is on top.
+    if (GUIManager.RootElement.get() != 0)
+    {
+        GUIManager.Render(frameSeconds, info);
+    }
 }
 
 
 void LevelEditor::OnWindowResized(void)
 {
-    Vector2f windowSize = ToV2f(Manager->GetWindowSize());
-    worldViewGrid->SetBounds(Box2D(0.0f, windowSize.x, -windowSize.y, 0.0f));
+    windowSizeF = ToV2f(Manager->GetWindowSize());
 
     //TODO: Re-position the rest of the GUI elements.
 }
@@ -255,4 +302,127 @@ void LevelEditor::OnOtherWindowEvent(sf::Event& windowEvent)
             worldViewBounds.Scale(Vector2f(scaleAmnt, scaleAmnt));
         }
     }
+}
+
+
+void LevelEditor::RenderRoom(const RoomInfo& room, ItemTypes spawnItem, Vector2u roomOffset,
+                             bool isPlacing, float frameSeconds, const RenderInfo& info) const
+{
+    GUIRoom guiRoom(worldViewGrid, *this, isPlacing, &room, spawnItem);
+
+    Vector2f minRoom_Screen = ToV2f(roomOffset);
+    guiRoom.SetBounds(Box2D(minRoom_Screen.x, minRoom_Screen.y, Vector2f(1.0f, 1.0f)));
+
+    guiRoom.Render(frameSeconds, info);
+}
+
+
+//UI callbacks.
+
+void LevelEditor::OnButton_CreateRoom(void)
+{
+    //TODO: Set up and position the "create room" panel.
+}
+void LevelEditor::OnButton_MoveRoom(void)
+{
+    unsigned int room = LevelData.GetRoom(currentMouseGridPos);
+    assert(room != LevelData.Rooms.size());
+
+    placingRoom_Room = LevelData.Rooms[room];
+    placingRoom_Item = LevelData.RoomItems[room];
+    placingRoom_IsPlacing = true;
+
+    LevelData.Rooms.erase(LevelData.Rooms.begin() + room);
+    LevelData.RoomItems.erase(LevelData.RoomItems.begin() + room);
+    LevelData.RoomOffsets.erase(LevelData.RoomOffsets.begin() + room);
+}
+void LevelEditor::OnButton_DeleteRoom(void)
+{
+    unsigned int room = LevelData.GetRoom(currentMouseGridPos);
+    assert(room != LevelData.Rooms.size());
+
+    LevelData.Rooms.erase(LevelData.Rooms.begin() + room);
+    LevelData.RoomItems.erase(LevelData.RoomItems.begin() + room);
+    LevelData.RoomOffsets.erase(LevelData.RoomOffsets.begin() + room);
+}
+void LevelEditor::OnButton_PlaceTeam1(void)
+{
+    LevelData.TeamOneCenter = currentMouseWorldPos;
+}
+void LevelEditor::OnButton_PlaceTeam2(void)
+{
+    LevelData.TeamTwoCenter = currentMouseWorldPos;
+}
+void LevelEditor::OnButton_SetSpawn(ItemTypes type)
+{
+    unsigned int room = LevelData.GetRoom(currentMouseGridPos);
+    assert(room != LevelData.Rooms.size());
+    assert(LevelData.Rooms[room].GetRoomHasSpawns());
+
+    LevelData.RoomItems[room] = type;
+}
+void LevelEditor::OnButton_Save(void)
+{
+    BinaryWriter writer(true, sizeof(LevelInfo));
+
+    writer.WriteDataStructure(LevelData, "Data");
+
+    std::string err = writer.SaveData(levelFile);
+    if (!Assert(err.empty(), "Error saving level '" + levelFile + "'", err))
+    {
+        return;
+    }
+}
+void LevelEditor::OnButton_Test(void)
+{
+    //TODO: Create a "TestGame" page.
+    assert(false);
+}
+void LevelEditor::OnButton_Quit(void)
+{
+    //TODO: Show "are you sure you want to quit?" panel.
+    assert(false);
+}
+
+Vector2f LevelEditor::WorldPosToScreen(Vector2f worldPos) const
+{
+    Vector2f screenSizeF = ToV2f(Manager->GetWindowSize());
+
+    Vector2f worldViewMin = worldViewBounds.GetMinCorner(),
+             worldViewSize = worldViewBounds.GetDimensions();
+    Vector2f posLerp((worldPos.x - worldViewMin.x) / worldViewSize.x,
+                     (worldPos.y - worldViewMin.y) / worldViewSize.y);
+
+    return Vector2f::Lerp(Vector2f(0.0f, -screenSizeF.x),
+                          Vector2f(screenSizeF.x, 0.0f),
+                          posLerp);
+}
+Vector2f LevelEditor::WorldSizeToScreen(Vector2f worldSize) const
+{
+    Vector2f worldViewSize = worldViewBounds.GetDimensions(),
+             worldLerp(worldSize.x / worldViewSize.x,
+                       worldSize.y / worldViewSize.y);
+
+    return worldLerp.ComponentProduct(ToV2f(Manager->GetWindowSize()));
+}
+Vector2f LevelEditor::ScreenPosToWorld(Vector2f screenPos) const
+{
+    Vector2f windowSizeF = ToV2f(Manager->GetWindowSize()),
+             screenSizeMin(0.0f, -windowSizeF.y);
+
+    Vector2f posLerp((screenPos.x - screenSizeMin.x) / windowSizeF.x,
+                     (screenPos.y - screenSizeMin.y) / windowSizeF.y);
+    assert(posLerp.y >= 0.0f);
+
+    return Vector2f::Lerp(worldViewBounds.GetMinCorner(),
+                          worldViewBounds.GetMaxCorner(),
+                          posLerp);
+}
+Vector2f LevelEditor::ScreenSizeToWorld(Vector2f screenSize) const
+{
+    Vector2f windowSizeF = ToV2f(Manager->GetWindowSize());
+
+    Vector2f sizeLerp(screenSize.x / windowSizeF.x,
+                      screenSize.y / windowSizeF.y);
+    return sizeLerp.ComponentProduct(worldViewBounds.GetDimensions());
 }

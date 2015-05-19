@@ -12,7 +12,7 @@ public:
 
 
     //If something went wrong, an error message is output to the given string.
-    GUIEditorGrid(Box2D& worldViewBounds, MTexture2D* noiseTex, std::string& outErrorMsg);
+    GUIEditorGrid(Box2D& worldViewBounds, std::string& outErrorMsg);
 
     ~GUIEditorGrid(void);
 
@@ -21,6 +21,8 @@ public:
 
 
 private:
-
-    MTexture2D* noiseTex;
+    
+    static Material* gridMat;
+    static UniformDictionary gridMatParams;
+    static unsigned int nInstances;
 };

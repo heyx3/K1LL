@@ -2,8 +2,12 @@
 
 #include "../Page.h"
 #include "../../Level Info/LevelInfo.h"
-#include "ContextMenu.h"
 
+#include "ContextMenu.h"
+#include "GUIEditorGrid.h"
+
+
+//TODO: When saving a level, also save a thumbnail of it.
 
 //The "level editor" page.
 //Left-click to move rooms around and right-click to pan or to bring up a context menu.
@@ -26,7 +30,10 @@ public:
     virtual void OnCloseWindow(void) override;
 
     virtual void OnOtherWindowEvent(sf::Event& windowEvent) override;
-    
+
+
+    void RenderRoom(const RoomInfo& room, ItemTypes spawnItem, Vector2u roomOffset,
+                    bool isPlacing, float frameSeconds, const RenderInfo& info) const;
 
     //Callbacks for various UI events.
     void OnButton_CreateRoom(void),
@@ -38,6 +45,11 @@ public:
          OnButton_Save(void),
          OnButton_Test(void),
          OnButton_Quit(void);
+
+    Vector2f WorldPosToScreen(Vector2f worldPos) const;
+    Vector2f WorldSizeToScreen(Vector2f worldSize) const;
+    Vector2f ScreenPosToWorld(Vector2f screenPos) const;
+    Vector2f ScreenSizeToWorld(Vector2f screenSize) const;
 
 
 private:
@@ -60,16 +72,27 @@ private:
     };
 
 
+    //The full relative path to the level file being edited.
+    std::string levelFile;
+
     EditorStates currentState = ES_IDLE;
     Box2D worldViewBounds;
 
-    MTexture2D noiseTex;
-    GUIElementPtr worldViewGrid;
+    Vector2f windowSizeF;
+
+    Vector2f currentMouseWorldPos;
+    Vector2u currentMouseGridPos;
+
+    ContextMenu contextMenu;
+    GUIEditorGrid worldViewGrid;
+    
+    //Whether the left mouse button was being pressed last frame.
+    bool mouseLastFrame = false;
 
     //State-specific variables.
     RoomInfo placingRoom_Room; //TODO: Track the offset of the player's mouse when he clicked on the room.
+    ItemTypes placingRoom_Item;
+    bool placingRoom_IsPlacing; //Keeps track of this fact between multiple states.
     Vector2i waitingOnRightMouse_StartPos;
     Vector2i panning_LastPos;
-    GUIElementPtr contextMenu_Menu, contextMenu_MenuPanel;
-    ContextMenu& GetContextMenu(void) { return *(ContextMenu*)contextMenu_Menu.get(); }
 };

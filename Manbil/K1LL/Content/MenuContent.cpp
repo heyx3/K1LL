@@ -32,6 +32,7 @@ MenuContent::MenuContent(void)
       WeaponHeavyTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       WeaponSpecialTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       HealthTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
+      EditorNoiseTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       MainTextFontScale(0.25f, 0.25f), MainTextFontHeight(256)
 {
 
@@ -98,6 +99,8 @@ bool MenuContent::Initialize(std::string& err)
     TRY_LOAD(WeaponHeavyTex, Weapon Heavy.png)
     TRY_LOAD(WeaponSpecialTex, Weapon Special.png)
     TRY_LOAD(HealthTex, Health.png)
+
+    TRY_LOAD(EditorNoiseTex, GridNoise.png)
 
 
     #pragma endregion
@@ -202,6 +205,8 @@ void MenuContent::Destroy(void)
     WeaponHeavyTex.DeleteIfValid();
     WeaponSpecialTex.DeleteIfValid();
     HealthTex.DeleteIfValid();
+    
+    EditorNoiseTex.DeleteIfValid();
 }
 
 GUITexture MenuContent::CreateGUITexture(MTexture2D* tex, bool isButton)

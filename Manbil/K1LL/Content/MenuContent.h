@@ -38,6 +38,9 @@ public:
                WeaponLightTex, WeaponHeavyTex, WeaponSpecialTex,
                HealthTex;
 
+    //Level editor textures.
+    MTexture2D EditorNoiseTex;
+
 
     //Text-rendering stuff.
 
