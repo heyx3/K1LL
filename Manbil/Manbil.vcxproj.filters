@@ -1132,6 +1132,9 @@
     <ClInclude Include="K1LL\GUI Pages\Level Editor\ContextMenu.h">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClInclude>
+    <ClInclude Include="K1LL\Level Info\ItemTypes.h">
+      <Filter>K1LL\Level Info</Filter>
+    </ClInclude>
     <ClInclude Include="K1LL\GUI Pages\Level Editor\GUIRoom.h">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClInclude>

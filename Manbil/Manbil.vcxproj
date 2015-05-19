@@ -344,6 +344,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\GUI Pages\MainMenu.h" />
     <ClInclude Include="K1LL\GUI Pages\Page.h" />
     <ClInclude Include="K1LL\GUI Pages\PageManager.h" />
+    <ClInclude Include="K1LL\Level Info\ItemTypes.h" />
     <ClInclude Include="K1LL\Level Info\LevelInfo.h" />
     <ClInclude Include="K1LL\Level Info\RoomInfo.h" />
     <ClInclude Include="K1LL\Room Editor\RoomEditorView.h" />

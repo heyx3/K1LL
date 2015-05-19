@@ -4,21 +4,10 @@
 #include "../../../Math/Lower Math/Vectors.h"
 #include "../../../Graph/AStarSearch.h"
 
+#include "../../Level Info/ItemTypes.h"
+
 
 //Defines data structures for pathing through rooms in a level.
-
-
-enum ItemTypes
-{
-    IT_WEAPON_LIGHT,
-    IT_WEAPON_HEAVY,
-    IT_WEAPON_SPECIAL,
-    IT_AMMO_LIGHT,
-    IT_AMMO_HEAVY,
-    IT_AMMO_SPECIAL,
-    IT_HEALTH,
-    IT_NONE,
-};
 
 
 struct RoomNode
