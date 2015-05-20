@@ -71,7 +71,12 @@ ContextMenu::ContextMenu(LevelEditor* editor, std::string& err,
                       },
                       0, MC.MainTextFontHeight, this)
 {
-
+    if (err.empty())
+    {
+        MainBox.ScaleBy(Vector2f(0.35f, 0.35f));
+        Highlight.ScaleBy(Vector2f(0.17f, 0.5));
+        ScaleBy(Vector2f(2.3f, 2.3f));
+    }
 }
 
 void ContextMenu::SetUpForEmptySpace(void)
@@ -80,9 +85,9 @@ void ContextMenu::SetUpForEmptySpace(void)
     {
         switch ((Options)i)
         {
-            #define CASE(option, shouldBeHidden) \
+            #define CASE(option, shouldBeShown) \
                 case Options::O_ ## option : \
-                    SetIsItemHidden(i, shouldBeHidden); \
+                    SetIsItemHidden(i, !shouldBeShown); \
                     break;
             
 
@@ -120,9 +125,9 @@ void ContextMenu::SetUpForRoom(unsigned int roomIndex)
     {
         switch ((Options)i)
         {
-            #define CASE(option, shouldBeHidden) \
+            #define CASE(option, shouldBeShown) \
                 case Options::O_ ## option : \
-                    SetIsItemHidden(i, shouldBeHidden); \
+                    SetIsItemHidden(i, !shouldBeShown); \
                     break;
             
 
