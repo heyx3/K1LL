@@ -117,9 +117,11 @@ ChooseLevelEditor::ChooseLevelEditor(PageManager* manager, std::string& err)
     editLevelButton->OnClicked = [](GUITexture* thisTex, Vector2f mousePos, void* pData)
     {
         ChooseLevelEditor* cle = (ChooseLevelEditor*)pData;
+        GUISelectionBox* levels = cle->levelChoices;
 
         std::string err;
-        Page::Ptr nextPage(new LevelEditor(cle->enterLevelTextBox->GetText(), cle->Manager, err));
+        Page::Ptr nextPage(new LevelEditor(levels->GetItems()[levels->GetSelectedObject()],
+                                           cle->Manager, err));
 
         if (!err.empty())
         {
