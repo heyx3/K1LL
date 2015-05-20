@@ -43,7 +43,6 @@ void PageManager::InitializeWorld(void)
     }
 
     std::string err;
-
     ContentLoader::LoadContent(err);
     if (!err.empty())
     {
@@ -54,7 +53,6 @@ void PageManager::InitializeWorld(void)
         EndWorld();
         return;
     }
-
 
     currentPage = Page::Ptr(new MainMenu(this));
 }
@@ -74,7 +72,7 @@ void PageManager::UpdateWorld(float frameSeconds)
         currentPage = nextPage;
         nextPage = 0;
     }
-    currentPage->Update(Vector2i(screenPos.x, -screenPos.y), frameSeconds);
+    currentPage->Update(Vector2i(screenPos.x, screenPos.y - (int)windowSize.y), frameSeconds);
 }
 void PageManager::RenderOpenGL(float frameSeconds)
 {

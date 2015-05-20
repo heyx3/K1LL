@@ -32,11 +32,20 @@ void Page::Update(Vector2i mousePos, float frameSeconds)
         }
     }
 
-    GUIManager.Update(frameSeconds, mousePos,
-                      GetIsWindowInFocus() && isMousePressed && !waitForMouseRelease);
+    if (GUIManager.GetRoot() != 0)
+    {
+        GUIManager.Update(frameSeconds, mousePos,
+                          GetIsWindowInFocus() && isMousePressed && !waitForMouseRelease);
+    }
 }
 void Page::Render(float frameSeconds)
 {
+    if (GUIManager.GetRoot() == 0)
+    {
+        return;
+    }
+
+
     ScreenClearer(true, true, false, Vector4f(0.02f, 0.02f, 0.15f, 0.0f)).ClearScreen();
     RenderingState(RenderingState::C_NONE).EnableState();
 
