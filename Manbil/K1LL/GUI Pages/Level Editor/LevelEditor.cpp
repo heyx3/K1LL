@@ -6,7 +6,10 @@
 #include "../../../Rendering/GUI/GUI Elements/GUIPanel.h"
 
 #include "../PageManager.h"
+#include "../ChooseLevelEditor.h"
 #include "GUIRoom.h"
+
+#include "../../../DebugAssist.h"
 
 
 namespace
@@ -55,7 +58,8 @@ LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager,
       windowSizeF(ToV2f(manager->GetWindowSize())),
       levelFile(LevelInfo::LevelFilesPath + levelFileName + ".lvl"),
       worldViewGrid(worldViewBounds, err),
-      contextMenu(this, err, onContextMenu)
+      contextMenu(this, err, onContextMenu),
+      placingRoom_IsPlacing(false)
 {
     //See if any fields failed their initialization.
     if (!Assert(err.empty(), "Error initializing editor fields", err))
@@ -100,12 +104,18 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
     //Calculate the world grid position of the mouse.
     Vector2f mousePosF = ToV2f(mousePos),
              windowSizeF = ToV2f(Manager->GetWindowSize());
-    Vector2f posLerp(mousePosF.x / windowSizeF.x, mousePosF.y / windowSizeF.y);
+    Vector2f mousePosLerp(mousePosF.x / windowSizeF.x, -mousePosF.y / windowSizeF.y);
     currentMouseWorldPos = Vector2f::Lerp(worldViewBounds.GetMinCorner(),
                                           worldViewBounds.GetMaxCorner(),
-                                          posLerp);
+                                          mousePosLerp);
     Vector2i gridPosI = currentMouseWorldPos.Floored();
     currentMouseGridPos = ToV2u(Vector2i(Mathf::Max(gridPosI.x, 0), Mathf::Max(gridPosI.y, 0)));
+
+
+    std::cout << "Mouse pos window: " << DebugAssist::ToString(mousePos) <<
+                 "; mouse pos world: " << DebugAssist::ToString(currentMouseWorldPos) <<
+                 "; mouse pos screen: " << DebugAssist::ToString(WorldPosToScreen(currentMouseWorldPos)) << "\n";
+    
     
     //Get the room that the mouse is hovering over.
     unsigned int mousedRoom = LevelData.GetRoom(currentMouseGridPos);
@@ -173,9 +183,43 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                     {
                         contextMenu.SetUpForRoom(mousedRoom);
                     }
-                    //TODO: Position context menu (pick a corner of the menu to center on the mouse based on which corner of the screen the mouse is on) and set its GUIPanel as the current root element.
-                    assert(false);
+                    //Position the context menu.
+                    //Pick a corner of the menu to center on the mouse
+                    //    based on which corner of the screen the mouse is on.
+                    Vector2f halfMenuDims = contextMenu.GetBounds().GetDimensions() * 0.5f;
+                    Vector2f posOffset;
+                    if (mousePosLerp.x > 0.5f)
+                    {
+                        if (mousePosLerp.y > 0.5f)
+                        {
+                            posOffset = -halfMenuDims;
+                        }
+                        else
+                        {
+                            posOffset = halfMenuDims.FlipX();
+                        }
+                    }
+                    else
+                    {
+                        if (mousePosLerp.y > 0.5f)
+                        {
+                            posOffset = halfMenuDims.FlipY();
+                        }
+                        else
+                        {
+                            posOffset = halfMenuDims;
+                        }
+                    }
+                    Vector2f finalPos = WorldPosToScreen(currentMouseWorldPos);
+                    finalPos = Vector2f(finalPos.x, -(float)Manager->GetWindowSize().y - finalPos.y);
+                    //contextMenu.SetPosition(finalPos);
 
+                    contextMenu.SetIsExtended(true);
+                    Vector2f dims = contextMenu.GetBounds().GetDimensions();
+                    
+                    contextMenu.SetBounds(Box2D(0.0f, dims.x, -dims.y + 000.0f, 0.0f));
+
+                    GUIManager.SetRoot(&contextMenu);
                     currentState = ES_CONTEXT_MENU;
                 }
             }
@@ -186,6 +230,7 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                 if (mousePos.Distance(waitingOnRightMouse_StartPos) >= minDragDist)
                 {
                     currentState = ES_PANNING;
+                    Manager->GetWindow()->setMouseCursorVisible(false);
                     panning_LastPos = waitingOnRightMouse_StartPos;
                 }
             }
@@ -194,18 +239,21 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
         case ES_PANNING: {
             //Calculate the change in world position and move the view bounds by that change.
             Vector2i deltaMPos = mousePos - panning_LastPos;
-            Vector2f deltaWorldMPos((float)deltaMPos.x * worldViewBounds.GetXSize() /
+            Vector2f deltaWorldMPos(-(float)deltaMPos.x * worldViewBounds.GetXSize() /
                                         (float)Manager->GetWindowSize().x,
                                     (float)deltaMPos.y * worldViewBounds.GetYSize() /
                                         (float)Manager->GetWindowSize().y);
             worldViewBounds.Move(deltaWorldMPos);
 
             //Reset the mouse to the position it was originally at.
-            sf::Mouse::setPosition(sf::Vector2i(panning_LastPos.x, panning_LastPos.y),
+            sf::Mouse::setPosition(sf::Vector2i(panning_LastPos.x,
+                                                panning_LastPos.y + Manager->GetWindowSize().y),
                                    *Manager->GetWindow());
 
             if (!rightMouse)
             {
+                Manager->GetWindow()->setMouseCursorVisible(true);
+
                 if (placingRoom_IsPlacing)
                 {
                     currentState = ES_PLACING_ROOM;
@@ -219,9 +267,10 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
 
         case ES_CONTEXT_MENU:
             //If the context menu was dismissed by the player (by clicking outside it), go back to idling.
-            if (contextMenu.GetIsExtended())
+            if (!contextMenu.GetIsExtended())
             {
                 currentState = ES_IDLE;
+                GUIManager.SetRoot(0);
             }
             break;
 
@@ -259,6 +308,7 @@ void LevelEditor::Render(float frameSeconds)
 
 
     //Render the grid.
+    worldViewGrid.Depth = -0.5f;
     worldViewGrid.SetBounds(Box2D(0.0f, windowSize.x, -windowSize.y, 0.0f));
     worldViewGrid.Render(frameSeconds, info);
 
@@ -269,8 +319,30 @@ void LevelEditor::Render(float frameSeconds)
                    false, frameSeconds, info);
     }
 
+
+    //State-specific rendering.
+    switch (currentState)
+    {
+        case ES_IDLE:
+        case ES_WAITING_ON_RIGHT_MOUSE:
+        case ES_PANNING:
+        case ES_CREATING_ROOM: //Handled by the GUIManager.
+        case ES_CONTEXT_MENU: //Handled by the GUIManager.
+            break;
+
+        case ES_PLACING_ROOM:
+            RenderRoom(placingRoom_Room, placingRoom_Item, currentMouseGridPos,
+                       true, frameSeconds, info);
+            break;
+
+        default:
+            assert(false);
+            break;
+    }
+
+
     //Render whatever GUI is on top.
-    if (GUIManager.RootElement.get() != 0)
+    if (GUIManager.GetRoot() != 0)
     {
         GUIManager.Render(frameSeconds, info);
     }
@@ -281,7 +353,11 @@ void LevelEditor::OnWindowResized(void)
 {
     windowSizeF = ToV2f(Manager->GetWindowSize());
 
-    //TODO: Re-position the rest of the GUI elements.
+    float worldBoundsAR = worldViewBounds.GetXSize() / worldViewBounds.GetYSize(),
+          windowAR = (float)Manager->GetWindowSize().x / (float)Manager->GetWindowSize().y;
+    worldViewBounds.Scale(Vector2f(windowAR / worldBoundsAR, 1.0f));
+
+    //TODO: Re-position the GUI elements.
 }
 void LevelEditor::OnCloseWindow(void)
 {
@@ -294,7 +370,7 @@ void LevelEditor::OnOtherWindowEvent(sf::Event& windowEvent)
     //If the player used the mouse wheel, zoom in/out.
     if (windowEvent.type == sf::Event::MouseWheelMoved)
     {
-        const float zoomChange = 1.1f;
+        const float zoomChange = 0.9f;
         const float minDiagonal = 1.0f;
         if (windowEvent.mouseWheel.delta < 0 || worldViewBounds.GetDimensions().Length() > minDiagonal)
         {
@@ -321,7 +397,7 @@ void LevelEditor::RenderRoom(const RoomInfo& room, ItemTypes spawnItem, Vector2u
 
 void LevelEditor::OnButton_CreateRoom(void)
 {
-    //TODO: Set up and position the "create room" panel.
+    //TODO: Set up and position the "create room" panel. Set GUIManager to use it.
 }
 void LevelEditor::OnButton_MoveRoom(void)
 {
@@ -380,8 +456,14 @@ void LevelEditor::OnButton_Test(void)
 }
 void LevelEditor::OnButton_Quit(void)
 {
-    //TODO: Show "are you sure you want to quit?" panel.
-    assert(false);
+    std::string err;
+    Page::Ptr nextPage(new ChooseLevelEditor(Manager, err));
+    if (!Assert(err.empty(), "Error setting up 'ChooseLevelEditor' page", err))
+    {
+        return;
+    }
+
+    Manager->UpdateCurrentPage(nextPage);
 }
 
 Vector2f LevelEditor::WorldPosToScreen(Vector2f worldPos) const
