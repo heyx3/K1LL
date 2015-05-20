@@ -42,66 +42,52 @@ bool MenuContent::Initialize(std::string& err)
 {
     #pragma region Load textures
 
-    PageBackground.Create();
-    BackButton.Create();
-    TextBoxBackground.Create();
-
-    PlayButton.Create();
-    OptionsButton.Create();
-    EditorButton.Create();
-    QuitButton.Create();
-
-    ConfirmDeletePopup.Create();
-    NOTex.Create();
-    YESTex.Create();
-    EditLevelTex.Create();
-    DeleteLevelTex.Create();
-    CreateLevelTex.Create();
-    LevelSelectionBoxHighlight.Create();
-    LevelSelectionBoxBackground.Create();
-    LevelSelectionSingleElement.Create();
-
-
-#define TRY_LOAD(buttonVar, fileName) \
-    buttonVar.SetDataFromFile(std::string("Content/Menu/") + #fileName, err); \
-    if (!err.empty()) \
-    { \
-        err = std::string("Error loading ") + #fileName + " tex: " + err; \
-        return false; \
-    }
+    #define CREATE_LOAD(buttonVar, fileName) \
+        buttonVar.Create(); \
+        buttonVar.SetDataFromFile(std::string("Content/Menu/") + #fileName, err); \
+        if (!err.empty()) \
+        { \
+            err = std::string("Error loading ") + #fileName + " tex: " + err; \
+            return false; \
+        }
     
-    TRY_LOAD(PageBackground, Background.png)
-    TRY_LOAD(BackButton, BackButton.png)
-    TRY_LOAD(TextBoxBackground, TextBoxBackground.png)
 
-    TRY_LOAD(PlayButton, Play Button.png)
-    TRY_LOAD(OptionsButton, Options Button.png)
-    TRY_LOAD(EditorButton, Editor Button.png)
-    TRY_LOAD(QuitButton, Quit Button.png)
+    CREATE_LOAD(PageBackground, Background.png)
+    CREATE_LOAD(BackButton, BackButton.png)
+    CREATE_LOAD(TextBoxBackground, TextBoxBackground.png)
 
-    TRY_LOAD(ConfirmDeletePopup, ConfirmDeletePopup.png)
-    TRY_LOAD(NOTex, NOWithoutBackground.png)
-    TRY_LOAD(YESTex, YESWithoutBackground.png)
-    TRY_LOAD(EditLevelTex, EditLevelButton.png)
-    TRY_LOAD(DeleteLevelTex, DeleteLevelButton.png)
-    TRY_LOAD(CreateLevelTex, CreateButton.png)
-    TRY_LOAD(LevelSelectionBoxHighlight, LevelChoiceHighlight.png)
-    TRY_LOAD(LevelSelectionBoxBackground, LevelChoiceBackground.png)
+    CREATE_LOAD(PlayButton, Play Button.png)
+    CREATE_LOAD(OptionsButton, Options Button.png)
+    CREATE_LOAD(EditorButton, Editor Button.png)
+    CREATE_LOAD(QuitButton, Quit Button.png)
+
+    CREATE_LOAD(ConfirmDeletePopup, ConfirmDeletePopup.png)
+    CREATE_LOAD(NOTex, NOWithoutBackground.png)
+    CREATE_LOAD(YESTex, YESWithoutBackground.png)
+    CREATE_LOAD(EditLevelTex, EditLevelButton.png)
+    CREATE_LOAD(DeleteLevelTex, DeleteLevelButton.png)
+    CREATE_LOAD(CreateLevelTex, CreateButton.png)
+    CREATE_LOAD(LevelSelectionBoxHighlight, LevelChoiceHighlight.png)
+    CREATE_LOAD(LevelSelectionBoxBackground, LevelChoiceBackground.png)
+
     Array2D<Vector4b> colors(1, 1, Vector4b((unsigned char)255, 255, 255, 255));
+    LevelSelectionSingleElement.Create();
     LevelSelectionSingleElement.SetColorData(colors);
 
-    TRY_LOAD(FloorTex, LevelEditorFloor.png)
-    TRY_LOAD(WallTex, Wall.png)
-    TRY_LOAD(AmmoLightTex, Ammo Light.png)
-    TRY_LOAD(AmmoHeavyTex, Ammo Heavy.png)
-    TRY_LOAD(AmmoSpecialTex, Ammo Special.png)
-    TRY_LOAD(WeaponLightTex, Weapon Light.png)
-    TRY_LOAD(WeaponHeavyTex, Weapon Heavy.png)
-    TRY_LOAD(WeaponSpecialTex, Weapon Special.png)
-    TRY_LOAD(HealthTex, Health.png)
+    CREATE_LOAD(FloorTex, LevelEditorFloor.png)
+    CREATE_LOAD(WallTex, Wall.png)
+    CREATE_LOAD(AmmoLightTex, Ammo Light.png)
+    CREATE_LOAD(AmmoHeavyTex, Ammo Heavy.png)
+    CREATE_LOAD(AmmoSpecialTex, Ammo Special.png)
+    CREATE_LOAD(WeaponLightTex, Weapon Light.png)
+    CREATE_LOAD(WeaponHeavyTex, Weapon Heavy.png)
+    CREATE_LOAD(WeaponSpecialTex, Weapon Special.png)
+    CREATE_LOAD(HealthTex, Health.png)
 
-    TRY_LOAD(EditorNoiseTex, GridNoise.png)
+    CREATE_LOAD(EditorNoiseTex, GridNoise.png)
 
+
+    #undef CREATE_LOAD
 
     #pragma endregion
 
