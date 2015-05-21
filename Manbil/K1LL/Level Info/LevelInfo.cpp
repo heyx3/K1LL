@@ -46,12 +46,21 @@ bool LevelInfo::IsAreaFree(Vector2u start, Vector2u end, bool allowEdges) const
     for (unsigned int i = 0; i < Rooms.size(); ++i)
     {
         Vector2u min = RoomOffsets[i],
-                 max = min + Rooms[i].RoomGrid.GetDimensions();
+                 max = min + Rooms[i].RoomGrid.GetDimensions() - Vector2u(1, 1);
 
-        if (BoxesTouchingInside(start, end, min, max) ||
-            (!allowEdges && BoxesBorder(start, end, min, max)))
+        if (allowEdges)
         {
-            return false;
+            if (start.x < max.x && end.x > min.x && start.y < max.y && end.y > min.y)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (start.x <= max.x && end.x >= min.x && start.y <= max.y && end.y >= min.y)
+            {
+                return false;
+            }
         }
     }
 
@@ -63,7 +72,7 @@ unsigned int LevelInfo::GetRoom(Vector2u worldGridPos) const
     for (unsigned int i = 0; i < Rooms.size(); ++i)
     {
         Vector2u min = RoomOffsets[i],
-                 max = min + Rooms[i].RoomGrid.GetDimensions();
+                 max = min + Rooms[i].RoomGrid.GetDimensions() - Vector2u(1, 1);
         if (worldGridPos.x >= min.x && worldGridPos.x <= max.x &&
             worldGridPos.y >= min.y && worldGridPos.y <= max.y)
         {

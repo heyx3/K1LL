@@ -40,7 +40,10 @@ void GUIRoom::Render(float seconds, const RenderInfo& info)
     }
 
     //Render the floor.
+    float depth = Depth;
+    Depth = 0.0001f;
     GUITexture::Render(seconds, info);
+    Depth = depth;
 
 
     //Render the walls.
@@ -63,7 +66,7 @@ void GUIRoom::Render(float seconds, const RenderInfo& info)
             BlockTypes block = RoomData->RoomGrid[gridLocal];
             
             //Only draw walls/doorways.
-            if (block == BT_NONE || block == BT_SPAWN)
+            if (block == BT_NONE)
             {
                 continue;
             }
@@ -91,10 +94,9 @@ void GUIRoom::Render(float seconds, const RenderInfo& info)
                 {
                     child.SetTex(itemTex);
 
-                    float alpha = Mathf::Lerp(0.4f, 0.8f,
-                                              0.5f + (0.5f *
-                                                      sinf(0.8f * Editor.Manager->GetTotalElapsedSeconds())));
-                    child.SetColor(Vector4f(1.0f, 1.0f, 1.0f, 0.4f));
+                    float t = Editor.Manager->GetTotalElapsedSeconds();
+                    float alpha = Mathf::Lerp(0.4f, 0.8f, 0.5f + (0.5f * sinf(4.0f * t)));
+                    child.SetColor(Vector4f(1.0f, 1.0f, 1.0f, alpha));
 
                     Vector2f blockMin_Screen = roomMin_Screen +
                                                ToV2f(gridLocal).ComponentProduct(blockSize_Screen);

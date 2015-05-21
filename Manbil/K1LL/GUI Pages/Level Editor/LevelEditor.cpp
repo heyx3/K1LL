@@ -130,15 +130,15 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
     switch (currentState)
     {
         case ES_IDLE:
-            std::cout << "Idle\n";
-
             if (leftMouse && !mouseLastFrame)
             {
                 //If the player clicked on a room, pick it up and let him move it.
                 if (!noMousedRoom)
                 {
                     currentState = ES_PLACING_ROOM;
+                    placingRoom_IsPlacing = true;
                     placingRoom_Room = LevelData.Rooms[mousedRoom];
+                    placingRoom_Item = LevelData.RoomItems[mousedRoom];
 
                     LevelData.Rooms.erase(LevelData.Rooms.begin() + mousedRoom);
                     LevelData.RoomItems.erase(LevelData.RoomItems.begin() + mousedRoom);
@@ -176,14 +176,13 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
             break;
 
         case ES_PLACING_ROOM:
-            std::cout << "Placing Room\n";
-
             if (leftMouse && !mouseLastFrame)
             {
                 //If this is a valid spot to stick the room, go ahead and place it down.
-                if (LevelData.IsAreaFree(currentMouseGridPos,
-                                         currentMouseGridPos + placingRoom_Room.RoomGrid.GetDimensions(),
-                                         true))
+                Vector2u roomEnd = currentMouseGridPos +
+                                   placingRoom_Room.RoomGrid.GetDimensions() -
+                                   Vector2u(1, 1);
+                if (LevelData.IsAreaFree(currentMouseGridPos, roomEnd, true))
                 {
                     LevelData.Rooms.push_back(placingRoom_Room);
                     LevelData.RoomItems.push_back(placingRoom_Item);
@@ -201,8 +200,6 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
             break;
 
         case ES_WAITING_ON_RIGHT_MOUSE:
-            std::cout << "Waiting on right mouse\n";
-
             if (!rightMouse)
             {
                 //If the player was placing a room, remove it.
@@ -218,10 +215,12 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                     if (noMousedRoom)
                     {
                         contextMenu.SetUpForEmptySpace();
+                        contextMenu_SelectedRoom = LevelData.Rooms.size();
                     }
                     else
                     {
                         contextMenu.SetUpForRoom(mousedRoom);
+                        contextMenu_SelectedRoom = mousedRoom;
                     }
 
                     //Activate the context menu.
@@ -230,6 +229,7 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                     GUIManager.SetRoot(&contextMenu);
                     
                     //Position the context menu.
+                    //TODO: Scale if it's too big for the screen.
                     contextMenu.SetBounds(Box2D(0.0f, dims.x, -dims.y + 000.0f, 0.0f));
 
                     currentState = ES_CONTEXT_MENU;
@@ -249,8 +249,6 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
             break;
 
         case ES_PANNING: {
-            std::cout << "Panning\n";
-
             //Calculate the change in world position and move the view bounds by that change.
             Vector2i deltaMPos = mousePos - panning_LastPos;
             Vector2f deltaWorldMPos(-(float)deltaMPos.x * worldViewBounds.GetXSize() /
@@ -280,8 +278,6 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
         }   break;
 
         case ES_CONTEXT_MENU:
-            std::cout << "Context Menu\n";
-
             //If the context menu was dismissed by the player (by clicking outside it), go back to idling.
             if (!contextMenu.GetIsExtended())
             {
@@ -338,7 +334,8 @@ void LevelEditor::Render(float frameSeconds)
                    (mousedRoom == i), frameSeconds, info,
                    (mousedRoom == i ?
                         Vector4f(2.0f, 2.0f, 2.0f, 1.0f) :
-                        Vector4f(1.0f, 1.0f, 1.0f, 1.0f)));
+                        Vector4f(1.0f, 1.0f, 1.0f, 1.0f)),
+                   i);
     }
 
 
@@ -346,15 +343,27 @@ void LevelEditor::Render(float frameSeconds)
     switch (currentState)
     {
         case ES_IDLE:
-        case ES_WAITING_ON_RIGHT_MOUSE:
-        case ES_PANNING:
         case ES_CREATING_ROOM: //Handled by the GUIManager.
         case ES_CONTEXT_MENU: //Handled by the GUIManager.
             break;
 
         case ES_PLACING_ROOM:
-            RenderRoom(placingRoom_Room, placingRoom_Item, currentMouseGridPos,
-                       true, frameSeconds, info, Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+        case ES_WAITING_ON_RIGHT_MOUSE:
+        case ES_PANNING:
+            if (placingRoom_IsPlacing)
+            {
+                Vector4f blendCol = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+                Vector2u roomEnd = currentMouseGridPos +
+                                   placingRoom_Room.RoomGrid.GetDimensions() -
+                                   Vector2u(1, 1);
+                if (!LevelData.IsAreaFree(currentMouseGridPos, roomEnd, true))
+                {
+                    blendCol = Vector4f(4.0f, 1.0f, 1.0f, 2.0f);
+                }
+
+                RenderRoom(placingRoom_Room, placingRoom_Item, currentMouseGridPos,
+                           true, frameSeconds, info, blendCol, LevelData.Rooms.size());
+            }
             break;
 
         default:
@@ -378,6 +387,14 @@ void LevelEditor::OnWindowResized(void)
     float worldBoundsAR = worldViewBounds.GetXSize() / worldViewBounds.GetYSize(),
           windowAR = (float)Manager->GetWindowSize().x / (float)Manager->GetWindowSize().y;
     worldViewBounds.Scale(Vector2f(windowAR / worldBoundsAR, 1.0f));
+
+    //Dismiss the context menu if it exists.
+    if (currentState == ES_CONTEXT_MENU)
+    {
+        currentState = ES_IDLE;
+        contextMenu.SetIsExtended(false);
+        GUIManager.SetRoot(0);
+    }
 
     //TODO: Re-position the GUI elements.
 }
@@ -405,18 +422,16 @@ void LevelEditor::OnOtherWindowEvent(sf::Event& windowEvent)
 
 void LevelEditor::RenderRoom(const RoomInfo& room, ItemTypes spawnItem, Vector2u roomOffset,
                              bool isPlacing, float frameSeconds, const RenderInfo& info,
-                             Vector4f blendCol) const
+                             Vector4f blendCol, int depthIncrement) const
 {
     GUIRoom guiRoom(worldViewGrid, *this, isPlacing, &room, spawnItem);
 
-    guiRoom.Depth = 0.03f;
+    guiRoom.Depth = 0.01f * (float)depthIncrement;
 
     Vector2f minRoom_Screen = WorldPosToScreen(ToV2f(roomOffset)),
              sizeRoom_Screen = WorldSizeToScreen(ToV2f(room.RoomGrid.GetDimensions()));
     guiRoom.SetBounds(Box2D(minRoom_Screen.x, minRoom_Screen.y - sizeRoom_Screen.y,
                             sizeRoom_Screen));
-    //guiRoom.SetBounds(Box2D(minRoom_Screen.x, minRoom_Screen.y,
-    //                        WorldSizeToScreen(ToV2f(room.RoomGrid.GetDimensions()))));
 
     guiRoom.SetColor(blendCol);
     guiRoom.Render(frameSeconds, info);
@@ -461,11 +476,10 @@ void LevelEditor::OnButton_PlaceTeam2(void)
 }
 void LevelEditor::OnButton_SetSpawn(ItemTypes type)
 {
-    unsigned int room = LevelData.GetRoom(currentMouseGridPos);
-    assert(room != LevelData.Rooms.size());
-    assert(LevelData.Rooms[room].GetRoomHasSpawns());
+    assert(contextMenu_SelectedRoom < LevelData.Rooms.size());
+    assert(LevelData.Rooms[contextMenu_SelectedRoom].GetRoomHasSpawns());
 
-    LevelData.RoomItems[room] = type;
+    LevelData.RoomItems[contextMenu_SelectedRoom] = type;
 }
 void LevelEditor::OnButton_Save(void)
 {
@@ -520,7 +534,7 @@ Vector2f LevelEditor::WorldSizeToScreen(Vector2f worldSize) const
 Vector2f LevelEditor::ScreenPosToWorld(Vector2f screenPos) const
 {
     Vector2f windowSizeF = ToV2f(Manager->GetWindowSize()),
-             screenSizeMin(0.0f, -windowSizeF.y);
+             screenSizeMin(0.0f, 0.0f);
 
     Vector2f posLerp((screenPos.x - screenSizeMin.x) / windowSizeF.x,
                      (screenPos.y - screenSizeMin.y) / windowSizeF.y);

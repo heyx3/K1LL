@@ -27,11 +27,5 @@ public:
     GUIRoom(const GUIEditorGrid& grid, const LevelEditor& editor, bool isBeingPlaced,
             const RoomInfo* roomData, ItemTypes roomSpawn);
 
-
-    //Vector2f WorldPosToScreen(Vector2f worldPos) const;
-    //Vector2f WorldSizeToScreen(Vector2f worldSize) const;
-
-    //virtual Box2D GetBounds(void) const override;
-
     virtual void Render(float elapsedTime, const RenderInfo& info) override;
 };

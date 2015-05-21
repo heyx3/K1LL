@@ -34,7 +34,7 @@ public:
 
     void RenderRoom(const RoomInfo& room, ItemTypes spawnItem, Vector2u roomOffset,
                     bool isPlacing, float frameSeconds, const RenderInfo& info,
-                    Vector4f blendCol) const;
+                    Vector4f blendCol, int depthIncrement) const;
 
     //Callbacks for various UI events.
     void OnButton_CreateRoom(void),
@@ -96,4 +96,5 @@ private:
     bool placingRoom_IsPlacing; //Keeps track of this fact between multiple states.
     Vector2i waitingOnRightMouse_StartPos;
     Vector2i panning_LastPos;
+    unsigned int contextMenu_SelectedRoom;
 };
