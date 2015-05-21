@@ -3,6 +3,8 @@
 #include "../../Rendering/GUI/GUI Elements/GUITexture.h"
 #include "../../Rendering/GUI/GUI Elements/GUILabel.h"
 
+#include "../Level Info/ItemTypes.h"
+
 
 //Contains content for menus.
 class MenuContent
@@ -53,6 +55,9 @@ public:
 
     bool Initialize(std::string& outErrorMsg);
     void Destroy(void);
+
+
+    MTexture2D* GetPickupTex(ItemTypes pickup);
 
 
     //Creates a GUI texture for a menu. A 0 pointer may be passed for the texture.

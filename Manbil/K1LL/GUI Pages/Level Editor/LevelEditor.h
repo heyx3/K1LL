@@ -33,7 +33,8 @@ public:
 
 
     void RenderRoom(const RoomInfo& room, ItemTypes spawnItem, Vector2u roomOffset,
-                    bool isPlacing, float frameSeconds, const RenderInfo& info) const;
+                    bool isPlacing, float frameSeconds, const RenderInfo& info,
+                    Vector4f blendCol) const;
 
     //Callbacks for various UI events.
     void OnButton_CreateRoom(void),

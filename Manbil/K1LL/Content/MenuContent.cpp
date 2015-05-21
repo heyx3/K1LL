@@ -195,6 +195,36 @@ void MenuContent::Destroy(void)
     EditorNoiseTex.DeleteIfValid();
 }
 
+MTexture2D* MenuContent::GetPickupTex(ItemTypes pickup)
+{
+    switch (pickup)
+    {
+        case IT_NONE:
+            return 0;
+
+        case IT_AMMO_LIGHT:
+            return &AmmoLightTex;
+        case IT_AMMO_HEAVY:
+            return &AmmoHeavyTex;
+        case IT_AMMO_SPECIAL:
+            return &AmmoSpecialTex;
+
+        case IT_WEAPON_LIGHT:
+            return &WeaponLightTex;
+        case IT_WEAPON_HEAVY:
+            return &WeaponHeavyTex;
+        case IT_WEAPON_SPECIAL:
+            return &WeaponSpecialTex;
+
+        case IT_HEALTH:
+            return &HealthTex;
+
+        default:
+            assert(false);
+            return 0;
+    }
+}
+
 GUITexture MenuContent::CreateGUITexture(MTexture2D* tex, bool isButton)
 {
     assert(tex == 0 || tex->IsColorTexture());

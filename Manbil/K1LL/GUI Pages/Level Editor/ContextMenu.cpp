@@ -71,6 +71,7 @@ ContextMenu::ContextMenu(LevelEditor* editor, std::string& err,
                       },
                       0, MC.MainTextFontHeight, this)
 {
+    Depth = 0.5f;
     if (err.empty())
     {
         MainBox.ScaleBy(Vector2f(0.35f, 0.35f));
