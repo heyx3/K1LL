@@ -9,7 +9,23 @@
 
 namespace
 {
-    #define OP ContextMenu::Options
+    //Scaling constants.
+    const Vector2f SCALE_Item(0.5f, 0.25f),
+                   SCALE_Highlight(0.25f, 0.3f),
+                   SCALE_Total(2.3f, 2.3f),
+                   SCALE_Text(1.4f, 1.4f);
+
+    //Color constants.
+    const Vector4f COLOR_Text(1.0f, 1.0f, 1.0f, 1.0f),
+                   COLOR_Background(0.05f, 0.05f, 0.05f, 1.0f),
+                   COLOR_Highlight(0.2f, 0.2f, 2.0f, 1.0f),
+                   COLOR_Total(1.0f, 1.0f, 1.0f, 0.95f);
+
+    //Spacing constants.
+    const float SPACING_Items = 5.0f;
+
+
+#define OP ContextMenu::Options
 
     std::string ToString(OP opt)
     {
@@ -52,14 +68,15 @@ namespace
         return vals;
     }
 
-    #undef OP
+#undef OP
 }
 
 ContextMenu::ContextMenu(LevelEditor* editor, std::string& err,
                          void(*onElementClicked)(Options element, ContextMenu* thisMenu))
     : Editor(editor), OnElementClicked(onElementClicked),
-      GUISelectionBox(&MC.TextRender, MC.MainTextFont, Vector4f(0.0f, 0.0f, 0.0f, 1.0f), false, FT_LINEAR,
-                      MC.MainTextFontScale, 10.0f, MC.LabelGUIMat, MC.LabelGUIParams,
+      GUISelectionBox(&MC.TextRender, MC.MainTextFont, COLOR_Text, false, FT_LINEAR,
+                      MC.MainTextFontScale.ComponentProduct(SCALE_Text), SPACING_Items,
+                      MC.LabelGUIMat, MC.LabelGUIParams,
                       MC.CreateGUITexture(&MC.TextBoxBackground, true),
                       MC.CreateGUITexture(&MC.LevelSelectionBoxHighlight, false),
                       MC.CreateGUITexture(&MC.TextBoxBackground, false),
@@ -71,12 +88,15 @@ ContextMenu::ContextMenu(LevelEditor* editor, std::string& err,
                       },
                       0, MC.MainTextFontHeight, this)
 {
-    Depth = 0.5f;
     if (err.empty())
     {
-        MainBox.ScaleBy(Vector2f(0.35f, 0.35f));
-        Highlight.ScaleBy(Vector2f(0.17f, 0.5));
-        ScaleBy(Vector2f(2.3f, 2.3f));
+        MainBox.ScaleBy(SCALE_Item);
+        Highlight.ScaleBy(SCALE_Highlight);
+        ScaleBy(SCALE_Total);
+
+        Highlight.SetColor(COLOR_Highlight);
+        SelectionBackground.SetColor(COLOR_Background);
+        SetColor(COLOR_Total);
     }
 }
 

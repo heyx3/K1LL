@@ -9,16 +9,21 @@
 #define MC MenuContent::Instance
 
 
-//If placing the room, oscillate its color between two values.
+//Color and depth constants.
 namespace
 {
     const Vector4f minBlendCol = Vector4f(0.6f, 0.6f, 0.6f, 0.75f),
                    maxBlendCol = Vector4f(0.8f, 0.8f, 1.0f, 0.95f);
     const float blendSpeed = 3.0f;
+
+    const Vector3f COLOR_Wall(0.8f, 0.8f, 0.8f),
+                   COLOR_Spawn(1.0f, 1.0f, 1.0f);
+
+    const float DEPTH_BlockOffset = 0.1f;
 }
 
 
-GUIRoom::GUIRoom(const GUIEditorGrid& grid, const LevelEditor& editor, bool isBeingPlaced,
+GUIRoom::GUIRoom(const GUIEditorGrid& grid, LevelEditor& editor, bool isBeingPlaced,
                  const RoomInfo* roomData, ItemTypes roomSpawn)
     : Grid(grid), Editor(editor), IsBeingPlaced(isBeingPlaced),
       RoomData(roomData), RoomSpawn(roomSpawn),
@@ -40,10 +45,7 @@ void GUIRoom::Render(float seconds, const RenderInfo& info)
     }
 
     //Render the floor.
-    float depth = Depth;
-    Depth = 0.0001f;
     GUITexture::Render(seconds, info);
-    Depth = depth;
 
 
     //Render the walls.
@@ -57,7 +59,7 @@ void GUIRoom::Render(float seconds, const RenderInfo& info)
                               roomSize_Screen.y / (float)RoomData->RoomGrid.GetHeight());
 
     GUITexture child(Params, &MC.WallTex, Mat);
-    child.Depth = Depth + 0.001f;
+    child.Depth = Depth + DEPTH_BlockOffset;
 
     for (Vector2u gridLocal; gridLocal.y < RoomData->RoomGrid.GetHeight(); ++gridLocal.y)
     {
@@ -66,19 +68,14 @@ void GUIRoom::Render(float seconds, const RenderInfo& info)
             BlockTypes block = RoomData->RoomGrid[gridLocal];
             
             //Only draw walls/doorways.
-            if (block == BT_NONE)
+            if (block == BT_NONE || block == BT_DOORWAY)
             {
                 continue;
             }
-            else if (block == BT_WALL || block == BT_DOORWAY)
+            else if (block == BT_WALL)
             {
                 child.SetTex(&MC.WallTex);
-
-                //Draw doorways as partially-transparent walls.
-                Vector4f color = block == BT_WALL ?
-                                     Vector4f(1.0f, 1.0f, 1.0f, 1.0f) :
-                                     Vector4f(1.0f, 1.0f, 1.0f, 0.25f);
-                child.SetColor(color.ComponentProduct(GetColor()));
+                child.SetColor(Vector4f(COLOR_Wall, 1.0f).ComponentProduct(GetColor()));
                 
                 //Position the block.
                 Vector2f blockMin_Screen = roomMin_Screen +
@@ -94,10 +91,12 @@ void GUIRoom::Render(float seconds, const RenderInfo& info)
                 {
                     child.SetTex(itemTex);
 
+                    //Set the color and oscillate the alpha.
                     float t = Editor.Manager->GetTotalElapsedSeconds();
-                    float alpha = Mathf::Lerp(0.4f, 0.8f, 0.5f + (0.5f * sinf(4.0f * t)));
-                    child.SetColor(Vector4f(1.0f, 1.0f, 1.0f, alpha));
+                    float alpha = Mathf::Lerp(0.4f, 0.8f, 0.2f + (0.2f * sinf(4.0f * t)));
+                    child.SetColor(GetColor().ComponentProduct(Vector4f(COLOR_Spawn, alpha)));
 
+                    //Position the block.
                     Vector2f blockMin_Screen = roomMin_Screen +
                                                ToV2f(gridLocal).ComponentProduct(blockSize_Screen);
                     child.SetBounds(Box2D(blockMin_Screen.x, blockMin_Screen.y, blockSize_Screen));
