@@ -5,6 +5,7 @@
 
 #include "ContextMenu.h"
 #include "GUIEditorGrid.h"
+#include "GUIRoomSelection.h"
 
 
 //TODO: When saving a level, also save a thumbnail of it.
@@ -34,9 +35,10 @@ public:
 
     void RenderRoom(const RoomInfo& room, ItemTypes spawnItem, Vector2u roomOffset,
                     bool isPlacing, float frameSeconds, const RenderInfo& info,
-                    Vector4f blendCol, int depthIncrement) const;
+                    Vector4f blendCol, float depth);
 
     //Callbacks for various UI events.
+    void OnRoomSelection(unsigned int roomIndex);
     void OnButton_CreateRoom(void),
          OnButton_MoveRoom(void),
          OnButton_DeleteRoom(void),
@@ -86,6 +88,7 @@ private:
 
     ContextMenu contextMenu;
     GUIEditorGrid worldViewGrid;
+    GUIRoomSelection newRoomSelection;
     
     //Whether the left mouse button was being pressed last frame.
     bool mouseLastFrame = false;
