@@ -21,9 +21,9 @@ namespace
         LevelEditor* Editor;
     };
 
-    GUIElementPtr CreateRoom(InputData& data, unsigned int roomIndex, const RoomInfo* roomData)
+    GUIElementPtr CreateRoom(InputData& data, unsigned int roomIndex, const LevelInfo::RoomData* room)
     {
-        GUIElementPtr ptr(new GUIRoom(*data.Grid, *data.Editor, false, roomData, IT_NONE));
+        GUIElementPtr ptr(new GUIRoom(*data.Grid, *data.Editor, false, room));
         ptr->Depth = DEPTH_Floor + 0.0001f;
         ptr->SetColor(Vector4f(2.0f, 2.0f, 2.0f, 1.0f));
         
@@ -72,9 +72,12 @@ GUIRoomSelection::GUIRoomSelection(const GUIEditorGrid& grid, LevelEditor& _edit
     InputData dat;
     dat.Editor = &editor;
     dat.Grid = &grid;
+    roomDatas.reserve(rooms.Rooms.size());
     for (unsigned int i = 0; i < rooms.Rooms.size(); ++i)
     {
-        AddElement(CreateRoom(dat, i, &rooms.Rooms[i]));
+        roomDatas.push_back(LevelInfo::RoomData(rooms.Rooms[i].RoomGrid,
+                                                Vector2u(), IT_NONE, 0.0f, 0.0f));
+        AddElement(CreateRoom(dat, i, &roomDatas[i]));
     }
 
     //Re-position the rooms.

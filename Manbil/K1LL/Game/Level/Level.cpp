@@ -54,64 +54,25 @@ Level::Level(const LevelInfo& level, std::string& err)
 {
     LevelInfo::UIntBox bnds = level.GetBounds();
 
+    level.GenerateFullLevel(BlockGrid);
+
     //Set up the rooms.
     std::vector<RoomNode> tempRooms;
-    BlockGrid.Reset(bnds.Max.x - bnds.Min.x, bnds.Max.y - bnds.Min.y, BT_WALL);
     for (unsigned int i = 0; i < level.Rooms.size(); ++i)
     {
-        Vector2u min = level.RoomOffsets[i],
-                 max = min + level.Rooms[i].RoomGrid.GetDimensions();
-
-        LevelInfo::UIntBox lvlBnds;
-        lvlBnds.Min = min;
-        lvlBnds.Max = max;
-        RoomBounds.push_back(lvlBnds);
-
-        #pragma region Fill in the grid area this room covers
-
-        for (Vector2u counter = min; counter.y <= max.y; ++counter.y)
+        RoomBounds.push_back(level.GetBounds(i));
+        
+        //Keep track of any spawn points.
+        for (Vector2u counter; counter.y < level.Rooms[i].Walls.GetHeight(); ++counter.y)
         {
-            for (counter.x = min.x; counter.x <= max.x; ++counter.x)
+            for (counter.x = 0; counter.x < level.Rooms[i].Walls.GetWidth(); ++counter.x)
             {
-                BlockTypes& levelType = BlockGrid[counter];
-                BlockTypes roomType = level.Rooms[i].RoomGrid[counter - min];
-
-                //If there is already a doorway here, then we either have another doorway or a wall.
-                if (levelType == BT_DOORWAY)
+                if (level.Rooms[i].Walls[counter] == BT_SPAWN)
                 {
-                    if (roomType == BT_DOORWAY)
-                    {
-                        levelType = BT_NONE;
-                    }
-                    else
-                    {
-                        assert(roomType == BT_WALL);
-                        levelType = BT_WALL;
-                    }
-                }
-                else
-                {
-                    levelType = roomType;
+                    Spawns[level.Rooms[i].SpawnedItem].push_back(counter + level.Rooms[i].MinCornerPos);
                 }
             }
         }
-
-        #pragma endregion
-
-        #pragma region Turn any unused doorways into walls
-
-        for (Vector2u counter = min; counter.y <= max.y; ++counter.y)
-        {
-            for (counter.x = min.x; counter.x <= max.x; ++counter.x)
-            {
-                if (BlockGrid[counter] == BT_DOORWAY)
-                {
-                    BlockGrid[counter] = BT_WALL;
-                }
-            }
-        }
-
-        #pragma endregion
     }
 
     level.GetConnections(RoomGraph);

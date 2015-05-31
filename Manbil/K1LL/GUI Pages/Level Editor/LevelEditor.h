@@ -33,9 +33,8 @@ public:
     virtual void OnOtherWindowEvent(sf::Event& windowEvent) override;
 
 
-    void RenderRoom(const RoomInfo& room, ItemTypes spawnItem, Vector2u roomOffset,
-                    bool isPlacing, float frameSeconds, const RenderInfo& info,
-                    Vector4f blendCol, float depth);
+    void RenderRoom(const LevelInfo::RoomData& room, bool isPlacing,
+                    Vector4f blendCol, float depth, float frameSeconds, const RenderInfo& info);
 
     //Callbacks for various UI events.
     void OnRoomSelection(unsigned int roomIndex);
@@ -94,10 +93,9 @@ private:
     bool mouseLastFrame = false;
 
     //State-specific variables.
-    RoomInfo placingRoom_Room; //TODO: Track the offset of the player's mouse when he clicked on the room.
-    ItemTypes placingRoom_Item;
+    LevelInfo::RoomData placingRoom_Room;
     bool placingRoom_IsPlacing; //Keeps track of this fact between multiple states.
     Vector2i waitingOnRightMouse_StartPos;
     Vector2i panning_LastPos;
-    unsigned int contextMenu_SelectedRoom;
+    unsigned int contextMenu_SelectedRoom; //The room that was right-clicked on.
 };

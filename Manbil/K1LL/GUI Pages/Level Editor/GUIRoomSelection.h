@@ -3,6 +3,7 @@
 #include "../../../Rendering/GUI/GUI Elements/GUIPanel.h"
 
 #include "../../Room Editor/RoomCollection.h"
+#include "../../Level Info/LevelInfo.h"
 
 
 class GUIEditorGrid;
@@ -20,7 +21,7 @@ public:
 
 
     const LevelEditor& GetLevelEditor(void) const { return editor; }
-    const RoomCollection& GetRooms(void) const { return rooms; }
+    const std::vector<LevelInfo::RoomData>& GetRooms(void) const { return roomDatas; }
     
     const GUIRoom& GetRoomElement(unsigned int index) const;
 
@@ -31,5 +32,7 @@ public:
 private:
 
     LevelEditor& editor;
+
     RoomCollection rooms;
+    std::vector<LevelInfo::RoomData> roomDatas;
 };

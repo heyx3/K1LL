@@ -1,25 +1,34 @@
 #include "LevelGraph.h"
 
 
-float LevelEdge::GetTraversalCost(GraphSearchGoal<LevelNode>& goal)
+float LevelEdge::GetTraversalCost(const GraphSearchGoal<LevelNode>& goal) const
 {
     float dist = Start.GridPos.Distance(End.GridPos);
 
     if (goal.SpecificEnd.HasValue())
     {
-        return dist + End.GridPos.Distance(goal.SpecificEnd.GetValue().GridPos);
+        return dist + End.GridPos.DistanceSquared(goal.SpecificEnd.GetValue().GridPos);
     }
     else
     {
         return dist;
     }
 }
-float LevelEdge::GetSearchCost(GraphSearchGoal<LevelNode>& goal)
+float LevelEdge::GetSearchCost(const GraphSearchGoal<LevelNode>& goal) const
 {
-    return Start.GridPos.Distance(End.GridPos);
+    //The blocks should be either adjacent or diagonal to each other.
+
+    if (Start.GridPos.x == End.GridPos.x || Start.GridPos.y == End.GridPos.y)
+    {
+        assert(Start.GridPos.ManhattanDistance(End.GridPos) == 1);
+        return 1.0f;
+    }
+
+    assert(Start.GridPos.ManhattanDistance(End.GridPos) == 2);
+    return 1.41421356f;
 }
 
-void LevelGraph::GetConnectedEdges(LevelNode startNode, std::vector<LevelEdge>& outConnections)
+void LevelGraph::GetConnectedEdges(LevelNode startNode, std::vector<LevelEdge>& outConnections) const
 {
     assert(startNode.GridPos.x < LevelGrid.GetWidth() &&
            startNode.GridPos.y < LevelGrid.GetHeight());
@@ -34,43 +43,45 @@ void LevelGraph::GetConnectedEdges(LevelNode startNode, std::vector<LevelEdge>& 
     {
         Vector2u lessX = startNode.GridPos.LessX();
 
-        if (LevelGrid[lessX] != BT_WALL)
+        if (IsFree(lessX))
         {
             outConnections.push_back(LevelEdge(startNode, LevelNode(lessX)));
-        }
 
-        if (!atMinY && LevelGrid[lessX.LessY()] != BT_WALL)
-        {
-            outConnections.push_back(LevelEdge(startNode, LevelNode(lessX.LessY())));
-        }
-        if (!atMaxY && LevelGrid[lessX.MoreY()] != BT_WALL)
-        {
-            outConnections.push_back(LevelEdge(startNode, LevelNode(lessX.MoreY())));
+            //Check the corners.
+            if (!atMinY && IsFree(lessX.LessY()) && IsFree(startNode.GridPos.LessY()))
+            {
+                outConnections.push_back(LevelEdge(startNode, LevelNode(lessX.LessY())));
+            }
+            if (!atMaxY && IsFree(lessX.MoreY()) && IsFree(startNode.GridPos.MoreY()))
+            {
+                outConnections.push_back(LevelEdge(startNode, LevelNode(lessX.MoreY())));
+            }
         }
     }
     if (!atMaxX)
     {
         Vector2u moreX = startNode.GridPos.MoreX();
 
-        if (LevelGrid[moreX] != BT_WALL)
+        if (IsFree(moreX))
         {
             outConnections.push_back(LevelEdge(startNode, LevelNode(moreX)));
-        }
 
-        if (!atMinY && LevelGrid[moreX.LessY()] != BT_WALL)
-        {
-            outConnections.push_back(LevelEdge(startNode, LevelNode(moreX.LessY())));
-        }
-        if (!atMaxY && LevelGrid[moreX.MoreY()] != BT_WALL)
-        {
-            outConnections.push_back(LevelEdge(startNode, LevelNode(moreX.MoreY())));
+            //Check the corners.
+            if (!atMinY && IsFree(moreX.LessY()) && IsFree(startNode.GridPos.LessY()))
+            {
+                outConnections.push_back(LevelEdge(startNode, LevelNode(moreX.LessY())));
+            }
+            if (!atMaxY && IsFree(moreX.MoreY()) && IsFree(startNode.GridPos.MoreY()))
+            {
+                outConnections.push_back(LevelEdge(startNode, LevelNode(moreX.MoreY())));
+            }
         }
     }
-    if (!atMinY && LevelGrid[startNode.GridPos.LessY()] != BT_WALL)
+    if (!atMinY && IsFree(startNode.GridPos.LessY()))
     {
         outConnections.push_back(LevelEdge(startNode, LevelNode(startNode.GridPos.LessY())));
     }
-    if (!atMaxY && LevelGrid[startNode.GridPos.MoreY()] != BT_WALL)
+    if (!atMaxY && IsFree(startNode.GridPos.MoreY()))
     {
         outConnections.push_back(LevelEdge(startNode, LevelNode(startNode.GridPos.MoreY())));
     }

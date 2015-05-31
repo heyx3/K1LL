@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+
 #include "../../../Math/Lower Math/Vectors.h"
 #include "../../../Graph/AStarSearch.h"
 
@@ -13,35 +14,44 @@
 struct RoomNode
 {
     //Enables this class to be used in std collections that use hashes.
-    size_t operator()(const RoomNode& r) const { return r.RoomCenter.GetHashCode(); }
-    bool operator==(const RoomNode& r) const { return r.RoomCenter == RoomCenter; }
-    bool operator!=(const RoomNode& r) const { return r.RoomCenter != RoomCenter; }
+    size_t operator()(const RoomNode& r) const { return (size_t)r.RoomIndex; }
+    bool operator==(const RoomNode& r) const { return r.RoomIndex == RoomIndex; }
+    bool operator!=(const RoomNode& r) const { return r.RoomIndex != RoomIndex; }
 
 
     Vector2u RoomCenter;
     ItemTypes ContainedItem;
-    float NavigationDifficulty;
+    float NavDifficultyHorz, NavDifficultyVert;
     unsigned int RoomIndex;
 
 
     RoomNode(void) { }
 
-    RoomNode(Vector2u roomCenter, ItemTypes containedItem, float navDifficulty, unsigned int roomIndex)
+    RoomNode(Vector2u roomCenter, ItemTypes containedItem,
+             float navDifficultyHorz, float navDifficultyVert, unsigned int roomIndex)
         : RoomCenter(roomCenter), ContainedItem(containedItem),
-          NavigationDifficulty(navDifficulty), RoomIndex(roomIndex) { }
+          NavDifficultyHorz(navDifficultyHorz), NavDifficultyVert(navDifficultyVert),
+          RoomIndex(roomIndex) { }
 
     RoomNode(Vector2u minGrid, Vector2u maxGrid, ItemTypes containedItem,
-             float navDifficulty, unsigned int roomIndex)
-        : RoomNode((minGrid + maxGrid) / 2, containedItem, navDifficulty, roomIndex) { }
+             float navDifficultyHorz, float navDifficultyVert, unsigned int roomIndex)
+        : RoomNode((minGrid + maxGrid) / 2, containedItem,
+                   navDifficultyHorz, navDifficultyVert, roomIndex) { }
 };
 
 
-struct RoomEdge : public Edge<RoomNode>
+class RoomsGraph;
+
+struct RoomEdge : public Edge<RoomNode, const RoomsGraph*>
 {
-    RoomEdge(RoomNode start, RoomNode end, void* pDat = 0) : Edge(start, end, pDat) { }
+    RoomEdge(RoomNode start, RoomNode end, const RoomsGraph* pDat) : Edge(start, end, pDat) { }
     
-    virtual float GetTraversalCost(GraphSearchGoal<RoomNode>& goal) override;
-    virtual float GetSearchCost(GraphSearchGoal<RoomNode>& goal) override;
+    virtual float GetTraversalCost(const GraphSearchGoal<RoomNode>& goal) const override;
+    virtual float GetSearchCost(const GraphSearchGoal<RoomNode>& goal) const override;
+
+private:
+
+    bool IsHorizontalConnection(void) const;
 };
 
 
@@ -49,11 +59,18 @@ class RoomsGraph : public Graph<RoomNode, RoomEdge>
 {
 public:
 
-    //Indexes each room into a set of connected rooms.
-    std::unordered_map<RoomNode, std::vector<RoomNode>, RoomNode> Connections;
+    //Defines a mapping of RoomNode instances to some value type.
+    #define ROOM_NODE_MAP(valueType) std::unordered_map<RoomNode, valueType, RoomNode>
 
-    virtual void GetConnectedEdges(RoomNode startNode, std::vector<RoomEdge>& outConnections) override;
+    //Indexes each room into a set of connected rooms.
+    ROOM_NODE_MAP(std::vector<RoomNode>) Connections;
+    //Indexes each room into its connecting rooms, which each correspond to a bool
+    //    describing whether the connection is vertical or horizontal.
+    ROOM_NODE_MAP(ROOM_NODE_MAP(bool)) AreConnectionsHorizontal;
+
+
+    virtual void GetConnectedEdges(RoomNode startNode, std::vector<RoomEdge>& outConnections) const override;
 };
 
 
-typedef AStarSearch<RoomNode, RoomEdge> RoomsGraphPather;
+typedef AStarSearch<RoomNode, RoomEdge, GraphSearchGoal<RoomNode>, const RoomsGraph*> RoomsGraphPather;

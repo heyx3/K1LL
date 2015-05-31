@@ -153,22 +153,6 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
                      *gridYBtnList = new EditorButtonList(gridYBtns,
                                                           EditorObject::DescriptionData("Height:"),
                                                           10.0f, Vector2f(0.0f, 10.0f));
-    
-    //The slider continually tells this editor pane which slider displays the navigation difficulty.
-    typedef SlidingBarFloat<RoomEditorPane*> MySliderF;
-    auto onNavDifficultyChanged = [](GUISlider* slider, float newVal, RoomEditorPane* pne)
-    {
-        pne->GetCurrentRoom().NavigationDifficulty = newVal;
-    };
-    auto onNavDifficultyUpdate = [](GUISlider* slider, float elapsed, Vector2f mPos, RoomEditorPane* pne)
-    {
-        pne->SetNavDifficultySlider(slider);
-    };
-    MySliderF *navDifficulty = new MySliderF(0.0f, 1.0f, Vector2f(0.0f, 20.0f),
-                                             EditorObject::DescriptionData("Nav Difficulty: "),
-                                             onNavDifficultyChanged, 0.5f, 1.0f, this);
-    navDifficulty->OnUpdate = onNavDifficultyUpdate;
-    navDifficulty->OnUpdate_Data = this;
 
     //The label continually tells this editor pane which label displays the current room.
     EditorLabel* currentRoom = new EditorLabel("Room " + std::to_string(CurrentRoom + 1),
@@ -255,7 +239,6 @@ std::string RoomEditorPane::BuildEditorElements(std::vector<EditorObjectPtr>& ou
     outElements.push_back(EditorObjectPtr(blockTypes));
     outElements.push_back(EditorObjectPtr(gridXBtnList));
     outElements.push_back(EditorObjectPtr(gridYBtnList));
-    outElements.push_back(EditorObjectPtr(navDifficulty));
     outElements.push_back(EditorObjectPtr(currentRoom));
     outElements.push_back(EditorObjectPtr(changeRoomButtons));
     outElements.push_back(EditorObjectPtr(addRemoveButtons));
@@ -269,7 +252,4 @@ void RoomEditorPane::UpdateCurrentRoomLabel(void)
     std::string roomVal = "Room " + std::to_string(CurrentRoom + 1);
     bool tryL = currentRoomLabel->SetText(roomVal);
     assert(tryL);
-
-    //Also update the current difficulty slider.
-    navDifficultySlider->Value = GetCurrentRoom().NavigationDifficulty;
 }

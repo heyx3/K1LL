@@ -39,9 +39,6 @@ namespace
             case OP::O_SET_LIGHT_AMMO: return "Room has light ammo";
             case OP::O_SET_HEAVY_AMMO: return "Room has heavy ammo";
             case OP::O_SET_SPECIAL_AMMO: return "Room has special ammo";
-            case OP::O_SET_LIGHT_WEAPON: return "Room has light weapon";
-            case OP::O_SET_HEAVY_WEAPON: return "Room has heavy weapon";
-            case OP::O_SET_SPECIAL_WEAPON: return "Room has special weapon";
             case OP::O_SET_HEALTH: return "Room has health";
             case OP::O_SET_NONE: return "Room has nothing";
             case OP::O_SAVE: return "Save level";
@@ -115,14 +112,11 @@ void ContextMenu::SetUpForEmptySpace(void)
             CASE(CREATE_ROOM, true)
             CASE(MOVE_ROOM, false)
             CASE(DELETE_ROOM, false)
-            CASE(PLACE_TEAM1, false)
-            CASE(PLACE_TEAM2, false)
+            CASE(PLACE_TEAM1, true)
+            CASE(PLACE_TEAM2, true)
             CASE(SET_LIGHT_AMMO, false)
             CASE(SET_HEAVY_AMMO, false)
             CASE(SET_SPECIAL_AMMO, false)
-            CASE(SET_LIGHT_WEAPON, false)
-            CASE(SET_HEAVY_WEAPON, false)
-            CASE(SET_SPECIAL_WEAPON, false)
             CASE(SET_HEALTH, false)
             CASE(SET_NONE, false)
             CASE(SAVE, true)
@@ -140,7 +134,7 @@ void ContextMenu::SetUpForEmptySpace(void)
 }
 void ContextMenu::SetUpForRoom(unsigned int roomIndex)
 {
-    bool hasSpawns = Editor->LevelData.Rooms[roomIndex].GetRoomHasSpawns();
+    bool hasSpawns = Editor->LevelData.Rooms[roomIndex].GetHasSpawns();
 
     for (unsigned int i = 0; i < GetItems().size(); ++i)
     {
@@ -155,14 +149,11 @@ void ContextMenu::SetUpForRoom(unsigned int roomIndex)
             CASE(CREATE_ROOM, true)
             CASE(MOVE_ROOM, true)
             CASE(DELETE_ROOM, true)
-            CASE(PLACE_TEAM1, true)
-            CASE(PLACE_TEAM2, true)
+            CASE(PLACE_TEAM1, false)
+            CASE(PLACE_TEAM2, false)
             CASE(SET_LIGHT_AMMO, hasSpawns)
             CASE(SET_HEAVY_AMMO, hasSpawns)
             CASE(SET_SPECIAL_AMMO, hasSpawns)
-            CASE(SET_LIGHT_WEAPON, hasSpawns)
-            CASE(SET_HEAVY_WEAPON, hasSpawns)
-            CASE(SET_SPECIAL_WEAPON, hasSpawns)
             CASE(SET_HEALTH, hasSpawns)
             CASE(SET_NONE, hasSpawns)
             CASE(SAVE, true)

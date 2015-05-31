@@ -507,6 +507,9 @@
     <ClCompile Include="K1LL\GUI Pages\Level Editor\GUIRoomSelection.cpp">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClCompile>
+    <ClCompile Include="K1LL\GUI Pages\Level Editor\GUILevelPathing.cpp">
+      <Filter>K1LL\GUI Pages\Level Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input\Input Objects\KeyboardBoolInput.h">
@@ -1142,6 +1145,9 @@
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\GUI Pages\Level Editor\GUIRoomSelection.h">
+      <Filter>K1LL\GUI Pages\Level Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\GUI Pages\Level Editor\GUILevelPathing.h">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClInclude>
   </ItemGroup>

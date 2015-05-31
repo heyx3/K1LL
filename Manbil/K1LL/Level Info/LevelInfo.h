@@ -7,11 +7,63 @@
 
 
 //Information about a level, defined as a collection of rooms plus some meta-data.
-//Note that room can never pass behind the origin.
+//Note that room can never pass below the origin.
 struct LevelInfo : public ISerializable
 {
+    //All information about a room in this level.
+    struct RoomData : public ISerializable
+    {
+        //The layout of the room.
+        Array2D<BlockTypes> Walls;
+        //The position of this room's min corner in the level.
+        Vector2u MinCornerPos;
+        //The item this room spawns.
+        ItemTypes SpawnedItem;
+        //The average number of grid spaces needed to traverse from one end of this room to the other.
+        //Based on the size of the room and the complexity of the wall layout.
+        float NavDifficultyHorz, NavDifficultyVert;
+
+
+        RoomData(void) : Walls(1, 1, BT_NONE) { }
+
+        RoomData(const Array2D<BlockTypes>& walls, Vector2u minCornerPos, ItemTypes spawnedItem,
+                 float navDifficultyHorz, float navDifficultyVert)
+            : Walls(walls.GetWidth(), walls.GetHeight()), MinCornerPos(minCornerPos),
+              SpawnedItem(spawnedItem),
+              NavDifficultyHorz(navDifficultyHorz), NavDifficultyVert(navDifficultyVert)
+        {
+            walls.MemCopyInto(Walls.GetArray());
+        }
+
+        
+        RoomData(RoomData&& other)
+            : Walls(std::move(other.Walls)),
+              MinCornerPos(other.MinCornerPos), SpawnedItem(other.SpawnedItem),
+              NavDifficultyHorz(other.NavDifficultyHorz), NavDifficultyVert(other.NavDifficultyVert) { }
+
+        RoomData& operator=(RoomData&& other)
+        {
+            Walls = std::move(other.Walls);
+            MinCornerPos = other.MinCornerPos;
+            SpawnedItem = other.SpawnedItem;
+            NavDifficultyHorz = other.NavDifficultyHorz;
+            NavDifficultyVert = other.NavDifficultyVert;
+
+            return *this;
+        }
+
+
+        //Gets whether this room has any spawn blocks.
+        bool GetHasSpawns(void) const;
+
+        virtual void WriteData(DataWriter* writer) const override;
+        virtual void ReadData(DataReader* reader) override;
+    };
+
+
     //A bounding box using unsigned ints.
     struct UIntBox { Vector2u Min, Max; };
+
 
     static const std::string LevelFilesPath;
 
@@ -24,16 +76,13 @@ struct LevelInfo : public ISerializable
     static bool BoxesBorder(Vector2u min1, Vector2u max1, Vector2u min2, Vector2u max2);
 
 
-    std::vector<RoomInfo> Rooms;
+    std::vector<RoomData> Rooms;
 
-    //The offsets specify the coordinates of the min (top-left) corner of the room.
-    std::vector<Vector2u> RoomOffsets;
+    //The distance from each team's base to the farthest-away point from it on the map.
+    float MaxDistToTeam1, MaxDistToTeam2;
 
-    //The type of item each room contains.
-    std::vector<ItemTypes> RoomItems;
-
-    //The "center" for each team -- has an effect on spawning, objectives, pathing, etc.
-    Vector2f TeamOneCenter, TeamTwoCenter;
+    //The room that each team is based in.
+    unsigned int Team1Base, Team2Base;
 
 
     //Gets whether the given area is completely devoid of rooms.
@@ -46,12 +95,24 @@ struct LevelInfo : public ISerializable
     //Gets all rooms that border the given one.
     //Rooms are specified as indices into this instance's "Rooms" collection.
     void GetBorderingRooms(unsigned int room, std::vector<unsigned int>& outRooms) const;
+    //Gets all rooms that border the given area.
+    //Rooms are specified as indices into this instance's "Rooms" collection.
+    void GetBorderingRooms(UIntBox area, std::vector<unsigned int>& outRooms) const;
 
-    //Gets the smallest-possible bounding box covering every room in the level.
+    //Gets the smallest-possible bounding box that covers every room in the level.
     UIntBox GetBounds(void) const;
+    //Gets the bounding box of the given room in the level.
+    UIntBox GetBounds(unsigned int roomIndex) const;
 
     //Calculates room connections.
     void GetConnections(RoomsGraph& outGraph) const;
+
+    //Generates a full level grid with this level's rooms.
+    //Uses the given bounds as the level grid's bounds. Assumes they're big enough to fit every room.
+    void GenerateFullLevel(Array2D<BlockTypes>& outLevel, UIntBox levelBnds) const;
+    //Generates a full level grid with this level's rooms.
+    //The grid will be as small as possible while still fitting every room.
+    void GenerateFullLevel(Array2D<BlockTypes>& outLevel) const { GenerateFullLevel(outLevel, GetBounds()); }
 
 
     virtual void WriteData(DataWriter* writer) const override;

@@ -37,7 +37,6 @@ public:
     //2D Room-rendering textures.
     MTexture2D FloorTex, WallTex,
                AmmoLightTex, AmmoHeavyTex, AmmoSpecialTex,
-               WeaponLightTex, WeaponHeavyTex, WeaponSpecialTex,
                HealthTex;
 
     //Level editor textures.

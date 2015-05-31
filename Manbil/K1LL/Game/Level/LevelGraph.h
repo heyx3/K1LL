@@ -22,8 +22,8 @@ struct LevelEdge : public Edge<LevelNode>
 {
     LevelEdge(LevelNode start, LevelNode end, void* pDat = 0) : Edge(start, end, pDat) { }
     
-    virtual float GetTraversalCost(GraphSearchGoal<LevelNode>& goal) override;
-    virtual float GetSearchCost(GraphSearchGoal<LevelNode>& goal) override;
+    virtual float GetTraversalCost(const GraphSearchGoal<LevelNode>& goal) const override;
+    virtual float GetSearchCost(const GraphSearchGoal<LevelNode>& goal) const override;
 };
 
 
@@ -33,10 +33,17 @@ public:
 
     const Array2D<BlockTypes>& LevelGrid;
 
+
     LevelGraph(const Array2D<BlockTypes>& levelGrid) : LevelGrid(levelGrid) { }
 
     
-    virtual void GetConnectedEdges(LevelNode startNode, std::vector<LevelEdge>& outConnections) override;
+    virtual void GetConnectedEdges(LevelNode startNode,
+                                   std::vector<LevelEdge>& outConnections) const override;
+
+
+private:
+
+    bool IsFree(Vector2u pos) const { return LevelGrid[pos] != BT_WALL; }
 };
 
 

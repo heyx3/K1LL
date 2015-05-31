@@ -24,9 +24,9 @@ namespace
 
 
 GUIRoom::GUIRoom(const GUIEditorGrid& grid, LevelEditor& editor, bool isBeingPlaced,
-                 const RoomInfo* roomData, ItemTypes roomSpawn)
+                 const LevelInfo::RoomData* roomData)
     : Grid(grid), Editor(editor), IsBeingPlaced(isBeingPlaced),
-      RoomData(roomData), RoomSpawn(roomSpawn),
+      RoomData(roomData),
       GUITexture(MC.StaticColorGUIParams, &MC.FloorTex, MC.StaticColorGUIMat)
 {
 
@@ -55,17 +55,17 @@ void GUIRoom::Render(float seconds, const RenderInfo& info)
     
     Vector2f roomMin_Screen = roomBounds_Screen.GetMinCorner(),
              roomSize_Screen = roomBounds_Screen.GetDimensions(),
-             blockSize_Screen(roomSize_Screen.x / (float)RoomData->RoomGrid.GetWidth(),
-                              roomSize_Screen.y / (float)RoomData->RoomGrid.GetHeight());
+             blockSize_Screen(roomSize_Screen.x / (float)RoomData->Walls.GetWidth(),
+                              roomSize_Screen.y / (float)RoomData->Walls.GetHeight());
 
     GUITexture child(Params, &MC.WallTex, Mat);
     child.Depth = Depth + DEPTH_BlockOffset;
 
-    for (Vector2u gridLocal; gridLocal.y < RoomData->RoomGrid.GetHeight(); ++gridLocal.y)
+    for (Vector2u gridLocal; gridLocal.y < RoomData->Walls.GetHeight(); ++gridLocal.y)
     {
-        for (gridLocal.x = 0; gridLocal.x < RoomData->RoomGrid.GetWidth(); ++gridLocal.x)
+        for (gridLocal.x = 0; gridLocal.x < RoomData->Walls.GetWidth(); ++gridLocal.x)
         {
-            BlockTypes block = RoomData->RoomGrid[gridLocal];
+            BlockTypes block = RoomData->Walls[gridLocal];
             
             //Only draw walls/doorways.
             if (block == BT_NONE || block == BT_DOORWAY)
@@ -86,7 +86,7 @@ void GUIRoom::Render(float seconds, const RenderInfo& info)
             }
             else if (block == BT_SPAWN)
             {
-                MTexture2D* itemTex = MC.GetPickupTex(RoomSpawn);
+                MTexture2D* itemTex = MC.GetPickupTex(RoomData->SpawnedItem);
                 if (itemTex != 0)
                 {
                     child.SetTex(itemTex);

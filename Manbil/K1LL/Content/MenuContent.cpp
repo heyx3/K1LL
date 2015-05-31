@@ -28,9 +28,6 @@ MenuContent::MenuContent(void)
       AmmoLightTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       AmmoHeavyTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       AmmoSpecialTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
-      WeaponLightTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
-      WeaponHeavyTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
-      WeaponSpecialTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       HealthTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       EditorNoiseTex(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PixelSizes::PS_8U, false),
       MainTextFontScale(0.25f, 0.25f), MainTextFontHeight(256)
@@ -79,9 +76,6 @@ bool MenuContent::Initialize(std::string& err)
     CREATE_LOAD(AmmoLightTex, Ammo Light.png)
     CREATE_LOAD(AmmoHeavyTex, Ammo Heavy.png)
     CREATE_LOAD(AmmoSpecialTex, Ammo Special.png)
-    CREATE_LOAD(WeaponLightTex, Weapon Light.png)
-    CREATE_LOAD(WeaponHeavyTex, Weapon Heavy.png)
-    CREATE_LOAD(WeaponSpecialTex, Weapon Special.png)
     CREATE_LOAD(HealthTex, Health.png)
 
     CREATE_LOAD(EditorNoiseTex, GridNoise.png)
@@ -187,9 +181,6 @@ void MenuContent::Destroy(void)
     AmmoLightTex.DeleteIfValid();
     AmmoHeavyTex.DeleteIfValid();
     AmmoSpecialTex.DeleteIfValid();
-    WeaponLightTex.DeleteIfValid();
-    WeaponHeavyTex.DeleteIfValid();
-    WeaponSpecialTex.DeleteIfValid();
     HealthTex.DeleteIfValid();
     
     EditorNoiseTex.DeleteIfValid();
@@ -208,13 +199,6 @@ MTexture2D* MenuContent::GetPickupTex(ItemTypes pickup)
             return &AmmoHeavyTex;
         case IT_AMMO_SPECIAL:
             return &AmmoSpecialTex;
-
-        case IT_WEAPON_LIGHT:
-            return &WeaponLightTex;
-        case IT_WEAPON_HEAVY:
-            return &WeaponHeavyTex;
-        case IT_WEAPON_SPECIAL:
-            return &WeaponSpecialTex;
 
         case IT_HEALTH:
             return &HealthTex;

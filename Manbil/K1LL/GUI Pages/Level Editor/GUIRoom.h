@@ -2,7 +2,7 @@
 
 #include "../../../Rendering/GUI/GUIElement.h"
 
-#include "../../Level Info/RoomInfo.h"
+#include "../../Level Info/LevelInfo.h"
 #include "../../Level Info/ItemTypes.h"
 #include "GUIEditorGrid.h"
 
@@ -14,18 +14,17 @@ class GUIRoom : public GUITexture
 {
 public:
 
-    const RoomInfo* RoomData = 0;
-    ItemTypes RoomSpawn;
+    const LevelInfo::RoomData* RoomData = 0;
 
     LevelEditor& Editor;
     const GUIEditorGrid& Grid;
 
-    //If true, this element is rendering a room that the player is moving with the mouse.
+    //If true, this instance is rendering a room that the player is moving.
     bool IsBeingPlaced = false;
 
 
     GUIRoom(const GUIEditorGrid& grid, LevelEditor& editor, bool isBeingPlaced,
-            const RoomInfo* roomData, ItemTypes roomSpawn);
+            const LevelInfo::RoomData* roomData);
 
     virtual void Render(float elapsedTime, const RenderInfo& info) override;
 };

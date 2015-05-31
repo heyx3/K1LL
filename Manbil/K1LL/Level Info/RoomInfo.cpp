@@ -4,8 +4,7 @@
 
 
 RoomInfo::RoomInfo(const RoomInfo& cpy)
-    : NavigationDifficulty(cpy.NavigationDifficulty),
-      RoomGrid(cpy.RoomGrid.GetWidth(), cpy.RoomGrid.GetHeight())
+    : RoomGrid(cpy.RoomGrid.GetWidth(), cpy.RoomGrid.GetHeight())
 {
     cpy.RoomGrid.MemCopyInto(RoomGrid.GetArray());
 }
@@ -28,8 +27,6 @@ bool RoomInfo::GetRoomHasSpawns(void) const
 
 void RoomInfo::WriteData(DataWriter* writer) const
 {
-    writer->WriteFloat(NavigationDifficulty, "Navigation difficulty (0-1)");
-
     writer->WriteUInt(RoomGrid.GetWidth(), "Grid width");
     writer->WriteUInt(RoomGrid.GetHeight(), "Grid height");
 
@@ -44,8 +41,6 @@ void RoomInfo::WriteData(DataWriter* writer) const
 }
 void RoomInfo::ReadData(DataReader* reader)
 {
-    reader->ReadFloat(NavigationDifficulty);
-
     Vector2u gridSize;
     reader->ReadUInt(gridSize.x);
     reader->ReadUInt(gridSize.y);
@@ -55,7 +50,9 @@ void RoomInfo::ReadData(DataReader* reader)
     {
         for (unsigned int y = 0; y < gridSize.y; ++y)
         {
-            reader->ReadByte((unsigned char&)RoomGrid[Vector2u(x, y)]);
+            unsigned char b;
+            reader->ReadByte(b);
+            RoomGrid[Vector2u(x, y)] = (BlockTypes)b;
         }
     }
 }
