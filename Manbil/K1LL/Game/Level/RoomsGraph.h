@@ -4,46 +4,35 @@
 
 #include "../../../Math/Lower Math/Vectors.h"
 #include "../../../Graph/AStarSearch.h"
-
-#include "../../Level Info/ItemTypes.h"
+#include "../../Level Info/LevelInfo.h"
 
 
 //Defines data structures for pathing through rooms in a level.
 
-
+/*
 struct RoomNode
 {
     //Enables this class to be used in std collections that use hashes.
-    size_t operator()(const RoomNode& r) const { return (size_t)r.RoomIndex; }
-    bool operator==(const RoomNode& r) const { return r.RoomIndex == RoomIndex; }
-    bool operator!=(const RoomNode& r) const { return r.RoomIndex != RoomIndex; }
+    size_t operator()(const RoomNode& r) const { return (size_t)r.RoomPtr; }
+    bool operator==(const RoomNode& r) const { return r.RoomPtr== RoomPtr; }
+    bool operator!=(const RoomNode& r) const { return r.RoomPtr!= RoomPtr; }
 
 
-    Vector2u RoomCenter;
-    ItemTypes ContainedItem;
-    float NavDifficultyHorz, NavDifficultyVert;
-    unsigned int RoomIndex;
+    LevelInfo::RoomData* RoomPtr;
 
 
-    RoomNode(void) { }
-
-    RoomNode(Vector2u roomCenter, ItemTypes containedItem,
-             float navDifficultyHorz, float navDifficultyVert, unsigned int roomIndex)
-        : RoomCenter(roomCenter), ContainedItem(containedItem),
-          NavDifficultyHorz(navDifficultyHorz), NavDifficultyVert(navDifficultyVert),
-          RoomIndex(roomIndex) { }
-
-    RoomNode(Vector2u minGrid, Vector2u maxGrid, ItemTypes containedItem,
-             float navDifficultyHorz, float navDifficultyVert, unsigned int roomIndex)
-        : RoomNode((minGrid + maxGrid) / 2, containedItem,
-                   navDifficultyHorz, navDifficultyVert, roomIndex) { }
+    RoomNode(LevelInfo::RoomData* roomPtr = 0) : RoomPtr(roomPtr) { }
 };
+*/
+
+typedef const LevelInfo::RoomData* RoomNode;
 
 
 class RoomsGraph;
 
 struct RoomEdge : public Edge<RoomNode, const RoomsGraph*>
 {
+    RoomEdge(void) : Edge(0, 0, 0) { }
     RoomEdge(RoomNode start, RoomNode end, const RoomsGraph* pDat) : Edge(start, end, pDat) { }
     
     virtual float GetTraversalCost(const GraphSearchGoal<RoomNode>& goal) const override;
@@ -71,6 +60,5 @@ public:
 
     virtual void GetConnectedEdges(RoomNode startNode, std::vector<RoomEdge>& outConnections) const override;
 };
-
 
 typedef AStarSearch<RoomNode, RoomEdge, GraphSearchGoal<RoomNode>, const RoomsGraph*> RoomsGraphPather;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include "../../../Rendering/GUI/GUI Elements/GUITexture.h"
 
 #include "../../Level Info/RoomInfo.h"
@@ -19,11 +21,12 @@ public:
     //Callbacks for changes to rooms.
     void OnRoomsChanged(void);
 
+    virtual void Render(float elapsedTime, const RenderInfo& info) override;
+
 
 protected:
     
     virtual void CustomUpdate(float elapsedTime, Vector2f relativeMousePos) override;
-    virtual void Render(float elapsedTime, const RenderInfo& info) override;
 
 
 private:
@@ -31,8 +34,8 @@ private:
     LevelEditor& editor;
 
     Array2D<BlockTypes> levelGrid;
-    std::vector<unsigned int[2]> nStepsFromRoomToTeamBases;
-    std::vector<float[2]> roomNormalizedDistsToTeamBases;
+    std::vector<std::array<unsigned int, 2>> nStepsFromRoomToTeamBases;
+    std::vector<std::array<float, 2>> roomNormalizedDistsToTeamBases;
 
     RoomsGraph graph;
     RoomsGraphPather pather;

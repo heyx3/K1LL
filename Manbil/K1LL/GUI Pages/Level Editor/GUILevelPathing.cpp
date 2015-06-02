@@ -9,9 +9,17 @@
 #define MC MenuContent::Instance
 
 
+namespace
+{
+    //Coloring constants.
+    Vector4f COLOR_Team1(1.0f, 0.0f, 0.0f, 0.85f),
+             COLOR_Team2(0.0f, 0.0f, 1.0f, 0.85f);
+}
+
+
 GUILevelPathing::GUILevelPathing(LevelEditor& _editor)
     : editor(_editor), pather(&graph), levelGrid(1, 1, BT_NONE),
-      GUITexture(MC.StaticColorGUIParams, 0, MC.StaticColorGUIMat)
+      GUITexture(MC.StaticColorGUINoTexParams, 0, MC.StaticColorGUIMatNoTex)
 {
 
 }
@@ -25,8 +33,12 @@ void GUILevelPathing::OnRoomsChanged(void)
     roomsToPath = editor.LevelData.Rooms.size();
     roomsToNav = roomsToPath;
 
-    nStepsFromRoomToTeamBases.resize(editor.LevelData.Rooms.size(), { 0, 0 });
-    roomNormalizedDistsToTeamBases.resize(editor.LevelData.Rooms.size(), { 1.0f, 1.0f });
+    nStepsFromRoomToTeamBases.resize(editor.LevelData.Rooms.size(), std::array<unsigned int, 2>());
+    roomNormalizedDistsToTeamBases.resize(editor.LevelData.Rooms.size(), std::array<float, 2>());
+
+    graph.Connections.clear();
+    graph.AreConnectionsHorizontal.clear();
+    editor.LevelData.GetConnections(graph);
 }
 
 void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
@@ -121,24 +133,18 @@ void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
         assert(lvl.Rooms.size() >= roomsToPath);
 
         //Path from the room to the team bases.
-        
+        path.clear();
         for (unsigned int i = 0; i < 2; ++i)
         {
             unsigned int teamIndex = (i == 0 ? lvl.Team1Base : lvl.Team2Base);
             
             LevelInfo::RoomData& room = lvl.Rooms[roomsToPath - 1];
             LevelInfo::UIntBox rmBnds = lvl.GetBounds(roomsToPath - 1);
-            RoomNode startNode(rmBnds.Min, rmBnds.Max, room.SpawnedItem,
-                               room.NavDifficultyHorz, room.NavDifficultyVert, roomsToPath - 1);
+            RoomNode startNode(&room);
 
-            path.clear();
             LevelInfo::RoomData& goalRm = lvl.Rooms[teamIndex];
             LevelInfo::UIntBox goalBnds = lvl.GetBounds(teamIndex);
-            GraphSearchGoal<RoomNode> goal = GraphSearchGoal<RoomNode>(RoomNode(goalBnds.Min, goalBnds.Max,
-                                                                                goalRm.SpawnedItem,
-                                                                                goalRm.NavDifficultyHorz,
-                                                                                goalRm.NavDifficultyVert,
-                                                                                teamIndex));
+            GraphSearchGoal<RoomNode> goal = GraphSearchGoal<RoomNode>(&goalRm);
 
             //The pather may fail if a room isn't connected to anything.
             if (pather.Search(startNode, goal, path))
@@ -188,8 +194,8 @@ void GUILevelPathing::Render(float elapsedTime, const RenderInfo& info)
         SetBounds(Box2D(editor.WorldPosToScreen(worldCenter),
                         editor.WorldSizeToScreen(ToV2f(room.Walls.GetDimensions()))));
 
-        SetColor(Vector4f(1.0f, 0.0f, 1.0f, 0.25f)); // Debugging color.
-        //TODO: Calculate a real color.
+        SetColor((COLOR_Team1 * (1.0f - roomNormalizedDistsToTeamBases[i][0])) +
+                 (COLOR_Team2 * (1.0f - roomNormalizedDistsToTeamBases[i][1])));
 
         GUITexture::Render(elapsedTime, info);
     }

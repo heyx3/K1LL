@@ -2,6 +2,8 @@
 
 #include "../../IO/Serialization.h"
 
+#include "../Game/Level/RoomsGraph.h"
+
 
 
 const std::string LevelInfo::LevelFilesPath = "Content/Levels/";
@@ -94,8 +96,23 @@ bool LevelInfo::BoxesTouching(Vector2u min1, Vector2u max1, Vector2u min2, Vecto
 }
 bool LevelInfo::BoxesBorder(Vector2u min1, Vector2u max1, Vector2u min2, Vector2u max2)
 {
-    return (min1.x == max2.x || max1.x == min2.x ||
-            min1.y == max2.y || max1.y == min2.y);
+#define INTERVALS_TOUCH_INSIDE(start1, end1, start2, end2) \
+    ((start1 == start2 && end1 == end2) || \
+     (start1 > start2 && start1 < end2) || \
+     (end1 > start2 && end1 < end2) || \
+     (start2 > start1 && start2 < end1) || \
+     (end2 > start1 && end2 < end1))
+
+    if (min1.y == max2.y || min2.y == max1.y)
+    {
+        return INTERVALS_TOUCH_INSIDE(min1.x, max1.x, min2.x, max2.x);
+    }
+    else if (min1.x == max2.x || min2.x == max1.x)
+    {
+        return INTERVALS_TOUCH_INSIDE(min1.y, max1.y, min2.y, max2.y);
+    }
+
+    return false;
 }
 
 bool LevelInfo::IsAreaFree(Vector2u start, Vector2u end, bool allowEdges) const
@@ -152,7 +169,7 @@ namespace
             {
                 LevelInfo::UIntBox hisBnds = info->GetBounds(i);
 
-                if (LevelInfo::BoxesBorder(bnds.Min, bnds.Max, bnds.Min, bnds.Max))
+                if (LevelInfo::BoxesBorder(bnds.Min, bnds.Max, hisBnds.Min, hisBnds.Max))
                 {
                     outRooms.push_back(i);
                 }
@@ -173,6 +190,14 @@ void LevelInfo::GetBorderingRooms(UIntBox myBnds, std::vector<unsigned int>& out
 LevelInfo::UIntBox LevelInfo::GetBounds(void) const
 {
     UIntBox box;
+
+    if (Rooms.size() == 0)
+    {
+        box.Min = Vector2u();
+        box.Max = Vector2u();
+        return box;
+    }
+
     box.Min = Vector2u(999999999, 999999999);
     box.Max = Vector2u();
 
@@ -205,15 +230,14 @@ void LevelInfo::GetConnections(RoomsGraph& outGraph) const
     outGraph.AreConnectionsHorizontal.clear();
 
     UIntBox bnds = GetBounds();
-
+    
     std::vector<RoomNode> tempRooms;
     for (unsigned int i = 0; i < Rooms.size(); ++i)
     {
         const RoomData& thisRoom = Rooms[i];
         UIntBox thisBnds = GetBounds(i);
 
-        RoomNode node(thisBnds .Min, thisBnds .Max, thisRoom.SpawnedItem,
-                      thisRoom.NavDifficultyHorz, thisRoom.NavDifficultyVert, i);
+        RoomNode node = &Rooms[i];
         assert(outGraph.Connections.find(node) == outGraph.Connections.end());
         
         //Go through all bordering rooms and find which ones have overlapping doorways.
@@ -236,8 +260,7 @@ void LevelInfo::GetConnections(RoomsGraph& outGraph) const
         if (thisRoom.Walls[thisPos] == BT_DOORWAY && \
             otherRoom.Walls[otherPos] == BT_DOORWAY) \
         { \
-            RoomNode connection(otherBnds.Min, otherBnds.Max, otherRoom.SpawnedItem, \
-                                otherRoom.NavDifficultyHorz, otherRoom.NavDifficultyVert, indx); \
+            RoomNode connection = &Rooms[indx]; \
             outGraph.Connections[node].push_back(connection); \
             outGraph.AreConnectionsHorizontal[node][connection] = isHorz; \
             break; \
@@ -245,26 +268,30 @@ void LevelInfo::GetConnections(RoomsGraph& outGraph) const
     }
             if (thisBnds.Min.x == otherBnds.Max.x)
             {
-                SEARCH_EDGE_FOR_DOORWAYS(y, thisBnds.Min.x, k - thisBnds.Min.y,
-                                         otherBnds.Max.x, k - otherBnds.Min.y,
+                SEARCH_EDGE_FOR_DOORWAYS(y,
+                                         0, k - thisBnds.Min.y,
+                                         otherBnds.Max.x - otherBnds.Min.x, k - otherBnds.Min.y,
                                          true)
             }
             else if (thisBnds.Max.x == otherBnds.Min.x)
             {
-                SEARCH_EDGE_FOR_DOORWAYS(y, thisBnds.Max.x, k - thisBnds.Min.y,
-                                         otherBnds.Min.x, k - otherBnds.Min.y,
+                SEARCH_EDGE_FOR_DOORWAYS(y,
+                                         thisBnds.Max.x - thisBnds.Min.x, k - thisBnds.Min.y,
+                                         0, k - otherBnds.Min.y,
                                          true)
             }
             else if (thisBnds.Min.y == otherBnds.Max.y)
             {
-                SEARCH_EDGE_FOR_DOORWAYS(x, k - thisBnds.Min.x, thisBnds.Min.y,
-                                         k - otherBnds.Min.x, otherBnds.Max.y,
+                SEARCH_EDGE_FOR_DOORWAYS(x,
+                                         k - thisBnds.Min.x, 0,
+                                         k - otherBnds.Min.x, otherBnds.Max.y - otherBnds.Min.y,
                                          false)
             }
             else if (thisBnds.Max.y == otherBnds.Min.y)
             {
-                SEARCH_EDGE_FOR_DOORWAYS(x, k - thisBnds.Min.x, thisBnds.Max.y,
-                                         k - otherBnds.Min.x, otherBnds.Min.y,
+                SEARCH_EDGE_FOR_DOORWAYS(x,
+                                         k - thisBnds.Min.x, thisBnds.Max.y - thisBnds.Min.y,
+                                         k - otherBnds.Min.x, 0,
                                          false)
             }
         }
@@ -273,7 +300,7 @@ void LevelInfo::GetConnections(RoomsGraph& outGraph) const
 
 void LevelInfo::GenerateFullLevel(Array2D<BlockTypes>& outLevel, UIntBox bnds) const
 {
-    outLevel.Reset(bnds.Max.x - bnds.Min.x, bnds.Max.y - bnds.Min.y, BT_WALL);
+    outLevel.Reset(bnds.Max.x - bnds.Min.x + 1, bnds.Max.y - bnds.Min.y + 1, BT_WALL);
     for (unsigned int i = 0; i < Rooms.size(); ++i)
     {
         UIntBox roomBnds = GetBounds(i);
@@ -309,9 +336,9 @@ void LevelInfo::GenerateFullLevel(Array2D<BlockTypes>& outLevel, UIntBox bnds) c
     }
 
     //Turn any unused doorways into walls.
-    for (Vector2u counter = Vector2u(); counter.y <= outLevel.GetHeight(); ++counter.y)
+    for (Vector2u counter = Vector2u(); counter.y < outLevel.GetHeight(); ++counter.y)
     {
-        for (counter.x = 0; counter.x <= outLevel.GetWidth(); ++counter.x)
+        for (counter.x = 0; counter.x < outLevel.GetWidth(); ++counter.x)
         {
             if (outLevel[counter] == BT_DOORWAY)
             {

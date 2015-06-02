@@ -3,7 +3,10 @@
 #include "../../IO/DataSerialization.h"
 
 #include "RoomInfo.h"
-#include "../Game/Level/RoomsGraph.h"
+#include "ItemTypes.h"
+
+
+class RoomsGraph;
 
 
 //Information about a level, defined as a collection of rooms plus some meta-data.
@@ -21,6 +24,7 @@ struct LevelInfo : public ISerializable
         ItemTypes SpawnedItem;
         //The average number of grid spaces needed to traverse from one end of this room to the other.
         //Based on the size of the room and the complexity of the wall layout.
+        //TODO: Combine these two into an average, since pathing may enter a room horizontally/vertically but leave it vertically/horizontally, respectively.
         float NavDifficultyHorz, NavDifficultyVert;
 
 
@@ -35,7 +39,20 @@ struct LevelInfo : public ISerializable
             walls.MemCopyInto(Walls.GetArray());
         }
 
-        
+        RoomData(const RoomData& cpy) : Walls(cpy.Walls.GetWidth(), cpy.Walls.GetHeight()) { *this = cpy; }
+        RoomData& operator=(const RoomData& cpy)
+        {
+            Walls.Resize(cpy.Walls.GetWidth(), cpy.Walls.GetHeight(), BT_NONE);
+            cpy.Walls.MemCopyInto(Walls.GetArray());
+
+            MinCornerPos = cpy.MinCornerPos;
+            SpawnedItem = cpy.SpawnedItem;
+            NavDifficultyHorz = cpy.NavDifficultyHorz;
+            NavDifficultyVert = cpy.NavDifficultyVert;
+
+            return *this;
+        }
+
         RoomData(RoomData&& other)
             : Walls(std::move(other.Walls)),
               MinCornerPos(other.MinCornerPos), SpawnedItem(other.SpawnedItem),
@@ -82,7 +99,8 @@ struct LevelInfo : public ISerializable
     float MaxDistToTeam1, MaxDistToTeam2;
 
     //The room that each team is based in.
-    unsigned int Team1Base, Team2Base;
+    unsigned int Team1Base = 0,
+                 Team2Base = 0;
 
 
     //Gets whether the given area is completely devoid of rooms.

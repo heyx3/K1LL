@@ -11,15 +11,12 @@
 //Defines data structures for pathing through grid spots in a level.
 
 
-struct LevelNode
-{
-    Vector2u GridPos;
-    LevelNode(Vector2u gridPos) : GridPos(gridPos) { }
-};
+typedef Vector2u LevelNode;
 
 
 struct LevelEdge : public Edge<LevelNode>
 {
+    LevelEdge(void) : Edge(LevelNode(), LevelNode(), 0) { }
     LevelEdge(LevelNode start, LevelNode end, void* pDat = 0) : Edge(start, end, pDat) { }
     
     virtual float GetTraversalCost(const GraphSearchGoal<LevelNode>& goal) const override;
@@ -47,4 +44,4 @@ private:
 };
 
 
-typedef AStarSearch<LevelNode, LevelEdge> LevelGraphPather;
+typedef AStarSearch<LevelNode, LevelEdge, GraphSearchGoal<LevelNode>, void*, LevelNode> LevelGraphPather;

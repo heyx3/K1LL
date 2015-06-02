@@ -1,22 +1,26 @@
 #include "RoomsGraph.h"
 
+#include "../../Level Info/LevelInfo.h"
+
 
 namespace
 {
-    //Navigation constants.
-    const float NAV_DistScale = 1.0f;
+    //The importance of distance to the destination in the A* heuristic.
+    const float NAV_DistScale = 0.25f;
 }
 
 
 float RoomEdge::GetTraversalCost(const GraphSearchGoal<RoomNode>& goal) const
 {
+    std::hash<RoomNode> hasher;
     float baseCost = 0.5f * (IsHorizontalConnection() ?
-                                 Start.NavDifficultyHorz + End.NavDifficultyHorz :
-                                 Start.NavDifficultyVert + End.NavDifficultyVert);
+                                 Start->NavDifficultyHorz + End->NavDifficultyHorz :
+                                 Start->NavDifficultyVert + End->NavDifficultyVert);
 
     if (goal.SpecificEnd.HasValue())
     {
-        baseCost += NAV_DistScale * End.RoomCenter.DistanceSquared(End.RoomCenter);
+        float distSqr = End->MinCornerPos.DistanceSquared(goal.SpecificEnd.GetValue()->MinCornerPos);
+        baseCost += NAV_DistScale * distSqr;
     }
 
     return baseCost;

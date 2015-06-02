@@ -18,6 +18,7 @@ namespace
     const float DEPTH_Grid = -0.5f,
                 DEPTH_NormalRoom = -0.49f,
                 DEPTH_SelectedRoom = -0.3f,
+                DEPTH_PathingOverlay = -0.04f,
                 DEPTH_ContextMenu = 0.5f;
 
     //Color constants.
@@ -72,6 +73,7 @@ LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager,
       worldViewGrid(worldViewBounds, err),
       contextMenu(this, err, onContextMenu),
       newRoomSelection(worldViewGrid, *this, err),
+      levelPathing(*this),
       placingRoom_IsPlacing(false),
       placingRoom_Room(Array2D<BlockTypes>(1, 1, BT_NONE), Vector2u(), IT_NONE, 0.0f, 0.0f)
 {
@@ -99,6 +101,8 @@ LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager,
     }
 
     //TODO: Call "OnRoomAdded()" on GUILevelPathing instance. Set its depth to a constant value.
+    levelPathing.OnRoomsChanged();
+    levelPathing.Depth = DEPTH_PathingOverlay;
 
 
     //Set up GUI stuff.
@@ -162,6 +166,8 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
             break;
 
         case ES_PLACING_ROOM:
+            placingRoom_Room.MinCornerPos = currentMouseGridPos;
+
             if (leftMouse && !mouseLastFrame)
             {
                 //If this is a valid spot to stick the room, go ahead and place it down.
@@ -171,6 +177,7 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                 if (LevelData.IsAreaFree(currentMouseGridPos, roomEnd, true))
                 {
                     LevelData.Rooms.push_back(placingRoom_Room);
+                    levelPathing.OnRoomsChanged();
 
                     placingRoom_IsPlacing = false;
                     currentState = ES_IDLE;
@@ -191,6 +198,8 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                 {
                     placingRoom_IsPlacing = false;
                     currentState = ES_IDLE;
+
+                    levelPathing.OnRoomsChanged();
                 }
                 //Otherwise, see what he right-clicked on.
                 else
@@ -285,6 +294,8 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
             break;
     }
 
+    levelPathing.Update(frameSeconds, mousePosF);
+
     mouseLastFrame = leftMouse;
 
     Page::Update(mousePos, frameSeconds);
@@ -371,6 +382,7 @@ void LevelEditor::Render(float frameSeconds)
 
 
     //Render whatever GUI is on top.
+    levelPathing.Render(frameSeconds, info);
     if (GUIManager.GetRoot() != 0)
     {
         GUIManager.Render(frameSeconds, info);
@@ -461,6 +473,7 @@ void LevelEditor::OnButton_MoveRoom(void)
 void LevelEditor::OnButton_DeleteRoom(void)
 {
     LevelData.Rooms.erase(LevelData.Rooms.begin() + contextMenu_SelectedRoom);
+    levelPathing.OnRoomsChanged();
 }
 void LevelEditor::OnButton_PlaceTeam1(void)
 {

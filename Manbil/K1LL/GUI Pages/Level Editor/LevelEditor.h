@@ -6,6 +6,7 @@
 #include "ContextMenu.h"
 #include "GUIEditorGrid.h"
 #include "GUIRoomSelection.h"
+#include "GUILevelPathing.h"
 
 
 //TODO: When saving a level, also save a thumbnail of it.
@@ -88,6 +89,7 @@ private:
     ContextMenu contextMenu;
     GUIEditorGrid worldViewGrid;
     GUIRoomSelection newRoomSelection;
+    GUILevelPathing levelPathing;
     
     //Whether the left mouse button was being pressed last frame.
     bool mouseLastFrame = false;
