@@ -110,6 +110,16 @@ bool MenuContent::Initialize(std::string& err)
     }
     StaticColorGUIMat = genM.Mat;
 
+    genM = GUIMaterials::GenerateStaticQuadDrawMaterial(StaticColorGUINoTexParams, GUIMaterials::TT_COLOR,
+                                                        DrawingQuad::GetVertexInputData(), 0U, 1U,
+                                                        false);
+    if (!genM.ErrorMessage.empty())
+    {
+        err = "Error generating static color GUI mat: " + genM.ErrorMessage;
+        return false;
+    }
+    StaticColorGUIMatNoTex = genM.Mat;
+
     genM = GUIMaterials::GenerateStaticQuadDrawMaterial(LabelGUIParams, GUIMaterials::TT_TEXT);
     if (!genM.ErrorMessage.empty())
     {
@@ -147,12 +157,14 @@ void MenuContent::Destroy(void)
     assert(b);
 
 
-    delete StaticColorGUIMat, AnimatedColorGUIMat, LabelGUIMat;
+    delete StaticColorGUIMat, StaticColorGUIMatNoTex, AnimatedColorGUIMat, LabelGUIMat;
     StaticColorGUIMat = 0;
+    StaticColorGUIMatNoTex = 0;
     AnimatedColorGUIMat = 0;
     LabelGUIMat = 0;
 
     StaticColorGUIParams.ClearUniforms();
+    StaticColorGUINoTexParams.ClearUniforms();
     AnimatedColorGUIParams.ClearUniforms();
     LabelGUIParams.ClearUniforms();
 
