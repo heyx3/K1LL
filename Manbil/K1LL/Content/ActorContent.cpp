@@ -239,28 +239,6 @@ void ActorContent::RenderPickup(Vector2f pos, ItemTypes item, const RenderInfo& 
             params = &specialAmmoParams;
             height = 2.0f;
             break;
-            
-        case IT_WEAPON_LIGHT:
-            mat = &lightWeaponMat[LightWeaponIndex];
-            mesh = &lightWeaponMesh;
-            mesh->CurrentSubMesh = LightWeaponIndex;
-            params = &lightWeaponParams[LightWeaponIndex];
-            height = 2.0f;
-            break;
-        case IT_WEAPON_HEAVY:
-            mat = &heavyWeaponMat[HeavyWeaponIndex];
-            mesh = &heavyWeaponMesh;
-            mesh->CurrentSubMesh = HeavyWeaponIndex;
-            params = &heavyWeaponParams[HeavyWeaponIndex];
-            height = 2.0f;
-            break;
-        case IT_WEAPON_SPECIAL:
-            mat = &specialWeaponMat[SpecialWeaponIndex];
-            mesh = &specialWeaponMesh;
-            mesh->CurrentSubMesh = SpecialWeaponIndex;
-            params = &specialWeaponParams[SpecialWeaponIndex];
-            height = 2.0f;
-            break;
 
         case IT_HEALTH:
             mat = healthMat;
