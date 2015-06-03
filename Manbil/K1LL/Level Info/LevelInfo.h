@@ -23,18 +23,15 @@ struct LevelInfo : public ISerializable
         //The item this room spawns.
         ItemTypes SpawnedItem;
         //The average number of grid spaces needed to traverse from one end of this room to the other.
-        //Based on the size of the room and the complexity of the wall layout.
-        //TODO: Combine these two into an average, since pathing may enter a room horizontally/vertically but leave it vertically/horizontally, respectively.
-        float NavDifficultyHorz, NavDifficultyVert;
+        float AverageLength;
 
 
         RoomData(void) : Walls(1, 1, BT_NONE) { }
 
-        RoomData(const Array2D<BlockTypes>& walls, Vector2u minCornerPos, ItemTypes spawnedItem,
-                 float navDifficultyHorz, float navDifficultyVert)
+        RoomData(const Array2D<BlockTypes>& walls, Vector2u minCornerPos,
+                 ItemTypes spawnedItem, float avgLength)
             : Walls(walls.GetWidth(), walls.GetHeight()), MinCornerPos(minCornerPos),
-              SpawnedItem(spawnedItem),
-              NavDifficultyHorz(navDifficultyHorz), NavDifficultyVert(navDifficultyVert)
+              SpawnedItem(spawnedItem), AverageLength(avgLength)
         {
             walls.MemCopyInto(Walls.GetArray());
         }
@@ -47,24 +44,21 @@ struct LevelInfo : public ISerializable
 
             MinCornerPos = cpy.MinCornerPos;
             SpawnedItem = cpy.SpawnedItem;
-            NavDifficultyHorz = cpy.NavDifficultyHorz;
-            NavDifficultyVert = cpy.NavDifficultyVert;
+            AverageLength = cpy.AverageLength;
 
             return *this;
         }
 
         RoomData(RoomData&& other)
-            : Walls(std::move(other.Walls)),
-              MinCornerPos(other.MinCornerPos), SpawnedItem(other.SpawnedItem),
-              NavDifficultyHorz(other.NavDifficultyHorz), NavDifficultyVert(other.NavDifficultyVert) { }
+            : Walls(std::move(other.Walls)), MinCornerPos(other.MinCornerPos),
+              SpawnedItem(other.SpawnedItem), AverageLength(other.AverageLength) { }
 
         RoomData& operator=(RoomData&& other)
         {
             Walls = std::move(other.Walls);
             MinCornerPos = other.MinCornerPos;
             SpawnedItem = other.SpawnedItem;
-            NavDifficultyHorz = other.NavDifficultyHorz;
-            NavDifficultyVert = other.NavDifficultyVert;
+            AverageLength = other.AverageLength;
 
             return *this;
         }

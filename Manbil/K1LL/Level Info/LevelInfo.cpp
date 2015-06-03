@@ -33,8 +33,7 @@ void LevelInfo::RoomData::WriteData(DataWriter* writer) const
 
     writer->WriteDataStructure(Vector2u_Writable(MinCornerPos), "Min corner pos");
     writer->WriteByte((unsigned char)SpawnedItem, "Spawned item");
-    writer->WriteFloat(NavDifficultyHorz, "Nav difficulty horizontal");
-    writer->WriteFloat(NavDifficultyVert, "Nav difficulty vertical");
+    writer->WriteFloat(AverageLength, "Average Length");
 }
 void LevelInfo::RoomData::ReadData(DataReader* reader)
 {
@@ -60,8 +59,7 @@ void LevelInfo::RoomData::ReadData(DataReader* reader)
     reader->ReadByte(b);
     SpawnedItem = (ItemTypes)b;
     
-    reader->ReadFloat(NavDifficultyHorz);
-    reader->ReadFloat(NavDifficultyVert);
+    reader->ReadFloat(AverageLength);
 }
 
 
@@ -227,7 +225,6 @@ LevelInfo::UIntBox LevelInfo::GetBounds(unsigned int roomIndex) const
 void LevelInfo::GetConnections(RoomsGraph& outGraph) const
 {
     outGraph.Connections.clear();
-    outGraph.AreConnectionsHorizontal.clear();
 
     UIntBox bnds = GetBounds();
     
@@ -262,7 +259,6 @@ void LevelInfo::GetConnections(RoomsGraph& outGraph) const
         { \
             RoomNode connection = &Rooms[indx]; \
             outGraph.Connections[node].push_back(connection); \
-            outGraph.AreConnectionsHorizontal[node][connection] = isHorz; \
             break; \
         } \
     }
@@ -270,29 +266,25 @@ void LevelInfo::GetConnections(RoomsGraph& outGraph) const
             {
                 SEARCH_EDGE_FOR_DOORWAYS(y,
                                          0, k - thisBnds.Min.y,
-                                         otherBnds.Max.x - otherBnds.Min.x, k - otherBnds.Min.y,
-                                         true)
+                                         otherBnds.Max.x - otherBnds.Min.x, k - otherBnds.Min.y)
             }
             else if (thisBnds.Max.x == otherBnds.Min.x)
             {
                 SEARCH_EDGE_FOR_DOORWAYS(y,
                                          thisBnds.Max.x - thisBnds.Min.x, k - thisBnds.Min.y,
-                                         0, k - otherBnds.Min.y,
-                                         true)
+                                         0, k - otherBnds.Min.y)
             }
             else if (thisBnds.Min.y == otherBnds.Max.y)
             {
                 SEARCH_EDGE_FOR_DOORWAYS(x,
                                          k - thisBnds.Min.x, 0,
-                                         k - otherBnds.Min.x, otherBnds.Max.y - otherBnds.Min.y,
-                                         false)
+                                         k - otherBnds.Min.x, otherBnds.Max.y - otherBnds.Min.y)
             }
             else if (thisBnds.Max.y == otherBnds.Min.y)
             {
                 SEARCH_EDGE_FOR_DOORWAYS(x,
                                          k - thisBnds.Min.x, thisBnds.Max.y - thisBnds.Min.y,
-                                         k - otherBnds.Min.x, 0,
-                                         false)
+                                         k - otherBnds.Min.x, 0)
             }
         }
     }

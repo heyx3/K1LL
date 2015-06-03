@@ -76,7 +76,7 @@ GUIRoomSelection::GUIRoomSelection(const GUIEditorGrid& grid, LevelEditor& _edit
     for (unsigned int i = 0; i < rooms.Rooms.size(); ++i)
     {
         roomDatas.push_back(LevelInfo::RoomData(rooms.Rooms[i].RoomGrid,
-                                                Vector2u(), IT_NONE, 0.0f, 0.0f));
+                                                Vector2u(), IT_NONE, 0.0f));
         AddElement(CreateRoom(dat, i, &roomDatas[i]));
     }
 

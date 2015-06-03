@@ -9,23 +9,23 @@
 
 //Defines data structures for pathing through rooms in a level.
 
-/*
+
 struct RoomNode
 {
     //Enables this class to be used in std collections that use hashes.
-    size_t operator()(const RoomNode& r) const { return (size_t)r.RoomPtr; }
-    bool operator==(const RoomNode& r) const { return r.RoomPtr== RoomPtr; }
-    bool operator!=(const RoomNode& r) const { return r.RoomPtr!= RoomPtr; }
+    size_t operator()(const RoomNode& r) const { return (size_t)r.Room; }
+    bool operator==(const RoomNode& r) const { return r.Room == Room; }
+    bool operator!=(const RoomNode& r) const { return r.Room != Room; }
 
 
-    LevelInfo::RoomData* RoomPtr;
+    const LevelInfo::RoomData* Room;
 
 
-    RoomNode(LevelInfo::RoomData* roomPtr = 0) : RoomPtr(roomPtr) { }
+    RoomNode(const LevelInfo::RoomData* roomPtr = 0) : Room(roomPtr) { }
 };
-*/
 
-typedef const LevelInfo::RoomData* RoomNode;
+
+//typedef const LevelInfo::RoomData* RoomNode;
 
 
 class RoomsGraph;
@@ -37,10 +37,6 @@ struct RoomEdge : public Edge<RoomNode, const RoomsGraph*>
     
     virtual float GetTraversalCost(const GraphSearchGoal<RoomNode>& goal) const override;
     virtual float GetSearchCost(const GraphSearchGoal<RoomNode>& goal) const override;
-
-private:
-
-    bool IsHorizontalConnection(void) const;
 };
 
 
@@ -48,17 +44,11 @@ class RoomsGraph : public Graph<RoomNode, RoomEdge>
 {
 public:
 
-    //Defines a mapping of RoomNode instances to some value type.
-    #define ROOM_NODE_MAP(valueType) std::unordered_map<RoomNode, valueType, RoomNode>
-
     //Indexes each room into a set of connected rooms.
-    ROOM_NODE_MAP(std::vector<RoomNode>) Connections;
-    //Indexes each room into its connecting rooms, which each correspond to a bool
-    //    describing whether the connection is vertical or horizontal.
-    ROOM_NODE_MAP(ROOM_NODE_MAP(bool)) AreConnectionsHorizontal;
+    std::unordered_map<RoomNode, std::vector<RoomNode>, RoomNode> Connections;
 
 
     virtual void GetConnectedEdges(RoomNode startNode, std::vector<RoomEdge>& outConnections) const override;
 };
 
-typedef AStarSearch<RoomNode, RoomEdge, GraphSearchGoal<RoomNode>, const RoomsGraph*> RoomsGraphPather;
+typedef AStarSearch<RoomNode, RoomEdge, GraphSearchGoal<RoomNode>, const RoomsGraph*, RoomNode> RoomsGraphPather;

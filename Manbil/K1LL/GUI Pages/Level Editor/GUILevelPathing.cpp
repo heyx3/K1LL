@@ -36,8 +36,6 @@ void GUILevelPathing::OnRoomsChanged(void)
     nStepsFromRoomToTeamBases.resize(editor.LevelData.Rooms.size(), std::array<unsigned int, 2>());
     roomNormalizedDistsToTeamBases.resize(editor.LevelData.Rooms.size(), std::array<float, 2>());
 
-    graph.Connections.clear();
-    graph.AreConnectionsHorizontal.clear();
     editor.LevelData.GetConnections(graph);
 }
 
@@ -48,81 +46,95 @@ void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
     //If rooms need to have their pathing info updated, pick one of them and update it.
     if (roomsToNav > 0)
     {
+        #pragma region Calculate "Average Length" for a room
+
         assert(roomsToNav <= lvl.Rooms.size());
 
-        //Figure out the average path length to pass through the room, vertically and horizontally.
+        //Figure out the average path length to pass through the room.
 
         LevelInfo::RoomData& room = lvl.Rooms[roomsToNav - 1];
         LevelInfo::UIntBox rmBnds = lvl.GetBounds(roomsToNav - 1);
-        LevelGraph graph(levelGrid);
+
+        Array2D<BlockTypes> tempRoom(room.Walls.GetWidth(), room.Walls.GetHeight());
+        tempRoom.Fill(levelGrid, -ToV2i(room.MinCornerPos));
+
+        //Get a list of all open end-points of the block.
+        std::vector<Vector2u> openSpaces;
+        openSpaces.reserve((2 * tempRoom.GetWidth()) + (2 * tempRoom.GetHeight()));
+        for (unsigned int x = 0; x < tempRoom.GetWidth(); ++x)
+        {
+            if (tempRoom[Vector2u(x, 0)] == BT_NONE)
+            {
+                openSpaces.push_back(Vector2u(x, 0));
+            }
+            if (tempRoom[Vector2u(x, tempRoom.GetHeight() - 1)] == BT_NONE)
+            {
+                openSpaces.push_back(Vector2u(x, tempRoom.GetHeight() - 1));
+            }
+        }
+        for (unsigned int y = 0; y < tempRoom.GetHeight(); ++y)
+        {
+            if (tempRoom[Vector2u(0, y)] == BT_NONE)
+            {
+                openSpaces.push_back(Vector2u(0, y));
+            }
+            if (tempRoom[Vector2u(tempRoom.GetWidth() - 1, y)] == BT_NONE)
+            {
+                openSpaces.push_back(Vector2u(tempRoom.GetWidth() - 1, y));
+            }
+        }
+
+        //Get all combinations of endpoints along the edge of the room.
+        std::vector<Vector4u> openSpacePairs;
+        openSpacePairs.reserve(openSpacePairs.size() * openSpacePairs.size());
+        for (unsigned int i = 0; i < openSpaces.size(); ++i)
+        {
+            for (unsigned int j = i + 1; j < openSpaces.size(); ++j)
+            {
+                openSpacePairs.push_back(Vector4u(openSpaces[i].x, openSpaces[i].y,
+                                                  openSpaces[j].x, openSpaces[j].y));
+            }
+        }
+        std::random_shuffle(openSpacePairs.begin(), openSpacePairs.end());
+
+        //Trim down the number of pairs to a reasonable size.
+        const unsigned int MAX_PAIRS = 30;
+        if (openSpacePairs.size() > MAX_PAIRS)
+        {
+            openSpacePairs.resize(MAX_PAIRS);
+        }
+
+
+        //Now go through every pair and get the average path length.
+
+        unsigned int totalSteps = 0;
+        unsigned int nPaths = 0;
+        LevelGraph graph(tempRoom);
         LevelGraphPather pather(&graph);
         GraphSearchGoal<LevelNode> goal = GraphSearchGoal<LevelNode>(LevelNode(Vector2u()));
         std::vector<LevelNode> dummyPath;
 
-        #pragma region Horizontal
-
-        unsigned int totalSteps = 0;
-        unsigned int nPaths = 0;
-        for (unsigned int x = rmBnds.Min.x; x <= rmBnds.Max.x; ++x)
+        for (unsigned int i = 0; i < openSpacePairs.size(); ++i)
         {
-            Vector2u startPos(x, rmBnds.Min.y);
+            Vector2u start(openSpacePairs[i].x, openSpacePairs[i].y),
+                     end(openSpacePairs[i].z, openSpacePairs[i].w);
 
-            //If this is a used, open doorway, see how long it takes
-            //    to reach the doorways on the other side of the room.
-            if (levelGrid[startPos] == BT_NONE)
+            dummyPath.clear();
+            goal.SpecificEnd.SetValue(end);
+            if (pather.Search(start, goal, dummyPath))
             {
-                for (unsigned int x2 = rmBnds.Min.x; x2 <= rmBnds.Max.x; ++x2)
-                {
-                    Vector2u endPos(x2, rmBnds.Max.y);
-
-                    if (levelGrid[endPos] == BT_NONE)
-                    {
-                        goal.SpecificEnd.SetValue(LevelNode(endPos));
-
-                        if (!pather.Search(LevelNode(startPos), goal, dummyPath))
-                        {
-                            totalSteps += dummyPath.size();
-                            dummyPath.clear();
-                            nPaths += 1;
-                        }
-                    }
-                }
+                totalSteps += dummyPath.size();
+                nPaths += 1;
             }
         }
-        lvl.Rooms[roomsToNav - 1].NavDifficultyHorz = (float)totalSteps / (float)nPaths;
-
-        #pragma endregion
-
-        #pragma region Vertical
-
-        totalSteps = 0;
-        nPaths = 0;
-        for (unsigned int y = rmBnds.Min.y; y <= rmBnds.Max.y; ++y)
+        if (nPaths == 0)
         {
-            Vector2u startPos(rmBnds.Min.x, y);
-
-            //If this is a used, open doorway, see how long it takes
-            //    to reach the doorways on the other side of the room.
-            if (levelGrid[startPos] == BT_NONE)
-            {
-                for (unsigned int y2 = rmBnds.Min.y; y2 <= rmBnds.Max.y; ++y2)
-                {
-                    Vector2u endPos(rmBnds.Max.x, y2);
-
-                    if (levelGrid[endPos] == BT_NONE)
-                    {
-                        goal.SpecificEnd.SetValue(LevelNode(endPos));
-                        if (!pather.Search(LevelNode(startPos), goal, dummyPath))
-                        {
-                            totalSteps += dummyPath.size();
-                            dummyPath.clear();
-                            nPaths += 1;
-                        }
-                    }
-                }
-            }
+            room.AverageLength = 0.0f;
         }
-        lvl.Rooms[roomsToNav - 1].NavDifficultyVert = (float)totalSteps / (float)nPaths;
+        else
+        {
+            room.AverageLength = (float)totalSteps / (float)nPaths;
+        }
 
         #pragma endregion
 
@@ -149,11 +161,11 @@ void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
             //The pather may fail if a room isn't connected to anything.
             if (pather.Search(startNode, goal, path))
             {
-                nStepsFromRoomToTeamBases[roomsToPath - 1][i] = std::numeric_limits<unsigned int>::max();
+                nStepsFromRoomToTeamBases[roomsToPath - 1][i] = path.size();
             }
             else
             {
-                nStepsFromRoomToTeamBases[roomsToPath - 1][i] = path.size();
+                nStepsFromRoomToTeamBases[roomsToPath - 1][i] = std::numeric_limits<unsigned int>::max();
             }
             path.clear();
         }

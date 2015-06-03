@@ -75,7 +75,7 @@ LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager,
       newRoomSelection(worldViewGrid, *this, err),
       levelPathing(*this),
       placingRoom_IsPlacing(false),
-      placingRoom_Room(Array2D<BlockTypes>(1, 1, BT_NONE), Vector2u(), IT_NONE, 0.0f, 0.0f)
+      placingRoom_Room(Array2D<BlockTypes>(1, 1, BT_NONE), Vector2u(), IT_NONE, 0.0f)
 {
     //See if any fields failed their initialization.
     if (!Assert(err.empty(), "Error initializing editor page's fields", err))
@@ -473,6 +473,16 @@ void LevelEditor::OnButton_MoveRoom(void)
 void LevelEditor::OnButton_DeleteRoom(void)
 {
     LevelData.Rooms.erase(LevelData.Rooms.begin() + contextMenu_SelectedRoom);
+    
+    if (LevelData.Team1Base >= LevelData.Rooms.size())
+    {
+        LevelData.Team1Base = LevelData.Rooms.size() - 1;
+    }
+    if (LevelData.Team2Base >= LevelData.Rooms.size())
+    {
+        LevelData.Team2Base = LevelData.Rooms.size() - 1;
+    }
+
     levelPathing.OnRoomsChanged();
 }
 void LevelEditor::OnButton_PlaceTeam1(void)
