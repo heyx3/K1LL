@@ -12,8 +12,10 @@
 namespace
 {
     //Coloring constants.
-    Vector4f COLOR_Team1(1.0f, 0.0f, 0.0f, 0.85f),
-             COLOR_Team2(0.0f, 0.0f, 1.0f, 0.85f);
+    Vector3f COLOR_Team1(1.0f, 0.0f, 0.0f),
+             COLOR_Team2(0.0f, 0.0f, 1.0f);
+    float ALPHA_Team = 0.3f,
+          COLOR_Exponent = 1.5f;
 }
 
 
@@ -33,15 +35,28 @@ void GUILevelPathing::OnRoomsChanged(void)
     roomsToPath = editor.LevelData.Rooms.size();
     roomsToNav = roomsToPath;
 
-    nStepsFromRoomToTeamBases.resize(editor.LevelData.Rooms.size(), std::array<unsigned int, 2>());
+    nStepsFromRoomToTeamBases.resize(editor.LevelData.Rooms.size(), std::array<float, 2>());
     roomNormalizedDistsToTeamBases.resize(editor.LevelData.Rooms.size(), std::array<float, 2>());
 
     editor.LevelData.GetConnections(graph);
 }
+void GUILevelPathing::OnTeamBasesChanged(void)
+{
+    roomsToPath = editor.LevelData.Rooms.size();
 
+    nStepsFromRoomToTeamBases.resize(editor.LevelData.Rooms.size(), std::array<float, 2>());
+    roomNormalizedDistsToTeamBases.resize(editor.LevelData.Rooms.size(), std::array<float, 2>());
+}
+
+#include <iostream>
 void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
 {
     LevelInfo& lvl = editor.LevelData;
+
+    if (!UpdatePathing)
+    {
+        return;
+    }
 
     //If rooms need to have their pathing info updated, pick one of them and update it.
     if (roomsToNav > 0)
@@ -135,6 +150,7 @@ void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
         {
             room.AverageLength = (float)totalSteps / (float)nPaths;
         }
+        std::cout << "Avg length for index " << std::to_string(roomsToNav - 1) << ": " << std::to_string(room.AverageLength) << "\n";
 
         #pragma endregion
 
@@ -156,16 +172,21 @@ void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
 
             LevelInfo::RoomData& goalRm = lvl.Rooms[teamIndex];
             LevelInfo::UIntBox goalBnds = lvl.GetBounds(teamIndex);
-            GraphSearchGoal<RoomNode> goal = GraphSearchGoal<RoomNode>(&goalRm);
+            GraphSearchGoal<RoomNode> goal = GraphSearchGoal<RoomNode>(RoomNode(&goalRm));
 
             //The pather may fail if a room isn't connected to anything.
+            float& nSteps = nStepsFromRoomToTeamBases[roomsToPath - 1][i];
             if (pather.Search(startNode, goal, path))
             {
-                nStepsFromRoomToTeamBases[roomsToPath - 1][i] = path.size();
+                nSteps = 0.0f;
+                for (unsigned int j = 0; j < path.size(); ++j)
+                {
+                    nSteps += path[j].Room->AverageLength;
+                }
             }
             else
             {
-                nStepsFromRoomToTeamBases[roomsToPath - 1][i] = std::numeric_limits<unsigned int>::max();
+                nSteps = Mathf::NaN;
             }
             path.clear();
         }
@@ -176,21 +197,28 @@ void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
         if (roomsToPath == 0)
         {
             //Get the max possible distance from any room to each team base.
-            unsigned int maxDists[2] = { std::numeric_limits<unsigned int>::max(),
-                                         std::numeric_limits<unsigned int>::max() };
+            float maxDists[2] = { -1.0f, -1.0f };
             for (unsigned int i = 0; i < nStepsFromRoomToTeamBases.size(); ++i)
             {
-                maxDists[0] = Mathf::Max(maxDists[0], nStepsFromRoomToTeamBases[i][0]);
-                maxDists[1] = Mathf::Max(maxDists[1], nStepsFromRoomToTeamBases[i][1]);
+                const std::array<float, 2>& vals = nStepsFromRoomToTeamBases[i];
+
+                if (!Mathf::IsNaN(vals[0]))
+                {
+                    maxDists[0] = Mathf::Max(maxDists[0], vals[0]);
+                }
+                if (!Mathf::IsNaN(vals[1]))
+                {
+                    maxDists[1] = Mathf::Max(maxDists[1], vals[1]);
+                }
             }
 
             //Get each room's distance to each base, from 0 to 1.
             for (unsigned int i = 0; i < nStepsFromRoomToTeamBases.size(); ++i)
             {
                 roomNormalizedDistsToTeamBases[i][0] =
-                    (float)nStepsFromRoomToTeamBases[i][0] / (float)maxDists[0];
+                    Mathf::Min(1.0f, nStepsFromRoomToTeamBases[i][0] / maxDists[0]);
                 roomNormalizedDistsToTeamBases[i][1] =
-                    (float)nStepsFromRoomToTeamBases[i][1] / (float)maxDists[1];
+                    Mathf::Min(1.0f, nStepsFromRoomToTeamBases[i][1] / maxDists[1]);
             }
         }
     }
@@ -206,8 +234,9 @@ void GUILevelPathing::Render(float elapsedTime, const RenderInfo& info)
         SetBounds(Box2D(editor.WorldPosToScreen(worldCenter),
                         editor.WorldSizeToScreen(ToV2f(room.Walls.GetDimensions()))));
 
-        SetColor((COLOR_Team1 * (1.0f - roomNormalizedDistsToTeamBases[i][0])) +
-                 (COLOR_Team2 * (1.0f - roomNormalizedDistsToTeamBases[i][1])));
+        Vector3f colRGB((COLOR_Team1 * (1.0f - powf(roomNormalizedDistsToTeamBases[i][0], COLOR_Exponent))) +
+                        (COLOR_Team2 * (1.0f - powf(roomNormalizedDistsToTeamBases[i][1], COLOR_Exponent))));
+        SetColor(Vector4f(colRGB, ALPHA_Team));
 
         GUITexture::Render(elapsedTime, info);
     }

@@ -247,7 +247,7 @@ void LevelInfo::GetConnections(RoomsGraph& outGraph) const
             const RoomData& otherRoom = Rooms[indx];
             UIntBox otherBnds = GetBounds(indx);
 
-#define SEARCH_EDGE_FOR_DOORWAYS(axisAlongEdge, thisPosX, thisPosY, otherPosX, otherPosY, isHorz) \
+#define SEARCH_EDGE_FOR_DOORWAYS(axisAlongEdge, thisPosX, thisPosY, otherPosX, otherPosY) \
     for (unsigned int k = Mathf::Max(thisBnds.Min.axisAlongEdge, otherBnds.Min.axisAlongEdge); \
          k < Mathf::Min(thisBnds.Max.axisAlongEdge, otherBnds.Max.axisAlongEdge); \
          ++k) \

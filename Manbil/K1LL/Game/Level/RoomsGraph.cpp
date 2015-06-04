@@ -39,6 +39,6 @@ void RoomsGraph::GetConnectedEdges(RoomNode startNode, std::vector<RoomEdge>& ou
     outConnections.reserve(outConnections.size() + nodeConns->second.size());
     for (unsigned int i = 0; i < nodeConns->second.size(); ++i)
     {
-        outConnections.push_back(RoomEdge(startNode, nodeConns->second[i], this));
+        outConnections.push_back(RoomEdge(startNode, nodeConns->second[i]));
     }
 }

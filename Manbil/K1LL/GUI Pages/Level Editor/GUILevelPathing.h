@@ -15,11 +15,17 @@ class GUILevelPathing : public GUITexture
 {
 public:
 
+    //If true, this instance will calculate pathing info for one room every frame
+    //   until all rooms have had their pathing info calculated.
+    bool UpdatePathing = true;
+
+
     GUILevelPathing(LevelEditor& editor);
 
 
-    //Callbacks for changes to rooms.
-    void OnRoomsChanged(void);
+    //Callbacks for changes to the level.
+    void OnRoomsChanged(void),
+         OnTeamBasesChanged(void);
 
     virtual void Render(float elapsedTime, const RenderInfo& info) override;
 
@@ -34,7 +40,7 @@ private:
     LevelEditor& editor;
 
     Array2D<BlockTypes> levelGrid;
-    std::vector<std::array<unsigned int, 2>> nStepsFromRoomToTeamBases;
+    std::vector<std::array<float, 2>> nStepsFromRoomToTeamBases;
     std::vector<std::array<float, 2>> roomNormalizedDistsToTeamBases;
 
     RoomsGraph graph;

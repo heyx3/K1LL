@@ -30,10 +30,10 @@ struct RoomNode
 
 class RoomsGraph;
 
-struct RoomEdge : public Edge<RoomNode, const RoomsGraph*>
+struct RoomEdge : public Edge<RoomNode>
 {
     RoomEdge(void) : Edge(0, 0, 0) { }
-    RoomEdge(RoomNode start, RoomNode end, const RoomsGraph* pDat) : Edge(start, end, pDat) { }
+    RoomEdge(RoomNode start, RoomNode end, void* pDat = 0) : Edge(start, end, pDat) { }
     
     virtual float GetTraversalCost(const GraphSearchGoal<RoomNode>& goal) const override;
     virtual float GetSearchCost(const GraphSearchGoal<RoomNode>& goal) const override;
@@ -51,4 +51,4 @@ public:
     virtual void GetConnectedEdges(RoomNode startNode, std::vector<RoomEdge>& outConnections) const override;
 };
 
-typedef AStarSearch<RoomNode, RoomEdge, GraphSearchGoal<RoomNode>, const RoomsGraph*, RoomNode> RoomsGraphPather;
+typedef AStarSearch<RoomNode, RoomEdge, GraphSearchGoal<RoomNode>, void*, RoomNode> RoomsGraphPather;

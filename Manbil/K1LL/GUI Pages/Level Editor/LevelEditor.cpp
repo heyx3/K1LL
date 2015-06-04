@@ -151,11 +151,8 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                 //If the player clicked on a room, pick it up and let him move it.
                 if (!noMousedRoom)
                 {
-                    currentState = ES_PLACING_ROOM;
-                    placingRoom_IsPlacing = true;
-                    placingRoom_Room = LevelData.Rooms[mousedRoom];
-
-                    LevelData.Rooms.erase(LevelData.Rooms.begin() + mousedRoom);
+                    contextMenu_SelectedRoom = mousedRoom;
+                    OnButton_MoveRoom();
                 }
             }
             else if (rightMouse)
@@ -177,6 +174,19 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                 if (LevelData.IsAreaFree(currentMouseGridPos, roomEnd, true))
                 {
                     LevelData.Rooms.push_back(placingRoom_Room);
+                    
+                    //Make sure team bases aren't messed up.
+                    if (LevelData.Team1Base >= LevelData.Rooms.size())
+                    {
+                        LevelData.Team1Base = LevelData.Rooms.size() - 1;
+                    }
+                    if (LevelData.Team2Base >= LevelData.Rooms.size())
+                    {
+                        LevelData.Team2Base = LevelData.Rooms.size() - 1;
+                    }
+                    
+
+                    levelPathing.UpdatePathing = true;
                     levelPathing.OnRoomsChanged();
 
                     placingRoom_IsPlacing = false;
@@ -198,6 +208,16 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                 {
                     placingRoom_IsPlacing = false;
                     currentState = ES_IDLE;
+                    
+                    //Make sure team bases aren't messed up.
+                    if (LevelData.Team1Base >= LevelData.Rooms.size())
+                    {
+                        LevelData.Team1Base = LevelData.Rooms.size() - 1;
+                    }
+                    if (LevelData.Team2Base >= LevelData.Rooms.size())
+                    {
+                        LevelData.Team2Base = LevelData.Rooms.size() - 1;
+                    }
 
                     levelPathing.OnRoomsChanged();
                 }
@@ -469,6 +489,8 @@ void LevelEditor::OnButton_MoveRoom(void)
     placingRoom_IsPlacing = true;
     placingRoom_Room = LevelData.Rooms[contextMenu_SelectedRoom];
     LevelData.Rooms.erase(LevelData.Rooms.begin() + contextMenu_SelectedRoom);
+
+    levelPathing.UpdatePathing = false;
 }
 void LevelEditor::OnButton_DeleteRoom(void)
 {
@@ -488,10 +510,12 @@ void LevelEditor::OnButton_DeleteRoom(void)
 void LevelEditor::OnButton_PlaceTeam1(void)
 {
     LevelData.Team1Base = contextMenu_SelectedRoom;
+    levelPathing.OnTeamBasesChanged();
 }
 void LevelEditor::OnButton_PlaceTeam2(void)
 {
     LevelData.Team2Base = contextMenu_SelectedRoom;
+    levelPathing.OnTeamBasesChanged();
 }
 void LevelEditor::OnButton_SetSpawn(ItemTypes type)
 {
