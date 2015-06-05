@@ -10,6 +10,8 @@
 
 
 //TODO: When saving a level, also save a thumbnail of it.
+//TODO: Add a "Room Editor" state.
+//TODO: Draw something on top of the team bases. Maybe just draw the spawn items in those rooms.
 
 //The "level editor" page.
 //Left-click to move rooms around and right-click to pan or to bring up a context menu.
@@ -82,6 +84,9 @@ private:
     Box2D worldViewBounds;
 
     Vector2f windowSizeF;
+
+    //Don't count left mouse events as this page is starting up.
+    bool ignoreLeftMouse = true;
 
     Vector2f currentMouseWorldPos;
     Vector2u currentMouseGridPos;

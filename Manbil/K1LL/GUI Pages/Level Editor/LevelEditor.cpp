@@ -100,7 +100,6 @@ LevelEditor::LevelEditor(const std::string& levelFileName, PageManager* manager,
         return;
     }
 
-    //TODO: Call "OnRoomAdded()" on GUILevelPathing instance. Set its depth to a constant value.
     levelPathing.OnRoomsChanged();
     levelPathing.Depth = DEPTH_PathingOverlay;
 
@@ -124,6 +123,19 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
 
     bool leftMouse = sf::Mouse::isButtonPressed(sf::Mouse::Left),
          rightMouse = sf::Mouse::isButtonPressed(sf::Mouse::Right);
+
+    if (ignoreLeftMouse)
+    {
+        if (leftMouse)
+        {
+            leftMouse = false;
+        }
+        else
+        {
+            ignoreLeftMouse = false;
+        }
+    }
+
     bool justPressedLeft = (leftMouse && !mouseLastFrame);
 
 
