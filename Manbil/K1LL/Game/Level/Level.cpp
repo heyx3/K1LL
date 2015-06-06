@@ -3,6 +3,8 @@
 #include "../../../Math/Higher Math/Geometryf.h"
 #include "../../Content/Constants.h"
 
+#include "../Rendering/LevelGeometry.h"
+
 
 namespace
 {
@@ -80,7 +82,7 @@ Level::Level(const LevelInfo& level, std::string& err)
 
     #pragma region Set up important Actors
 
-
+    Actors.push_back(ActorPtr(new LevelGeometry(BlockGrid, err)));
 
     #pragma endregion
 }

@@ -98,8 +98,6 @@ LevelGeometry::LevelGeometry(const Array2D<BlockTypes>& levelGrid, std::string& 
 
     #pragma region Generate material
 
-    //TODO: Create material. Draw grids based on distance along up and tangent vectors.
-
 
     std::string vIn_Pos = myVertAttrs.GetAttribute(0).Name,
                 vIn_Normal = myVertAttrs.GetAttribute(1).Name,

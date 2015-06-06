@@ -20,6 +20,7 @@ public:
 
     LevelGraph NavGraph;
     RoomsGraph RoomGraph;
+
     std::vector<LevelInfo::UIntBox> RoomBounds;
     std::unordered_map<ItemTypes, std::vector<Vector2u>> Spawns;
 
