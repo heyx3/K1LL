@@ -1,6 +1,9 @@
 #include "ContentLoader.h"
 
+#include <iostream>
+
 #include "Constants.h"
+#include "Settings.h"
 #include "ActorContent.h"
 #include "MenuContent.h"
 
@@ -17,9 +20,8 @@ void ContentLoader::LoadContent(std::string& err)
     }
 
     //Constants.
-    std::string tryRead;
-    Constants::Instance.ReadFromFile(tryRead);
-    if (!tryRead.empty())
+    Constants::Instance.ReadFromFile(err);
+    if (!err.empty())
     {
         Constants::Instance.SaveToFile(err);
         if (!err.empty())
@@ -27,6 +29,13 @@ void ContentLoader::LoadContent(std::string& err)
             err = "Error saving constants data to file: " + err;
             return;
         }
+    }
+
+    //Settings.
+    Settings::Instance.ReadFromFile();
+    if (!err.empty())
+    {
+        return;
     }
 
     //ActorContent.
@@ -50,4 +59,13 @@ void ContentLoader::DestroyContent(void)
 
     TextRenderer::DestroySystem();
     DrawingQuad::DestroyQuad();
+
+    std::string err;
+    Settings::Instance.SaveToFile(err);
+    if (!err.empty())
+    {
+        std::cout << "Error saving settings file: " << err;
+        char pause;
+        std::cin >> pause;
+    }
 }

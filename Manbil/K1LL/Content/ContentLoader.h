@@ -3,7 +3,7 @@
 #include <string>
 
 
-//Handles initialization of all content files.
+//Handles initialization of all content singleton classes.
 class ContentLoader
 {
 public:

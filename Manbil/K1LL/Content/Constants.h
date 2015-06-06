@@ -18,11 +18,6 @@ public:
           PlayerMaxSpeed = 4.0f;
     float PlayerLookMinDot = 0.1f;
 
-    float MinMouseRotSpeed = 0.05f,
-          MaxMouseRotSpeed = 0.5f;
-    float MinJoystickRotSpeed = 0.05f,
-          MaxJoystickRotSpeed = 0.5f;
-
 
     virtual void WriteData(DataWriter* writer) const override;
     virtual void ReadData(DataReader* reader) override;
