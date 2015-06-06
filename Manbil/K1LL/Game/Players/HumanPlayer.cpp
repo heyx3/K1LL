@@ -1,32 +1,21 @@
 #include "HumanPlayer.h"
 
 
-const Vector2i HumanPlayer::baseMPos = Vector2i(50, 50);
 
-
-HumanPlayer::HumanPlayer(PageManager* manager, Vector2f pos)
-    : Player(manager, pos)
+HumanPlayer::HumanPlayer(Level* level, InputMethods input, Vector2f pos)
+    : InputType(input), Player(level, pos)
 {
 
 }
 
 void HumanPlayer::Update(float elapsed)
 {
+    InputHandler::Inputs& inputs = InputHandler::Values[InputType];
+
     //First, handle rotation input.
-
-	sf::Vector2i mousePos = sf::Mouse::getPosition(*Manager->GetWindow());
-    sf::Mouse::setPosition(sf::Vector2i(baseMPos.x, baseMPos.y), *Manager->GetWindow());
-
-	Vector2i delta = Vector2i(mousePos.x, mousePos.y) - baseMPos;
-    float rotSpeed = Mathf::Lerp(Constants::Instance.MinMouseRotSpeed,
-                                 Constants::Instance.MaxMouseRotSpeed,
-                                 RotSpeedLerp);
-	float yaw = delta.x * rotSpeed * elapsed,
-          pitch = delta.y * rotSpeed * elapsed;
-
     Vector3f side = LookDir.Cross(Vector3f(0.0f, 0.0f, 1.0f));
-    Quaternion qPitch(side, pitch),
-               qYaw(Vector3f(0.0f, 0.0f, 1.0f), yaw);
+    Quaternion qPitch(side, inputs.Pitch),
+               qYaw(Vector3f(0.0f, 0.0f, 1.0f), inputs.Yaw);
 
     //Try pitch rotation.
     Vector3f oldLook = LookDir;
@@ -39,24 +28,12 @@ void HumanPlayer::Update(float elapsed)
     //Next, do yaw rotation.
     qYaw.Rotate(LookDir);
 
-
     //Second, handle movement input.
     Vector2f forward = LookDir.XY().Normalized(),
              newSide(forward.y, forward.x);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-    {
-        Acceleration += forward * Constants::Instance.PlayerAccel;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-    {
-        Acceleration += forward * -Constants::Instance.PlayerAccel;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-    {
-        Acceleration += newSide * Constants::Instance.PlayerAccel;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-    {
-        Acceleration += newSide * -Constants::Instance.PlayerAccel;
-    }
+    Acceleration += forward * inputs.ForwardMovement * Constants::Instance.PlayerAccel;
+    Acceleration += newSide * inputs.RightwardMovement * Constants::Instance.PlayerAccel;
+
+
+    //TODO: Handle pause, fire, and weapon-switch inputs.
 }

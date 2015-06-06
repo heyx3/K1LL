@@ -3,8 +3,8 @@
 #include "../../Content/ActorContent.h"
 
 
-Player::Player(PageManager* manager, Vector2f pos)
-    : Manager(manager), LookDir(1.0f, 0.0f, 0.0f)
+Player::Player(Level* level, Vector2f pos)
+    : Lvl(level), LookDir(1.0f, 0.0f, 0.0f)
 {
 
 }

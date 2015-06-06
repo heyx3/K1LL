@@ -510,6 +510,9 @@
     <ClCompile Include="K1LL\GUI Pages\Level Editor\GUILevelPathing.cpp">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClCompile>
+    <ClCompile Include="K1LL\Game\InputHandler.cpp">
+      <Filter>K1LL\Game</Filter>
+    </ClCompile>
     <ClCompile Include="K1LL\Content\Settings.cpp">
       <Filter>K1LL\Content</Filter>
     </ClCompile>
@@ -1152,6 +1155,9 @@
     </ClInclude>
     <ClInclude Include="K1LL\GUI Pages\Level Editor\GUILevelPathing.h">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\InputHandler.h">
+      <Filter>K1LL\Game</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\Content\Settings.h">
       <Filter>K1LL\Content</Filter>

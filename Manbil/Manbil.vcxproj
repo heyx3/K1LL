@@ -138,6 +138,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\Content\ContentLoader.cpp" />
     <ClCompile Include="K1LL\Content\MenuContent.cpp" />
     <ClCompile Include="K1LL\Content\Settings.cpp" />
+    <ClCompile Include="K1LL\Game\InputHandler.cpp" />
     <ClCompile Include="K1LL\Game\Level\Level.cpp" />
     <ClCompile Include="K1LL\Game\Level\LevelGraph.cpp" />
     <ClCompile Include="K1LL\Game\Level\RoomsGraph.cpp" />
@@ -332,6 +333,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Content\MenuContent.h" />
     <ClInclude Include="K1LL\Content\Settings.h" />
     <ClInclude Include="K1LL\Game\Actor.h" />
+    <ClInclude Include="K1LL\Game\InputHandler.h" />
     <ClInclude Include="K1LL\Game\Level\Level.h" />
     <ClInclude Include="K1LL\Game\Level\LevelGraph.h" />
     <ClInclude Include="K1LL\Game\Level\RoomsGraph.h" />
