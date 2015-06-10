@@ -76,8 +76,8 @@ void InputHandler::Update(sf::Window* window, int scrollWheel)
     sf::Vector2i sfMousePos = sf::Mouse::getPosition(*window);
     Vector2i delta = Vector2i(sfMousePos.x, sfMousePos.y) - BASE_MOUSE_POS;
     sf::Mouse::setPosition(sf::Vector2i(BASE_MOUSE_POS.x, BASE_MOUSE_POS.y), *window);
-    kbm.Yaw = Settings::Instance.MouseSpeedX;
-    kbm.Pitch = Settings::Instance.MouseSpeedY;
+    kbm.Yaw = Settings::Instance.MouseSpeedX * delta.x;
+    kbm.Pitch = Settings::Instance.MouseSpeedY * -delta.y;
 
 
     //Next, do the joysticks.
