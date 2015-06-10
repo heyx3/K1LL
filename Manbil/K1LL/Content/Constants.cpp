@@ -12,9 +12,13 @@ void Constants::WriteData(DataWriter* writer) const
     writer->WriteFloat(CeilingHeight, "Ceiling height");
     writer->WriteFloat(PlayerCollisionRadius, "Player collision radius");
     writer->WriteFloat(PlayerHeight, "Player height");
+    writer->WriteFloat(PlayerEyeHeight, "Player eye height");
+    writer->WriteFloat(PlayerEyeForward, "Player eye forward");
     writer->WriteFloat(PlayerAccel, "Player acceleration");
     writer->WriteFloat(PlayerMaxSpeed, "Player max speed");
     writer->WriteFloat(PlayerLookMinDot, "Player look min dot product");
+    writer->WriteFloat(CameraZNear, "Camera near Z plane");
+    writer->WriteFloat(CameraZFar, "Camera far Z plane");
 }
 
 void Constants::ReadData(DataReader* reader)
@@ -22,9 +26,13 @@ void Constants::ReadData(DataReader* reader)
     reader->ReadFloat(CeilingHeight);
     reader->ReadFloat(PlayerCollisionRadius);
     reader->ReadFloat(PlayerHeight);
+    reader->ReadFloat(PlayerEyeHeight);
+    reader->ReadFloat(PlayerEyeForward);
     reader->ReadFloat(PlayerAccel);
     reader->ReadFloat(PlayerMaxSpeed);
     reader->ReadFloat(PlayerLookMinDot);
+    reader->ReadFloat(CameraZNear);
+    reader->ReadFloat(CameraZFar);
 }
 
 

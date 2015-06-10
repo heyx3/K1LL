@@ -10,13 +10,19 @@ public:
     static Constants Instance;
 
 
-    float CeilingHeight = 10.0f;
+    float CeilingHeight = 5.0f;
 
     float PlayerCollisionRadius = 0.4f,
           PlayerHeight = 0.9f;
     float PlayerAccel = 3.0f,
           PlayerMaxSpeed = 4.0f;
-    float PlayerLookMinDot = 0.1f;
+    float PlayerLookMinDot = 0.01f;
+
+    float PlayerEyeHeight = 1.0f,
+          PlayerEyeForward = 0.45f;
+
+    float CameraZNear = 0.001f,
+          CameraZFar = 300.0f;
 
 
     virtual void WriteData(DataWriter* writer) const override;
