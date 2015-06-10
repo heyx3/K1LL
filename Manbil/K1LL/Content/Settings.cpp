@@ -40,6 +40,8 @@ void Settings::WriteData(DataWriter* writer) const
     writer->WriteFloat(ThumbstickSpeedY, "Thumbstick Speed Y");
 
     writer->WriteFloat(MasterVolume, "Master Volume");
+
+    writer->WriteFloat(FOVDegrees, "FOV in degrees");
 }
 void Settings::ReadData(DataReader* reader)
 {
@@ -49,6 +51,8 @@ void Settings::ReadData(DataReader* reader)
     reader->ReadFloat(ThumbstickSpeedY);
 
     reader->ReadFloat(MasterVolume);
+
+    reader->ReadFloat(FOVDegrees);
 }
 
 void Settings::SaveToFile(std::string& outErr) const
