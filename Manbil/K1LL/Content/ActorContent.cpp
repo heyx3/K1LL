@@ -160,10 +160,11 @@ bool ActorContent::Initialize(std::string& err)
             return false;
         }
 
-        playerMat = genM.Mat;
-
         assert(playerTex.IsValidTexture());
         playerParams.Texture2Ds[uniform_playerTex].Texture = playerTex.GetTextureHandle();
+        playerParams.Floats[uniform_teamColor].SetValue(Vector3f(1.0f, 1.0f, 1.0f));
+
+        playerMat = genM.Mat;
     }
 
     #pragma endregion
