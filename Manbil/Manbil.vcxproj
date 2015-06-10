@@ -145,6 +145,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\Game\Players\HumanPlayer.cpp" />
     <ClCompile Include="K1LL\Game\Players\Player.cpp" />
     <ClCompile Include="K1LL\Game\Rendering\LevelGeometry.cpp" />
+    <ClCompile Include="K1LL\Game\Rendering\PlayerViewport.cpp" />
     <ClCompile Include="K1LL\Game\TeamData.cpp" />
     <ClCompile Include="K1LL\GUI Pages\ChooseLevelEditor.cpp" />
     <ClCompile Include="K1LL\GUI Pages\Level Editor\ContextMenu.cpp" />
@@ -340,6 +341,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Game\Players\HumanPlayer.h" />
     <ClInclude Include="K1LL\Game\Players\Player.h" />
     <ClInclude Include="K1LL\Game\Rendering\LevelGeometry.h" />
+    <ClInclude Include="K1LL\Game\Rendering\PlayerViewport.h" />
     <ClInclude Include="K1LL\Game\TeamData.h" />
     <ClInclude Include="K1LL\Game\Weapons.h" />
     <ClInclude Include="K1LL\GUI Pages\ChooseLevelEditor.h" />
