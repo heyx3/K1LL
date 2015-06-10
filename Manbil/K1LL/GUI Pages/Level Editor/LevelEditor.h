@@ -104,5 +104,6 @@ private:
     bool placingRoom_IsPlacing; //Keeps track of this fact between multiple states.
     Vector2i waitingOnRightMouse_StartPos;
     Vector2i panning_LastPos;
+    Vector2u contextMenu_SelectedGrid; //The grid spot that was right-clicked on.
     unsigned int contextMenu_SelectedRoom; //The room that was right-clicked on.
 };

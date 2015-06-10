@@ -7,6 +7,7 @@
 
 #include "../PageManager.h"
 #include "../ChooseLevelEditor.h"
+#include "../LevelTest.h"
 #include "GUIRoom.h"
 
 #include "../../../DebugAssist.h"
@@ -163,6 +164,7 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                 //If the player clicked on a room, pick it up and let him move it.
                 if (!noMousedRoom)
                 {
+                    contextMenu_SelectedGrid = currentMouseGridPos;
                     contextMenu_SelectedRoom = mousedRoom;
                     OnButton_MoveRoom();
                 }
@@ -245,6 +247,7 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                     else
                     {
                         contextMenu.SetUpForRoom(mousedRoom);
+                        contextMenu_SelectedGrid = currentMouseGridPos;
                         contextMenu_SelectedRoom = mousedRoom;
                     }
 
@@ -549,8 +552,16 @@ void LevelEditor::OnButton_Save(void)
 }
 void LevelEditor::OnButton_Test(void)
 {
-    //TODO: Create a "TestGame" page.
-    assert(false);
+    std::string err;
+    Page::Ptr testLvl(new LevelTest(Manager->GetCurrentPage(), Manager,
+                                    ToV2f(contextMenu_SelectedGrid) + Vector2f(0.5f, 0.5f),
+                                    err));
+    if (!Assert(err.empty(), "Error setting up test level", err))
+    {
+        return;
+    }
+
+    Manager->UpdateCurrentPage(testLvl);
 }
 void LevelEditor::OnButton_Quit(void)
 {
