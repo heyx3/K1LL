@@ -246,7 +246,9 @@ void LevelEditor::Update(Vector2i mousePos, float frameSeconds)
                     }
                     else
                     {
-                        contextMenu.SetUpForRoom(mousedRoom);
+                        BlockTypes clickedType = levelPathing.GetLevelGrid()[currentMouseGridPos];
+                        bool isFree = (clickedType == BT_NONE || clickedType == BT_SPAWN);
+                        contextMenu.SetUpForRoom(mousedRoom, isFree);
                         contextMenu_SelectedGrid = currentMouseGridPos;
                         contextMenu_SelectedRoom = mousedRoom;
                     }
@@ -552,10 +554,12 @@ void LevelEditor::OnButton_Save(void)
 }
 void LevelEditor::OnButton_Test(void)
 {
+    //Get player's position relative to the start of the level.
+    LevelInfo::UIntBox lvlBnds = LevelData.GetBounds();
+    Vector2f playerPos = ToV2f(contextMenu_SelectedGrid - lvlBnds.Min) + Vector2f(0.5f, 0.5f);
+
     std::string err;
-    Page::Ptr testLvl(new LevelTest(Manager->GetCurrentPage(), Manager,
-                                    ToV2f(contextMenu_SelectedGrid) + Vector2f(0.5f, 0.5f),
-                                    err));
+    Page::Ptr testLvl(new LevelTest(Manager->GetCurrentPage(), Manager, playerPos, err));
     if (!Assert(err.empty(), "Error setting up test level", err))
     {
         return;

@@ -48,7 +48,6 @@ void GUILevelPathing::OnTeamBasesChanged(void)
     roomNormalizedDistsToTeamBases.resize(editor.LevelData.Rooms.size(), std::array<float, 2>());
 }
 
-#include <iostream>
 void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
 {
     LevelInfo& lvl = editor.LevelData;
@@ -150,7 +149,6 @@ void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
         {
             room.AverageLength = (float)totalSteps / (float)nPaths;
         }
-        std::cout << "Avg length for index " << std::to_string(roomsToNav - 1) << ": " << std::to_string(room.AverageLength) << "\n";
 
         #pragma endregion
 

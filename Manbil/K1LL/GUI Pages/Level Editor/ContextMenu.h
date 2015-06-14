@@ -42,5 +42,5 @@ public:
     //Sets up this menu to display the options for clicking on empty space.
     void SetUpForEmptySpace(void);
     //Sets up this menu to display the options for clicking on the given room.
-    void SetUpForRoom(unsigned int roomIndex);
+    void SetUpForRoom(unsigned int roomIndex, bool onEmptySpace);
 };

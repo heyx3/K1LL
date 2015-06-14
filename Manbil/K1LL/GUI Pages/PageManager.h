@@ -16,7 +16,7 @@ public:
 
     Vector2u GetWindowSize(void) const { return windowSize; }
     
-    const Page* GetCurrentPage(void) const { return currentPage.get(); }
+    const Page::Ptr GetCurrentPage(void) const { return currentPage; }
 
     //Sets the given page to become the new page next update step.
     void UpdateCurrentPage(Page::Ptr newPage) { nextPage = newPage; }

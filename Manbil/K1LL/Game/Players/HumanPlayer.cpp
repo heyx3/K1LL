@@ -17,23 +17,28 @@ void HumanPlayer::Update(float elapsed)
     Quaternion qPitch(side, inputs.Pitch),
                qYaw(Vector3f(0.0f, 0.0f, 1.0f), inputs.Yaw);
 
+    //Do yaw rotation.
+    qYaw.Rotate(LookDir);
+
     //Try pitch rotation.
     Vector3f oldLook = LookDir;
     qPitch.Rotate(LookDir);
-    if (LookDir.Dot(Vector3f(0.0f, 0.0f, 1.0f)) < Constants::Instance.PlayerLookMinDot)
+    if (abs(LookDir.Dot(Vector3f(0.0f, 0.0f, 1.0f))) < Constants::Instance.PlayerLookMinDot)
     {
         LookDir = oldLook;
     }
 
-    //Next, do yaw rotation.
-    qYaw.Rotate(LookDir);
+    LookDir.Normalize();
 
-    //Second, handle movement input.
+    //Next, handle movement input.
     Vector2f forward = LookDir.XY().Normalized(),
-             newSide(forward.y, forward.x);
+             newSide = -side.XY().Normalized();
     Acceleration += forward * inputs.ForwardMovement * Constants::Instance.PlayerAccel;
     Acceleration += newSide * inputs.RightwardMovement * Constants::Instance.PlayerAccel;
 
 
     //TODO: Handle pause, fire, and weapon-switch inputs.
+
+
+    Player::Update(elapsed);
 }

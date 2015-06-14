@@ -23,6 +23,7 @@ void ContentLoader::LoadContent(std::string& err)
     Constants::Instance.ReadFromFile(err);
     if (!err.empty())
     {
+        //The file doesn't exist, so create it.
         Constants::Instance.SaveToFile(err);
         if (!err.empty())
         {

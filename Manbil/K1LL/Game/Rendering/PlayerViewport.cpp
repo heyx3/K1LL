@@ -70,8 +70,7 @@ void PlayerViewport::Render(float frameSeconds, const RenderInfo& screenRenderIn
     
     Vector3f camPos(Target->Pos, Constants::Instance.PlayerEyeHeight);
     camPos += Vector3f(Target->LookDir.XY().Normalized() * Constants::Instance.PlayerEyeForward, 0.0f);
-    Camera cam(Vector3f(Target->Pos.x, Target->Pos.y, Constants::Instance.PlayerEyeHeight),
-               Target->LookDir, Vector3f(0.0f, 0.0f, 1.0f), false);
+    Camera cam(camPos, Target->LookDir, Vector3f(0.0f, 0.0f, 1.0f), false);
     cam.PerspectiveInfo.SetFOVDegrees(Settings::Instance.FOVDegrees);
     cam.PerspectiveInfo.Width = (float)worldRendTarg.GetWidth();
     cam.PerspectiveInfo.Height = (float)worldRendTarg.GetHeight();

@@ -27,6 +27,8 @@ public:
     void OnRoomsChanged(void),
          OnTeamBasesChanged(void);
 
+    const Array2D<BlockTypes>& GetLevelGrid(void) const { return levelGrid; }
+
     virtual void Render(float elapsedTime, const RenderInfo& info) override;
 
 

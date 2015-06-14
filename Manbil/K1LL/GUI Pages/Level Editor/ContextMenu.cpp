@@ -120,7 +120,7 @@ void ContextMenu::SetUpForEmptySpace(void)
             CASE(SET_HEALTH, false)
             CASE(SET_NONE, false)
             CASE(SAVE, true)
-            CASE(TEST, true)
+            CASE(TEST, false)
             CASE(QUIT, true)
 
             default:
@@ -132,7 +132,7 @@ void ContextMenu::SetUpForEmptySpace(void)
         }
     }
 }
-void ContextMenu::SetUpForRoom(unsigned int roomIndex)
+void ContextMenu::SetUpForRoom(unsigned int roomIndex, bool freeSpace)
 {
     bool hasSpawns = Editor->LevelData.Rooms[roomIndex].GetHasSpawns();
 
@@ -157,7 +157,7 @@ void ContextMenu::SetUpForRoom(unsigned int roomIndex)
             CASE(SET_HEALTH, hasSpawns)
             CASE(SET_NONE, hasSpawns)
             CASE(SAVE, true)
-            CASE(TEST, true)
+            CASE(TEST, freeSpace)
             CASE(QUIT, true)
 
             default:

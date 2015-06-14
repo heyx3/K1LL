@@ -14,15 +14,16 @@ public:
 
     float PlayerCollisionRadius = 0.4f,
           PlayerHeight = 0.9f;
-    float PlayerAccel = 3.0f,
-          PlayerMaxSpeed = 4.0f;
     float PlayerLookMinDot = 0.01f;
-
     float PlayerEyeHeight = 1.0f,
-          PlayerEyeForward = 0.45f;
+          PlayerEyeForward = 0.2f;
 
     float CameraZNear = 0.001f,
           CameraZFar = 300.0f;
+
+    float PlayerAccel = 50.0f,
+          PlayerMaxSpeed = 3.0f;
+    float PlayerFriction = 50.0f;
 
 
     virtual void WriteData(DataWriter* writer) const override;

@@ -14,7 +14,7 @@ class Player
 public:
     
     Level* Lvl;
-    Team MyTeam;
+    Team MyTeam = T_ONE;
 
     Vector2f Pos, Velocity;
     Vector3f LookDir;
@@ -36,11 +36,6 @@ public:
     }
 
 
-    //Tells this player to push back against the given wall it intersects with.
-    //Takes in the elapsed time this frame.
-    void PushOffWall(const Box2D& wall, float elapsedSeconds);
-
-
     //Child classes should call this AFTER doing their own update logic.
     //Behavior: updates the velocity and position given the acceleration.
     virtual void Update(float elapsedSeconds);
@@ -53,6 +48,12 @@ protected:
 
     //The world-space horizontal acceleration this turn. Resets to 0 at the end of every update.
     Vector2f Acceleration;
+
+private:
+
+    //Tries to move position based on the velocity and the given time step.
+    //If a wall is hit, the player reacts accordingly.
+    void TryMove(float timeStep);
 };
 
 

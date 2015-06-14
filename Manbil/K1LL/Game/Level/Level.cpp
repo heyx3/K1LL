@@ -2,53 +2,8 @@
 
 #include "../../../Math/Higher Math/Geometryf.h"
 #include "../../Content/Constants.h"
-
+#include "../Players/Player.h"
 #include "../Rendering/LevelGeometry.h"
-
-
-namespace
-{
-    //Gets whether the given circle touches the given grid spot.
-    bool TouchesGridBox(const Circle& circ, Vector2f gridPos)
-    {
-        Vector2f center(gridPos.x + 0.5f, gridPos.y + 0.5f);
-
-        Vector2f boxToCirc = circ.Pos - center,
-                 boxToCircAbs = boxToCirc.Abs();
-
-        //Find out which axis the box is closer along,
-        //    and use that to determine which edge will intersect with the circle.
-        Vector2f edge1, edge2;
-        if (boxToCircAbs.x < boxToCircAbs.y)
-        {
-            if (boxToCirc.y < 0.0f)
-            {
-                edge1 = gridPos;
-                edge2 = Vector2f(gridPos.x + 1.0f, gridPos.y);
-            }
-            else
-            {
-                edge1 = Vector2f(gridPos.x, gridPos.y + 1.0f);
-                edge2 = Vector2f(gridPos.x + 1.0f, edge1.y);
-            }
-        }
-        else
-        {
-            if (boxToCirc.x < 0.0f)
-            {
-                edge1 = gridPos;
-                edge2 = Vector2f(gridPos.x, gridPos.y + 1.0f);
-            }
-            else
-            {
-                edge1 = Vector2f(gridPos.x + 1.0f, gridPos.y);
-                edge2 = Vector2f(edge1.x, edge1.y + 1.0f);
-            }
-        }
-
-        return circ.IsPointInside(Geometryf::ClosestToLine(edge1, edge2, circ.Pos, false));
-    }
-}
 
 
 Level::Level(const LevelInfo& level, std::string& err)
@@ -89,32 +44,12 @@ Level::Level(const LevelInfo& level, std::string& err)
 
 void Level::Update(float elapsed)
 {
-    Vector2f playerRadius(Constants::Instance.PlayerCollisionRadius,
-                          Constants::Instance.PlayerCollisionRadius);
+    timeSinceGameStart += elapsed;
+
     for (unsigned int i = 0; i < Players.size(); ++i)
     {
-        Player& player = *Players[i];
-        player.Update(elapsed);
-
-        //Check for any collisions between this player and the walls.
-        Vector2f min = player.Pos - playerRadius,
-                 max = player.Pos + playerRadius;
-        Vector2i minGrid = ToV2i(min),
-                 maxGrid = ToV2i(max);
-        for (int x = minGrid.x; x <= maxGrid.x; ++x)
-        {
-            for (int y = minGrid.y; y <= maxGrid.y; ++y)
-            {
-                if (x < 0 || y < 0 || x >= BlockGrid.GetWidth() || y >= BlockGrid.GetHeight() ||
-                    (BlockGrid[ToV2u(Vector2i(x, y))] == BT_WALL &&
-                     TouchesGridBox(player.GetCollision2D(), Vector2f((float)x, (float)y))))
-                {
-                    player.PushOffWall(Box2D((float)x, (float)y, Vector2f(1.0f, 1.0f)), elapsed);
-                }
-            }
-        }
+        Players[i]->Update(elapsed);
     }
-
     for (unsigned int i = 0; i < Actors.size(); ++i)
     {
         if (Actors[i]->Update(this, elapsed))
@@ -134,6 +69,14 @@ void Level::Render(float elapsed, const RenderInfo& info)
     {
         Actors[i]->Render(this, elapsed, info);
     }
+}
+
+bool Level::IsGridPosBlocked(Vector2i gridPos) const
+{
+    return (gridPos.x < 0 || gridPos.y < 0 ||
+            gridPos.x >= (int)BlockGrid.GetWidth() ||
+            gridPos.y >= (int)BlockGrid.GetHeight() ||
+            BlockGrid[ToV2u(gridPos)] == BT_WALL);
 }
 
 Level::RaycastResults Level::CastWallRay(Vector3f start, Vector3f dir, Vector3f& hitPos, float& hitT)
