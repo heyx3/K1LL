@@ -23,6 +23,7 @@ public:
 
 
     Page(PageManager* manager) : Manager(manager) { }
+    virtual ~Page(void) { }
 
 
     virtual void Update(Vector2i mousePos, float frameSeconds);

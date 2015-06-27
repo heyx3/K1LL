@@ -5,6 +5,7 @@
 #include "../../Level Info/LevelInfo.h"
 #include "LevelGraph.h"
 #include "RoomsGraph.h"
+#include "../MatchInfo.h"
 
 #include "../Actor.h"
 
@@ -23,6 +24,8 @@ public:
     LevelGraph NavGraph;
     RoomsGraph RoomGraph;
 
+    MatchInfo MatchData;
+
     std::vector<LevelInfo::UIntBox> RoomBounds;
     std::unordered_map<ItemTypes, std::vector<Vector2u>> Spawns;
 
@@ -31,7 +34,7 @@ public:
 
 
     //If there was an error initializing the level, outputs an error message to the given string.
-    Level(const LevelInfo& level, std::string& errorMsg);
+    Level(const LevelInfo& level, MatchInfo info, std::string& errorMsg);
 
 
     void Update(float elapsed);

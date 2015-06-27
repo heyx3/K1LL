@@ -432,9 +432,6 @@
     <ClCompile Include="K1LL\Room Editor\RoomEditor.cpp">
       <Filter>K1LL\Room Editor</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\Content\Constants.cpp">
-      <Filter>K1LL\Content</Filter>
-    </ClCompile>
     <ClCompile Include="K1LL\Content\ActorContent.cpp">
       <Filter>K1LL\Content</Filter>
     </ClCompile>
@@ -446,9 +443,6 @@
     </ClCompile>
     <ClCompile Include="K1LL\Room Editor\RoomEditorView.cpp">
       <Filter>K1LL\Room Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Game\TeamData.cpp">
-      <Filter>K1LL\Game</Filter>
     </ClCompile>
     <ClCompile Include="K1LL\Level Info\RoomInfo.cpp">
       <Filter>K1LL\Level Info</Filter>
@@ -521,6 +515,24 @@
     </ClCompile>
     <ClCompile Include="K1LL\Game\Rendering\PlayerViewport.cpp">
       <Filter>K1LL\Game\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\Players\Weapons\Weapon.cpp">
+      <Filter>K1LL\Game\Players\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\WeaponConstants.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\Players\Weapons\Puncher.cpp">
+      <Filter>K1LL\Game\Players\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\Players\Projectiles\PuncherBullet.cpp">
+      <Filter>K1LL\Game\Players\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\WeaponContent.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\LevelConstants.cpp">
+      <Filter>K1LL\Content</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1075,9 +1087,6 @@
     <ClInclude Include="K1LL\Content\ActorContent.h">
       <Filter>K1LL\Content</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\Content\Constants.h">
-      <Filter>K1LL\Content</Filter>
-    </ClInclude>
     <ClInclude Include="K1LL\Room Editor\RoomCollection.h">
       <Filter>K1LL\Room Editor</Filter>
     </ClInclude>
@@ -1086,12 +1095,6 @@
     </ClInclude>
     <ClInclude Include="K1LL\Room Editor\RoomEditorView.h">
       <Filter>K1LL\Room Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Game\TeamData.h">
-      <Filter>K1LL\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Game\Weapons.h">
-      <Filter>K1LL\Game</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\Level Info\LevelInfo.h">
       <Filter>K1LL\Level Info</Filter>
@@ -1173,6 +1176,27 @@
     </ClInclude>
     <ClInclude Include="K1LL\Game\Rendering\PlayerViewport.h">
       <Filter>K1LL\Game\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\Players\Weapons\Weapon.h">
+      <Filter>K1LL\Game\Players\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\MatchInfo.h">
+      <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\Players\Weapons\Puncher.h">
+      <Filter>K1LL\Game\Players\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\WeaponConstants.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\Players\Projectiles\PuncherBullet.h">
+      <Filter>K1LL\Game\Players\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\WeaponContent.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\LevelConstants.h">
+      <Filter>K1LL\Content</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1313,6 +1337,12 @@
     </Filter>
     <Filter Include="K1LL\GUI Pages\Level Editor">
       <UniqueIdentifier>{891d5344-5529-4c68-8d7f-b10f79ced694}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Game\Players\Weapons">
+      <UniqueIdentifier>{92b45fed-e10c-4fa6-bb17-215aa0174a50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Game\Players\Projectiles">
+      <UniqueIdentifier>{7ffdb3e3-802b-4edd-9b0a-79e261e9a8ca}</UniqueIdentifier>
     </Filter>
     <Filter Include="IO\Serializers\tinyxml Library">
       <UniqueIdentifier>{e4f7dc4f-85f9-4536-b6db-5f9c56013c8a}</UniqueIdentifier>

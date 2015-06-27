@@ -3,7 +3,7 @@
 #include <string>
 
 
-//Handles initialization of all content singleton classes.
+//Handles initialization of all content/constants singleton classes.
 class ContentLoader
 {
 public:
@@ -11,6 +11,8 @@ public:
     static void LoadContent(std::string& outErrorMsg);
     static void DestroyContent(void);
 
+
 private:
+
     ContentLoader(void) { }
 };

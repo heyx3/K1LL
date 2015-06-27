@@ -2,19 +2,43 @@
 
 #include "../../Content/ActorContent.h"
 
+#include "../../Content/WeaponConstants.h"
 
 
-Player::Player(Level* level, Vector2f pos)
-    : Lvl(level), LookDir(1.0f, 0.0f, 0.0f), Pos(pos)
+
+Player::Player(Level* level, Vector2f pos, Weapon::Ptr weapons[3])
+    : Lvl(level), LookDir(LevelConstants::Instance.PlayerStartLookDir), Pos(pos)
 {
+    Weapons[WT_LIGHT] = weapons[WT_LIGHT];
+    Weapons[WT_LIGHT]->Owner = this;
 
+    Weapons[WT_HEAVY] = weapons[WT_HEAVY];
+    Weapons[WT_HEAVY]->Owner = this;
+
+    Weapons[WT_SPECIAL] = weapons[WT_SPECIAL];
+    Weapons[WT_SPECIAL]->Owner = this;
+}
+
+void Player::SetCurrentWeaponType(WeaponTypes newType)
+{
+    if (firedLastFrame)
+    {
+        GetCurrentWeapon()->StopFire();
+        firedLastFrame = false;
+    }
+
+    currentWeapon = newType;
+}
+
+std::pair<Vector3f, Vector3f> Player::GetWeaponPosAndDir(void) const
+{
+    Quaternion rot(Vector3f(0.0f, 0.0f, 1.0f), atan2f(LookDir.y, LookDir.x));
+    Vector3f offset = rot.Rotated(WeaponConstants::Instance.WeaponOffset);
+    return std::pair<Vector3f, Vector3f>(Vector3f(Pos, 0.0f) + offset, LookDir);
 }
 
 void Player::Update(float elapsed)
 {
-    //Check for collisions.
-    //CheckWallCollisions(elapsed);
-
     //Add friction into the acceleration.
 
     //If the player isn't accelerating, slow down his velocity completely.
@@ -22,7 +46,7 @@ void Player::Update(float elapsed)
     {
         if (Velocity.x != 0.0f || Velocity.y != 0.0f)
         {
-            Acceleration = -Velocity * Constants::Instance.PlayerFriction;
+            Acceleration = -Velocity * LevelConstants::Instance.PlayerFriction;
         }
     }
     else
@@ -38,11 +62,11 @@ void Player::Update(float elapsed)
         //Add friction to any velocity components that go against the acceleration.
         if (forwardA.Dot(forwardV) < 0.0f && (abs(forwardV.x) > 0.00001f || abs(forwardV.y) > 0.00001f))
         {
-            Acceleration -= forwardV.Normalized() * Constants::Instance.PlayerFriction;
+            Acceleration -= forwardV.Normalized() * LevelConstants::Instance.PlayerFriction;
         }
         if (sideA.Dot(sideV) < 0.0f && (abs(sideV.x) > 0.00001f || abs(sideV.y) > 0.00001f))
         {
-            Acceleration -= sideV.Normalized() * Constants::Instance.PlayerFriction;
+            Acceleration -= sideV.Normalized() * LevelConstants::Instance.PlayerFriction;
         }
     }
 
@@ -53,14 +77,31 @@ void Player::Update(float elapsed)
 
     //Constrain the velocity.
     float speedSqr = Velocity.LengthSquared();
-    if (speedSqr > Constants::Instance.PlayerMaxSpeed * Constants::Instance.PlayerMaxSpeed)
+    if (speedSqr > LevelConstants::Instance.PlayerMaxSpeed * LevelConstants::Instance.PlayerMaxSpeed)
     {
-        Velocity = (Velocity / sqrtf(speedSqr)) * Constants::Instance.PlayerMaxSpeed;
+        Velocity = (Velocity / sqrtf(speedSqr)) * LevelConstants::Instance.PlayerMaxSpeed;
     }
 
     //Update position.
-    //Pos += Velocity * elapsed;
     TryMove(elapsed);
+
+
+    //Handle weapons.
+    if (Fire)
+    {
+        if (!firedLastFrame)
+        {
+            firedLastFrame = true;
+            GetCurrentWeapon()->StartFire();
+        }
+        Fire = false;
+    }
+    else if (firedLastFrame)
+    {
+        GetCurrentWeapon()->StopFire();
+        firedLastFrame = false;
+    }
+    GetCurrentWeapon()->Update(elapsed);
 }
 void Player::TryMove(float timeStep)
 {
@@ -69,12 +110,12 @@ void Player::TryMove(float timeStep)
 
     //Check the X and Y components individually for wall collisions.
 
-    assert(Constants::Instance.PlayerCollisionRadius <= 1.0f);
+    assert(LevelConstants::Instance.PlayerCollisionRadius <= 1.0f);
 
     Vector2f movePos = Pos + delta,
              moveMax = movePos +
-                       Vector2f(signDelta.x * Constants::Instance.PlayerCollisionRadius,
-                                signDelta.y * Constants::Instance.PlayerCollisionRadius);
+                       Vector2f(signDelta.x * LevelConstants::Instance.PlayerCollisionRadius,
+                                signDelta.y * LevelConstants::Instance.PlayerCollisionRadius);
     Vector2i movePosI = ToV2i(movePos),
              moveMaxI = ToV2i(moveMax);
 
@@ -82,7 +123,8 @@ void Player::TryMove(float timeStep)
     if (Lvl->IsGridPosBlocked(Vector2i(moveMaxI.x, (int)Pos.y)))
     {
         //Cancel out horizontal velocity and move to the side of the wall.
-        float targetX = (float)moveMaxI.x + 0.5f + (-signDelta.x * 0.5f) + (-signDelta.x * Constants::Instance.PlayerCollisionRadius);
+        float targetX = (float)moveMaxI.x + 0.5f + (-signDelta.x * 0.5f) +
+                        (-signDelta.x * LevelConstants::Instance.PlayerCollisionRadius);
         delta.x = targetX - Pos.x;
         Velocity.x = 0.0f;
     }
@@ -90,7 +132,8 @@ void Player::TryMove(float timeStep)
     if (Lvl->IsGridPosBlocked(Vector2i((int)Pos.x, moveMaxI.y)))
     {
         //Cancel out vertical velocity and move to the side of the wall.
-        float targetY = (float)moveMaxI.y + 0.5f + (-signDelta.y * 0.5f) + (-signDelta.y * Constants::Instance.PlayerCollisionRadius);
+        float targetY = (float)moveMaxI.y + 0.5f + (-signDelta.y * 0.5f) +
+                        (-signDelta.y * LevelConstants::Instance.PlayerCollisionRadius);
         delta.y = targetY - Pos.y;
         Velocity.y = 0.0f;
     }
@@ -103,6 +146,13 @@ void Player::TryMove(float timeStep)
 
 void Player::Render(float elapsed, const RenderInfo& info)
 {
-    const TeamData& dat = TeamData::GetData(MyTeam);
-    ActorContent::Instance.RenderPlayer(Pos, LookDir, dat.TeamColor, dat.TeamMeshIndex, info);
+    ActorContent::Instance.RenderPlayer(Pos, LookDir,
+                                        Lvl->MatchData.TeamColors[MyTeam],
+                                        Lvl->MatchData.TeamPlayerMeshIndex[MyTeam],
+                                        info);
+
+    
+    //Render the weapon.
+    auto posAndDir = GetWeaponPosAndDir();
+    GetCurrentWeapon()->Render(posAndDir.first, posAndDir.second, info);
 }

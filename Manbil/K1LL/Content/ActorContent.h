@@ -4,22 +4,12 @@
 #include "../Level Info/ItemTypes.h"
 
 
+//Contains all 3D content for a match, except for weapons which are in "WeaponContent".
 class ActorContent
 {
 public:
 
     static ActorContent Instance;
-
-
-    static const unsigned int NLightWeapons = 1,
-                              NHeavyWeapons = 1,
-                              NSpecialWeapons = 1;
-
-
-    //The weapons being used for the current game. Determines which meshes get rendered.
-    unsigned int LightWeaponIndex = 0,
-                 HeavyWeaponIndex = 0,
-                 SpecialWeaponIndex = 0;
 
 
     //Creates/loads all the actor content.
@@ -54,10 +44,6 @@ private:
     Mesh lightAmmoMesh, heavyAmmoMesh, specialAmmoMesh;
     Material *lightAmmoMat, *heavyAmmoMat, *specialAmmoMat;
     UniformDictionary lightAmmoParams, heavyAmmoParams, specialAmmoParams;
-
-    Mesh lightWeaponMesh, heavyWeaponMesh, specialWeaponMesh;
-    Material *lightWeaponMat, *heavyWeaponMat, *specialWeaponMat;
-    std::vector<UniformDictionary> lightWeaponParams, heavyWeaponParams, specialWeaponParams;
     
     Mesh healthMesh;
     Material* healthMat;

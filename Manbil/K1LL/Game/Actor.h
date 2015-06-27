@@ -5,7 +5,7 @@
 #include "../../Rendering/Basic Rendering/RenderInfo.h"
 #include "../../Math/Shapes.hpp"
 
-#include "../Content/Constants.h"
+#include "../Content/LevelConstants.h"
 #include "../Content/ActorContent.h"
 
 
@@ -16,13 +16,21 @@ class Actor
 {
 public:
 
+    Actor(Level* theLevel) : lvl(theLevel) { }
     virtual ~Actor(void) { }
     
-    
-    //Returns whether this actor should be destroyed.
-    virtual bool Update(Level* theLevel, float elapsedSeconds) = 0;
 
-    virtual void Render(Level* theLevel, float elapsedSeconds, const RenderInfo& info) = 0;
+    Level* GetLevel(void) const { return lvl; }
+    
+    //Returns whether this actor should be removed from the level.
+    virtual bool Update(float elapsedSeconds) = 0;
+
+    virtual void Render(float elapsedSeconds, const RenderInfo& info) = 0;
+
+
+private:
+
+    Level* lvl;
 };
 
 typedef std::shared_ptr<Actor> ActorPtr;

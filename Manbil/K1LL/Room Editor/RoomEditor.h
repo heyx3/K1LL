@@ -9,7 +9,7 @@
 #include "RoomEditorView.h"
 
 
-//The editor for creating rooms.
+//The game world containing the editor for creating rooms.
 class RoomEditor : public SFMLOpenGLWorld
 {
 public:

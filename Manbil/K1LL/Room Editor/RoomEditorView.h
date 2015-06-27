@@ -8,7 +8,7 @@
 #include "RoomEditorPane.h"
 
 
-//The GUI element that updates/renders 
+//The GUI element that updates/renders the room editor.
 class RoomEditorView : public GUIElement, public RoomEditorPane
 {
 public:

@@ -1,11 +1,14 @@
 #include "LevelGeometry.h"
 
 #include "../../../Rendering/Primitives/PrimitiveGenerator.h"
+#include "../Level/Level.h"
 
 
-LevelGeometry::LevelGeometry(const Array2D<BlockTypes>& levelGrid, std::string& err)
-    : mat(0)
+LevelGeometry::LevelGeometry(Level* theLevel, std::string& err)
+    : mat(0), Actor(theLevel)
 {
+    const Array2D<BlockTypes>& levelGrid = theLevel->BlockGrid;
+
     typedef VertexPosNormal MyVert;
     RenderIOAttributes myVertAttrs = MyVert::GetVertexAttributes();
 
@@ -15,7 +18,7 @@ LevelGeometry::LevelGeometry(const Array2D<BlockTypes>& levelGrid, std::string& 
     std::vector<MyVert> vertices;
     std::vector<unsigned int> indices;
 
-    float ceilHeight = Constants::Instance.CeilingHeight;
+    float ceilHeight = LevelConstants::Instance.CeilingHeight;
 
     //For every empty space, build the walls that border it.
 
@@ -157,12 +160,12 @@ LevelGeometry::~LevelGeometry(void)
     }
 }
 
-bool LevelGeometry::Update(Level* theLevel, float elapsedTime)
+bool LevelGeometry::Update(float elapsedTime)
 {
     //Never destroy this actor.
     return false;
 }
-void LevelGeometry::Render(Level* theLevel, float elapsedTime, const RenderInfo& info)
+void LevelGeometry::Render(float elapsedTime, const RenderInfo& info)
 {
     mat->Render(info, &mesh, params);
 }

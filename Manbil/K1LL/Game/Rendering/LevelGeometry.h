@@ -11,12 +11,12 @@ class LevelGeometry : public Actor
 {
 public:
 
-    LevelGeometry(const Array2D<BlockTypes>& levelGrid, std::string& outErrorMsg);
+    LevelGeometry(Level* theLevel, std::string& outErrorMsg);
     ~LevelGeometry(void);
 
 
-    virtual bool Update(Level* theLevel, float elapsedTime) override;
-    virtual void Render(Level* theLevel, float elapsedTime, const RenderInfo& info) override;
+    virtual bool Update(float elapsedTime) override;
+    virtual void Render(float elapsedTime, const RenderInfo& info) override;
 
 
 private:

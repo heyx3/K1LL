@@ -2,8 +2,8 @@
 
 
 
-HumanPlayer::HumanPlayer(Level* level, InputMethods input, Vector2f pos)
-    : InputType(input), Player(level, pos)
+HumanPlayer::HumanPlayer(Level* level, InputMethods input, Vector2f pos, Weapon::Ptr weapons[3])
+    : InputType(input), Player(level, pos, weapons)
 {
 
 }
@@ -23,7 +23,7 @@ void HumanPlayer::Update(float elapsed)
     //Try pitch rotation.
     Vector3f oldLook = LookDir;
     qPitch.Rotate(LookDir);
-    if (abs(LookDir.Dot(Vector3f(0.0f, 0.0f, 1.0f))) < Constants::Instance.PlayerLookMinDot)
+    if (abs(LookDir.Dot(Vector3f(0.0f, 0.0f, 1.0f))) < LevelConstants::Instance.PlayerLookMinDot)
     {
         LookDir = oldLook;
     }
@@ -33,11 +33,14 @@ void HumanPlayer::Update(float elapsed)
     //Next, handle movement input.
     Vector2f forward = LookDir.XY().Normalized(),
              newSide = -side.XY().Normalized();
-    Acceleration += forward * inputs.ForwardMovement * Constants::Instance.PlayerAccel;
-    Acceleration += newSide * inputs.RightwardMovement * Constants::Instance.PlayerAccel;
+    Acceleration += forward * inputs.ForwardMovement * LevelConstants::Instance.PlayerAccel;
+    Acceleration += newSide * inputs.RightwardMovement * LevelConstants::Instance.PlayerAccel;
 
 
-    //TODO: Handle pause, fire, and weapon-switch inputs.
+    //Handle firing input. Pretty simple.
+    Fire = inputs.Fire;
+
+    //TODO: Handle pause and weapon-switch inputs.
 
 
     Player::Update(elapsed);

@@ -2,9 +2,11 @@
 
 #include <iostream>
 
-#include "Constants.h"
+#include "LevelConstants.h"
+#include "WeaponConstants.h"
 #include "Settings.h"
 #include "ActorContent.h"
+#include "WeaponContent.h"
 #include "MenuContent.h"
 
 
@@ -19,15 +21,27 @@ void ContentLoader::LoadContent(std::string& err)
         return;
     }
 
+
     //Constants.
-    Constants::Instance.ReadFromFile(err);
+    LevelConstants::Instance.ReadFromFile(err);
     if (!err.empty())
     {
         //The file doesn't exist, so create it.
-        Constants::Instance.SaveToFile(err);
+        LevelConstants::Instance.SaveToFile(err);
         if (!err.empty())
         {
-            err = "Error saving constants data to file: " + err;
+            err = "Error saving level constants data to file: " + err;
+            return;
+        }
+    }
+    WeaponConstants::Instance.ReadFromFile(err);
+    if (!err.empty())
+    {
+        //The file doesn't exist, so create it.
+        WeaponConstants::Instance.SaveToFile(err);
+        if (!err.empty())
+        {
+            err = "Error saving weapon constants data to file: " + err;
             return;
         }
     }
@@ -39,14 +53,17 @@ void ContentLoader::LoadContent(std::string& err)
         return;
     }
 
-    //ActorContent.
+    //Content.
     if (!ActorContent::Instance.Initialize(err))
     {
         err = "Error loading actor content: " + err;
         return;
     }
-
-    //MenuContent.
+    if (!WeaponContent::Instance.Initialize(err))
+    {
+        err = "Error loading weapon content: " + err;
+        return;
+    }
     if (!MenuContent::Instance.Initialize(err))
     {
         err = "Error loading menu content: " + err;
@@ -56,11 +73,14 @@ void ContentLoader::LoadContent(std::string& err)
 void ContentLoader::DestroyContent(void)
 {
     ActorContent::Instance.Destroy();
+    WeaponContent::Instance.Destroy();
     MenuContent::Instance.Destroy();
 
     TextRenderer::DestroySystem();
     DrawingQuad::DestroyQuad();
 
+
+    //Save the settings to a file so they can be loaded next time the game starts up.
     std::string err;
     Settings::Instance.SaveToFile(err);
     if (!err.empty())

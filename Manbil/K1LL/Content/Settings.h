@@ -13,7 +13,7 @@ public:
 
 
     const float MinMouseSpeed = 0.001f,
-                MaxMouseSpeed = 0.25f;
+                MaxMouseSpeed = 0.2f;
     const float MinThumbstickSpeed = 0.1f,
                 MaxThumbstickSpeed = 1.0f;
     const float MinFOVDegrees = 55.0f,

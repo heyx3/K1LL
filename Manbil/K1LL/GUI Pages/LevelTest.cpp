@@ -6,10 +6,24 @@
 #include "../Game/Rendering/PlayerViewport.h"
 #include "PageManager.h"
 
+#include "../Game/Players/Weapons/Puncher.h"
+
+
+namespace
+{
+    MatchInfo MakeMatchInfo(void)
+    {
+        return MatchInfo(Vector3f(1.0f, 0.0f, 0.0f), Vector3f(0.0f, 0.0f, 1.0f), 0, 1,
+                         [](Level& lvl) { return Weapon::Ptr(new Puncher(lvl)); },
+                         [](Level& lvl) { return Weapon::Ptr(new Puncher(lvl)); },
+                         [](Level& lvl) { return Weapon::Ptr(new Puncher(lvl)); });
+        //TODO: Add a heavy and special weapon here instead of three Punchers.
+    }
+}
 
 LevelTest::LevelTest(Page::Ptr editor, PageManager* manager,
                      Vector2f playerPos, std::string& err)
-    : levelEditor(editor), Lvl(((LevelEditor*)editor.get())->LevelData, err),
+    : levelEditor(editor), Lvl(((LevelEditor*)editor.get())->LevelData, MakeMatchInfo(), err),
       Page(manager)
 {
     if (!Assert(err.empty(), "Error initializing fields", err))
@@ -20,7 +34,13 @@ LevelTest::LevelTest(Page::Ptr editor, PageManager* manager,
     
     //Add a player to the level and create his viewport.
 
-    Lvl.Players.push_back(PlayerPtr(new HumanPlayer(&Lvl, IM_KEYBOARD_MOUSE, playerPos)));
+    Weapon::Ptr weaps[3] = {
+        Lvl.MatchData.LightWeapon(Lvl),
+        Lvl.MatchData.HeavyWeapon(Lvl),
+        Lvl.MatchData.SpecialWeapon(Lvl)
+    };
+    Lvl.Players.push_back(PlayerPtr(new HumanPlayer(&Lvl, IM_KEYBOARD_MOUSE, playerPos, weaps)));
+
     PlayerViewport* playerView = new PlayerViewport(Lvl, Lvl.Players[0].get(), Manager, err);
 
     if (!Assert(err.empty(), "Error initializing player view", err))
@@ -32,10 +52,6 @@ LevelTest::LevelTest(Page::Ptr editor, PageManager* manager,
     GUIManager.SetRoot(GUIElementPtr(playerView));
     GUIManager.GetRoot()->SetBounds(Box2D(0.0f, (float)Manager->GetWindow()->getSize().x,
                                           -(float)Manager->GetWindow()->getSize().y, 0.0f));
-
-    
-    TeamData::TOne.TeamColor = Vector3f(1.0f, 0.0f, 0.0f);
-    TeamData::TTwo.TeamColor = Vector3f(0.0f, 0.0f, 1.0f);
 }
 
 

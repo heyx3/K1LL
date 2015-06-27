@@ -8,8 +8,11 @@
 #include <assimp/postprocess.h>
 
 
-const std::string uniform_teamColor = "u_teamColor",
-                  uniform_playerTex = "u_tex";
+namespace
+{
+    const std::string uniform_teamColor = "u_teamColor",
+                      uniform_playerTex = "u_tex";
+}
 
 
 ActorContent ActorContent::Instance = ActorContent();
@@ -17,8 +20,7 @@ ActorContent ActorContent::Instance = ActorContent();
 ActorContent::ActorContent(void)
     : playerTex(TextureSampleSettings2D(FT_LINEAR, WT_WRAP), PS_8U, true),
       playerMat(0), healthMat(0),
-      lightAmmoMat(0), heavyAmmoMat(0), specialAmmoMat(0),
-      lightWeaponMat(0), heavyWeaponMat(0), specialWeaponMat(0)
+      lightAmmoMat(0), heavyAmmoMat(0), specialAmmoMat(0)
 {
 
 }
@@ -42,7 +44,7 @@ bool ActorContent::Initialize(std::string& err)
         const unsigned int nMeshes = 5;
         for (unsigned int i = 0; i < nMeshes; ++i)
         {
-            std::string file = "Content/Meshes/Players/M" + std::to_string(i) + ".obj";
+            std::string file = "Content/Game/Meshes/Players/M" + std::to_string(i) + ".obj";
             const aiScene* scene = importer.ReadFile(file, flags);
 
             //Load the scene/mesh.
@@ -106,7 +108,7 @@ bool ActorContent::Initialize(std::string& err)
     #pragma region Player Texture
 
     {
-        const std::string file = "Content/Textures/Player.png";
+        const std::string file = "Content/Game/Textures/Player.png";
         playerTex.Create();
         if (!playerTex.SetDataFromFile(file, err))
         {
@@ -169,7 +171,7 @@ bool ActorContent::Initialize(std::string& err)
 
     #pragma endregion
 
-    //TODO: ammo, weapon, and health meshes/materials/uniforms. Light ammo has that pixellated color thing, heavy ammo rotates, special ammo has a bubbly world position offset thing.
+    //TODO: ammo and health meshes/materials/uniforms. Light ammo has that pixellated color thing, heavy ammo rotates, special ammo has a bubbly world position offset thing.
 
     return true;
 }
@@ -179,10 +181,6 @@ void ActorContent::Destroy(void)
         if (varNameBase ## Mat != 0) { delete varNameBase ## Mat; varNameBase ## Mat = 0; } \
         varNameBase ## Mesh.SubMeshes.clear(); varNameBase ## Mesh.CurrentSubMesh = 0; \
         varNameBase ## Params.ClearUniforms();
-    #define CLEAR_ALL_ARRAY(varNameBase) \
-        if (varNameBase ## Mat != 0) { delete[] varNameBase ## Mat; varNameBase ## Mat = 0; } \
-        varNameBase ## Mesh.SubMeshes.clear(); varNameBase ## Mesh.CurrentSubMesh = 0; \
-        varNameBase ## Params.clear();
 
 
     CLEAR_ALL(player);
@@ -191,14 +189,10 @@ void ActorContent::Destroy(void)
     CLEAR_ALL(lightAmmo);
     CLEAR_ALL(heavyAmmo);
     CLEAR_ALL(specialAmmo);
-    CLEAR_ALL_ARRAY(lightWeapon);
-    CLEAR_ALL_ARRAY(heavyWeapon);
-    CLEAR_ALL_ARRAY(specialWeapon);
     CLEAR_ALL(health);
 
     
     #undef CLEAR_ALL
-    #undef CLEAR_ALL_ARRAY
 }
 
 void ActorContent::RenderPlayer(Vector2f pos, Vector3f forward, Vector3f color, unsigned int meshIndex,

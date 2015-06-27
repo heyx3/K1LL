@@ -1,13 +1,14 @@
 #include "Level.h"
 
 #include "../../../Math/Higher Math/Geometryf.h"
-#include "../../Content/Constants.h"
+#include "../../Content/LevelConstants.h"
 #include "../Players/Player.h"
 #include "../Rendering/LevelGeometry.h"
+#include "../Players/Projectiles/PuncherBullet.h"
 
 
-Level::Level(const LevelInfo& level, std::string& err)
-    : BlockGrid(1, 1), NavGraph(BlockGrid)
+Level::Level(const LevelInfo& level, MatchInfo info, std::string& err)
+    : BlockGrid(1, 1), NavGraph(BlockGrid), MatchData(info)
 {
     LevelInfo::UIntBox bnds = level.GetBounds();
 
@@ -37,7 +38,8 @@ Level::Level(const LevelInfo& level, std::string& err)
 
     #pragma region Set up important Actors
 
-    Actors.push_back(ActorPtr(new LevelGeometry(BlockGrid, err)));
+    Actors.push_back(ActorPtr(new LevelGeometry(this, err)));
+    Actors.push_back(PuncherBulletPool::CreatePool(this));
 
     #pragma endregion
 }
@@ -52,7 +54,7 @@ void Level::Update(float elapsed)
     }
     for (unsigned int i = 0; i < Actors.size(); ++i)
     {
-        if (Actors[i]->Update(this, elapsed))
+        if (Actors[i]->Update(elapsed))
         {
             Actors.erase(Actors.begin() + i);
             i -= 1;
@@ -67,7 +69,7 @@ void Level::Render(float elapsed, const RenderInfo& info)
     }
     for (unsigned int i = 0; i < Actors.size(); ++i)
     {
-        Actors[i]->Render(this, elapsed, info);
+        Actors[i]->Render(elapsed, info);
     }
 }
 
@@ -86,9 +88,9 @@ Level::RaycastResults Level::CastWallRay(Vector3f start, Vector3f dir, Vector3f&
     //Handle edge cases.
     if (dir.XY().LengthSquared() == 0.0f)
     {
-        if (start.z > Constants::Instance.CeilingHeight)
+        if (start.z > LevelConstants::Instance.CeilingHeight)
         {
-            hitPos = Vector3f(start.x, start.y, Constants::Instance.CeilingHeight);
+            hitPos = Vector3f(start.x, start.y, LevelConstants::Instance.CeilingHeight);
             hitT = 0.0f;
             return RR_CEILING;
         }
@@ -106,8 +108,8 @@ Level::RaycastResults Level::CastWallRay(Vector3f start, Vector3f dir, Vector3f&
         }
         else
         {
-            hitPos = Vector3f(start.x, start.y, Constants::Instance.CeilingHeight);
-            hitT = (Constants::Instance.CeilingHeight - start.z) / dir.z;
+            hitPos = Vector3f(start.x, start.y, LevelConstants::Instance.CeilingHeight);
+            hitT = (LevelConstants::Instance.CeilingHeight - start.z) / dir.z;
             return RR_CEILING;
         }
     }
@@ -134,7 +136,7 @@ Level::RaycastResults Level::CastWallRay(Vector3f start, Vector3f dir, Vector3f&
         else
         {
             verticalHit = Geometryf::GetPointOnLineAtValue(start, dir, 2,
-                                                           Constants::Instance.CeilingHeight);
+                                                           LevelConstants::Instance.CeilingHeight);
             verticalHitType = RR_CEILING;
         }
     }

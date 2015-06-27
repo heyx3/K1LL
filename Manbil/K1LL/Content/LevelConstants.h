@@ -1,19 +1,24 @@
 #pragma once
 
-#include "../../IO/DataSerialization.h"
+#include "../../IO/Serialization.h"
+#include "../../Math/Lower Math/Vectors.h"
 
 
-class Constants : public ISerializable
+//Game-related constants.
+class LevelConstants : public ISerializable
 {
 public:
 
-    static Constants Instance;
+    static LevelConstants Instance;
 
 
     float CeilingHeight = 5.0f;
 
     float PlayerCollisionRadius = 0.4f,
           PlayerHeight = 0.9f;
+    
+    Vector3f PlayerStartLookDir = Vector3f(1.0f, 0.0f, 0.0f);
+
     float PlayerLookMinDot = 0.01f;
     float PlayerEyeHeight = 1.0f,
           PlayerEyeForward = 0.2f;
@@ -36,5 +41,5 @@ public:
 
 private:
 
-    Constants(void) { }
+    LevelConstants(void) { }
 };
