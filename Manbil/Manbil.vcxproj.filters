@@ -9,7 +9,7 @@
       <Filter>Input\Input Objects\Vector2 Input</Filter>
     </ClCompile>
     <ClCompile Include="IO\tinyxml2.cpp">
-      <Filter>IO\tinyxml Library</Filter>
+      <Filter>IO\Serializers\tinyxml Library</Filter>
     </ClCompile>
     <ClCompile Include="Math\Higher Math\Camera.cpp">
       <Filter>Math\Higher Math</Filter>
@@ -549,7 +549,7 @@
       <Filter>Input\Input Objects</Filter>
     </ClInclude>
     <ClInclude Include="IO\tinyxml2.h">
-      <Filter>IO\tinyxml Library</Filter>
+      <Filter>IO\Serializers\tinyxml Library</Filter>
     </ClInclude>
     <ClInclude Include="Input\InputManager.h">
       <Filter>Input</Filter>
@@ -1224,9 +1224,6 @@
     <Filter Include="IO">
       <UniqueIdentifier>{8dc0e115-bfb4-46f2-b6f5-e0c3b762de30}</UniqueIdentifier>
     </Filter>
-    <Filter Include="IO\tinyxml Library">
-      <UniqueIdentifier>{e4f7dc4f-85f9-4536-b6db-5f9c56013c8a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\GUI\GUI Elements">
       <UniqueIdentifier>{ec92b068-e8ad-47a7-befa-6d2057a7ab49}</UniqueIdentifier>
     </Filter>
@@ -1316,6 +1313,9 @@
     </Filter>
     <Filter Include="K1LL\GUI Pages\Level Editor">
       <UniqueIdentifier>{891d5344-5529-4c68-8d7f-b10f79ced694}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IO\Serializers\tinyxml Library">
+      <UniqueIdentifier>{e4f7dc4f-85f9-4536-b6db-5f9c56013c8a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
