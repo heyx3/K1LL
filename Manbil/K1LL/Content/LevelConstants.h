@@ -20,7 +20,7 @@ public:
     Vector3f PlayerStartLookDir = Vector3f(1.0f, 0.0f, 0.0f);
 
     float PlayerLookMinDot = 0.01f;
-    float PlayerEyeHeight = 1.0f,
+    float PlayerEyeHeight = 1.05f,
           PlayerEyeForward = 0.2f;
 
     float CameraZNear = 0.001f,

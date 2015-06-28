@@ -47,11 +47,7 @@ void ContentLoader::LoadContent(std::string& err)
     }
 
     //Settings.
-    Settings::Instance.ReadFromFile();
-    if (!err.empty())
-    {
-        return;
-    }
+    Settings::Instance.Initialize();
 
     //Content.
     if (!ActorContent::Instance.Initialize(err))

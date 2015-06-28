@@ -37,8 +37,8 @@ public:
     static PuncherBulletPool* GetInstance(void) { return (PuncherBulletPool*)instance.get(); }
     ActorPtr GetInstanceSharedPtr(void) { return instance; }
 
-    //Always returns a new, valid bullet.
-    static PuncherBullet* NewBullet(Vector3f pos, Vector3f velocity, Level* lvl);
+    //Allocates a new bullet. Handles the lifetime, updating, and rendering of said bullet.
+    static PuncherBullet* NewBullet(Vector3f pos, Vector3f velocity);
 
     
     PuncherBulletPool(Level* lvl);
@@ -54,7 +54,7 @@ private:
     static ActorPtr instance;
 
 
-    PuncherBullet* NewBulletInstance(Vector3f pos, Vector3f velocity, Level* lvl);
+    PuncherBullet* NewBulletInstance(Vector3f pos, Vector3f velocity);
 
 
     //Arrays for bullet allocation.

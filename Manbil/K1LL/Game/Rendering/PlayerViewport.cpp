@@ -63,7 +63,8 @@ void PlayerViewport::Render(float frameSeconds, const RenderInfo& screenRenderIn
 
     //Render the world.
     worldRendTarg.EnableDrawingInto();
-
+    
+    //TODO: Fix culling.
     RenderingState(RenderingState::C_NONE).EnableState();
     ScreenClearer(true, true, false, Vector4f(1.0f, 0.0f, 1.0f, 0.0f)).ClearScreen();
     glViewport(0, 0, worldRendTarg.GetWidth(), worldRendTarg.GetHeight());

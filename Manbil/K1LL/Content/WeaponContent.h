@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../Rendering/Rendering.hpp"
+#include "WeaponConstants.h"
 
 
 class WeaponContent
@@ -44,6 +45,7 @@ private:
     WeaponContent(void);
 
 
-    void RenderWeapon(Vector3f pos, Vector3f dir, unsigned int meshIndex, float animSpeed,
+    void RenderWeapon(Vector3f pos, Vector3f dir, unsigned int meshIndex,
+                      WeaponConstants::MaterialParams& matData,
                       MTexture2D* tex, const RenderInfo& info);
 };

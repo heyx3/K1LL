@@ -4,6 +4,21 @@
 #include "../../IO/XmlSerialization.h"
 
 
+
+void WeaponConstants::MaterialParams::WriteData(DataWriter* writer) const
+{
+    writer->WriteFloat(AnimSpeed, "Animation speed");
+    writer->WriteFloat(GridThinness, "Grid thinness");
+    writer->WriteFloat(GridScale, "Grid scale");
+}
+void WeaponConstants::MaterialParams::ReadData(DataReader* reader)
+{
+    reader->ReadFloat(AnimSpeed);
+    reader->ReadFloat(GridThinness);
+    reader->ReadFloat(GridScale);
+}
+
+
 WeaponConstants WeaponConstants::Instance = WeaponConstants();
 
 
@@ -14,20 +29,16 @@ void WeaponConstants::WriteData(DataWriter* writer) const
     writer->WriteDataStructure(Vector3f_Writable(WeaponOffset), "Starting offset");
 
     writer->WriteFloat(PuncherReloadTime, "Puncher: reload time");
-    writer->WriteFloat(PuncherAnimSpeed, "Puncher: animation speed");
+    writer->WriteFloat(PuncherBulletSpeed, "Puncher: bullet speed");
     writer->WriteUInt(PuncherBufferSize, "Puncher: Number of pre-allocated bullets");
-
-    writer->WriteFloat(LightGunAnimSpeed, "LightGun: animation speed");
-
-    writer->WriteFloat(PRGAnimSpeed, "Perpetual Rail Gun: animation speed");
-
-    writer->WriteFloat(TerribleShotgunAnimSpeed, "Terrible Shotgun: animation speed");
-
-    writer->WriteFloat(SprayNPrayAnimSpeed, "Spray N Pray: animation speed");
-
-    writer->WriteFloat(ClusterAnimSpeed, "Cluster: animation speed");
-
-    writer->WriteFloat(POSAnimSpeed, "Personal Orbital Strike: animation speed");
+    
+    writer->WriteDataStructure(PuncherMaterial, "Puncher material");
+    writer->WriteDataStructure(LightGunMaterial, "Light Gun material");
+    writer->WriteDataStructure(PRGMaterial, "Perpetual Rail Gun material");
+    writer->WriteDataStructure(TerribleShotgunMaterial, "Terrible Shotgun material");
+    writer->WriteDataStructure(SprayNPrayMaterial, "Spray N Pray material");
+    writer->WriteDataStructure(ClusterMaterial, "Cluster material");
+    writer->WriteDataStructure(POSMaterial, "Personal Orbital Strike material");
 }
 
 void WeaponConstants::ReadData(DataReader* reader)
@@ -37,20 +48,16 @@ void WeaponConstants::ReadData(DataReader* reader)
     reader->ReadDataStructure(Vector3f_Readable(WeaponOffset));
 
     reader->ReadFloat(PuncherReloadTime);
-    reader->ReadFloat(PuncherAnimSpeed);
+    reader->ReadFloat(PuncherBulletSpeed);
     reader->ReadUInt(PuncherBufferSize);
-
-    reader->ReadFloat(LightGunAnimSpeed);
-
-    reader->ReadFloat(PRGAnimSpeed);
-
-    reader->ReadFloat(TerribleShotgunAnimSpeed);
-
-    reader->ReadFloat(SprayNPrayAnimSpeed);
-
-    reader->ReadFloat(ClusterAnimSpeed);
-
-    reader->ReadFloat(POSAnimSpeed);
+    
+    reader->ReadDataStructure(PuncherMaterial);
+    reader->ReadDataStructure(LightGunMaterial);
+    reader->ReadDataStructure(PRGMaterial);
+    reader->ReadDataStructure(TerribleShotgunMaterial);
+    reader->ReadDataStructure(SprayNPrayMaterial);
+    reader->ReadDataStructure(ClusterMaterial);
+    reader->ReadDataStructure(POSMaterial);
 }
 
 

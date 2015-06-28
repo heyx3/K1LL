@@ -4,6 +4,7 @@
 #include "../../../Content/WeaponConstants.h"
 #include "../../../Content/WeaponContent.h"
 #include "../Projectiles/PuncherBullet.h"
+#include "../Player.h"
 
 
 void Puncher::StartFire(void)
@@ -32,7 +33,11 @@ void Puncher::TryFire(void)
     if (timeSinceFire >= WeaponConstants::Instance.PuncherReloadTime)
     {
         timeSinceFire = 0.0f;
-        //TODO: Allocate and fire a puncher bullet.
-        assert(false);
+
+        //TODO: Ray-cast forward from the weapon to the nearest object (just walls?) and point the weapon to that.
+        auto posAndDir = Owner->GetWeaponPosAndDir();
+        Vector3f pos = posAndDir.first + (posAndDir.second * WeaponConstants::Instance.WeaponLength);
+        Vector3f vel = posAndDir.second * WeaponConstants::Instance.PuncherBulletSpeed;
+        PuncherBulletPool::GetInstance()->NewBullet(pos, vel);
     }
 }

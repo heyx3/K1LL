@@ -43,7 +43,12 @@ PuncherBulletPool::~PuncherBulletPool(void)
     delete[] isAllocated, bullets;
 }
 
-PuncherBullet* PuncherBulletPool::NewBulletInstance(Vector3f pos, Vector3f velocity, Level* lvl)
+
+PuncherBullet* PuncherBulletPool::NewBullet(Vector3f pos, Vector3f velocity)
+{
+    return GetInstance()->NewBulletInstance(pos, velocity);
+}
+PuncherBullet* PuncherBulletPool::NewBulletInstance(Vector3f pos, Vector3f velocity)
 {
     //Keep cycling through the bullets until an unused one is found.
     unsigned int startVal = nextBullet;

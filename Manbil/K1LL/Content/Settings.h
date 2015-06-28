@@ -33,8 +33,10 @@ public:
     virtual void WriteData(DataWriter* writer) const override;
     virtual void ReadData(DataReader* reader) override;
     
+    //Reads from the "Settings" file if it's there.
+    //If it's not there, creates a settings file with the default values.
+    void Initialize();
     void SaveToFile(std::string& outError) const;
-    void ReadFromFile();
 
 
 private:

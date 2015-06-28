@@ -55,29 +55,31 @@ void Settings::ReadData(DataReader* reader)
     reader->ReadFloat(FOVDegrees);
 }
 
-void Settings::SaveToFile(std::string& outErr) const
-{
-    //Try writing out the settings.
-
-    XmlWriter writer;
-    writer.WriteDataStructure(*this, "Values");
-
-    std::string err = writer.SaveData(FILE_PATH);
-    Assert(err.empty(), "Error saving settings to '" + FILE_PATH + "'", err, outErr, false);
-}
-void Settings::ReadFromFile()
+void Settings::Initialize()
 {
     //Try loading in the settings.
 
     XmlReader reader(FILE_PATH);
 
-    //It's not a fatal error if the file isn't there.
-    std::string err;
-    if (!Assert(reader.ErrorMessage.empty(), "Error reading in '" + FILE_PATH + "'",
-                reader.ErrorMessage, err, true))
+    //If the file isn't there, write it out and print a little notice.
+    if (!reader.ErrorMessage.empty())
     {
-        std::cout << "\nUsing default settings.\n";
-        return;
+        std::cout << "\nCouldn't read in settings; overwriting with default values.\n\n";
+        
+        std::string err, errFull;
+        SaveToFile(err);
+        if (!Assert(err.empty(), "Error saving file to '" + FILE_PATH + "'", err, errFull, true))
+        {
+            return;
+        }
+
+        reader.ErrorMessage.clear();
+        reader.Reload(FILE_PATH, reader.ErrorMessage);
+        if (!Assert(reader.ErrorMessage.empty(), "Error reading file '" + FILE_PATH + "'",
+                    reader.ErrorMessage, errFull, true))
+        {
+            return;
+        }
     }
     
     try
@@ -87,6 +89,17 @@ void Settings::ReadFromFile()
     catch (int e)
     {
         assert(e == DataReader::EXCEPTION_FAILURE);
+        std::string err;
         Assert(false, "Error parsing '" + FILE_PATH + "'", reader.ErrorMessage, err, true);
     }
+}
+void Settings::SaveToFile(std::string& outErr) const
+{
+    //Try writing out the settings.
+
+    XmlWriter writer;
+    writer.WriteDataStructure(*this, "Values");
+
+    std::string err = writer.SaveData(FILE_PATH);
+    Assert(err.empty(), "Error saving settings to '" + FILE_PATH + "'", err, outErr, false);
 }

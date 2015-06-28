@@ -10,7 +10,9 @@
 namespace
 {
     const std::string UNIFORM_TEXTURE = "u_tex",
-                      UNIFORM_ANIMSPEED = "u_animSpeed";
+                      UNIFORM_ANIMSPEED = "u_animSpeed",
+                      UNIFORM_GRIDTHINNESS = "u_grid_thinness",
+                      UNIFORM_GRIDSCALE = "u_grid_scale";
 
     enum Weapons
     {
@@ -112,7 +114,7 @@ bool WeaponContent::Initialize(std::string& err)
             }
             if (scene->mNumMeshes != 1)
             {
-                err = "Mesh '" + file + "' has " + std::to_string(scene->mNumMeshes) + "meshes in it";
+                err = "Mesh '" + file + "' has " + std::to_string(scene->mNumMeshes) + " meshes in it";
                 return false;
             }
 
@@ -141,7 +143,7 @@ bool WeaponContent::Initialize(std::string& err)
                 vertices[j].Tangent = *(Vector3f*)(&mesh->mTangents[j].x);
                 vertices[j].Bitangent = *(Vector3f*)(&mesh->mBitangents[j].x);
             }
-            indices.resize(mesh->mNumFaces);
+            indices.resize(mesh->mNumFaces * 3);
             for (unsigned int j = 0; j < mesh->mNumFaces; ++j)
             {
                 aiFace& fce = mesh->mFaces[j];
@@ -152,9 +154,10 @@ bool WeaponContent::Initialize(std::string& err)
                     return false;
                 }
 
-                indices.push_back(fce.mIndices[0]);
-                indices.push_back(fce.mIndices[1]);
-                indices.push_back(fce.mIndices[2]);
+                
+                indices[(j * 3)] = fce.mIndices[0];
+                indices[(j * 3) + 1] = fce.mIndices[1];
+                indices[(j * 3) + 2] = fce.mIndices[2];
             }
 
             //Create the vertex/index buffers.
@@ -192,63 +195,62 @@ bool WeaponContent::Initialize(std::string& err)
         //Vertex shader.
         std::string vOuts =
 R"(\
-out vec3 fIn_WorldPos, fIn_WorldNormal, fIn_WorldTangent, fIn_WorldBitangent;
+out vec3 fIn_Pos, fIn_Normal, fIn_Tangent, fIn_Bitangent;
 out vec2 fIn_UV;\
 )";
         MaterialUsageFlags vUse;
         vUse.EnableFlag(MaterialUsageFlags::DNF_USES_WVP_MAT);
         vUse.EnableFlag(MaterialUsageFlags::DNF_USES_WORLD_MAT);
         
-        std::string u_wvp = MaterialConstants::WVPMatName,
-                    u_world = MaterialConstants::WorldMatName;
+        std::string u_wvp = MaterialConstants::WVPMatName;
         std::string vShader = MaterialConstants::GetVertexHeader(vOuts, weaponVertIns, vUse) +
 R"(
 void main()
 {
     //Standard pass-through vertex shader.
     fIn_UV = vIn_UV;
-    vec4 temp4 = )" + u_world + R"( * vec4(vIn_Pos, 1.0);
-    fIn_WorldPos = temp4.xyz / temp4.w;
-    fIn_WorldNormal = ( )" + u_world + R"( * vec4(vIn_Normal, 0.0)).xyz;
-    fIn_WorldTangent = ( )" + u_world + R"( * vec4(vIn_Tangent, 0.0)).xyz;
-    fIn_WorldBitangent = ( )" + u_world + R"( * vec4(vIn_Bitangent, 0.0)).xyz;
+    fIn_Pos = vIn_Pos;
+    fIn_Normal = vIn_Normal;
+    fIn_Tangent = vIn_Tangent;
+    fIn_Bitangent = vIn_Bitangent;
 
-    gl_Position = )" + u_wvp + R"(vec4(vIn_Pos, 1.0);
+    gl_Position = )" + u_wvp + R"( * vec4(vIn_Pos, 1.0);
 })";
 
         //Fragment shader.
         std::string fIns =
 R"(\
-in vec3 fIn_WorldPos, fIn_WorldNormal, fIn_WorldTangent, fIn_WorldBitangent;
+in vec3 fIn_Pos, fIn_Normal, fIn_Tangent, fIn_Bitangent;
 in vec2 fIn_UV;\
 )";
         std::string fOuts = "out vec4 fOut_Color;";
         MaterialUsageFlags fUse;
         fUse.EnableFlag(MaterialUsageFlags::DNF_USES_TIME);
 
+        //TODO: Parameterize "gridSizeScale" and the pow exponent for "gridVals".
         std::string u_time = MaterialConstants::ElapsedTimeName;
-        std::string fShader = MaterialConstants::GetFragmentHeader(fIns, fOuts, MaterialUsageFlags()) +
+        std::string fShader = MaterialConstants::GetFragmentHeader(fIns, fOuts, fUse) +
 R"(
 uniform sampler2D )" + UNIFORM_TEXTURE + R"(;
-uniform float )" + UNIFORM_ANIMSPEED + R"(;
+uniform float )" + UNIFORM_ANIMSPEED + ", " + UNIFORM_GRIDSCALE + ", " + UNIFORM_GRIDTHINNESS + R"(;
 
 void main()
 {
     //For each tangent vector, get a value from 0 to 1 indicating how close this fragment is
     //   to a grid line in that direction.
 
-    const float gridSizeScale = 0.25;
-    
-    vec2 gridValsBase = vec2(dot(fIn_WorldPos, fIn_WorldTangent),
-                             dot(fIn_WorldPos, fIn_WorldBitangent));
+    vec2 gridValsBase = vec2(fIn_UV.x, fIn_UV.y);
     gridValsBase += )" + UNIFORM_ANIMSPEED + " * " + u_time + R"(;
-    vec2 gridVals = fract(gridSizeScale * gridValsBase);
-    gridVals = pow(2.0 * abs(gridVals - vec2(0.5)), vec2(8.0));
+    vec2 gridVals = fract( )" + UNIFORM_GRIDSCALE + R"( * gridValsBase);
+    gridVals = pow(2.0 * abs(gridVals - vec2(0.5)), vec2( )" + UNIFORM_GRIDTHINNESS + R"( ));
 
     vec3 texRGB = texture2D( )" + UNIFORM_TEXTURE + R"(, fIn_UV).xyz;
     fOut_Color = vec4(texRGB * max(gridVals.x, gridVals.y), 1.0);
 })";
-
+        weaponParams.Texture2Ds[UNIFORM_TEXTURE] = UniformValueSampler2D(0, UNIFORM_TEXTURE);
+        weaponParams.Floats[UNIFORM_ANIMSPEED] = UniformValueF(0.0f, UNIFORM_ANIMSPEED);
+        weaponParams.Floats[UNIFORM_GRIDSCALE] = UniformValueF(1.0f, UNIFORM_GRIDSCALE);
+        weaponParams.Floats[UNIFORM_GRIDTHINNESS] = UniformValueF(45.0f, UNIFORM_GRIDTHINNESS);
         weaponMat = new Material(vShader, fShader, weaponParams, weaponVertIns,
                                  BlendMode::GetOpaque(), err);
         if (!err.empty())
@@ -285,51 +287,51 @@ void WeaponContent::Destroy(void)
 
 void WeaponContent::RenderPuncher(Vector3f pos, Vector3f dir, const RenderInfo& info)
 {
-    RenderWeapon(pos, dir, W_PUNCHER, WeaponConstants::Instance.PuncherAnimSpeed,
-                 &texPuncher, info);
+    RenderWeapon(pos, dir, W_PUNCHER, WeaponConstants::Instance.PuncherMaterial, &texPuncher, info);
 }
 void WeaponContent::RenderLightGun(Vector3f pos, Vector3f dir, const RenderInfo& info)
 {
-    RenderWeapon(pos, dir, W_LIGHTGUN, WeaponConstants::Instance.LightGunAnimSpeed,
-                 &texLightGun, info);
+    RenderWeapon(pos, dir, W_LIGHTGUN, WeaponConstants::Instance.LightGunMaterial, &texLightGun, info);
 }
 void WeaponContent::RenderPRG(Vector3f pos, Vector3f dir, const RenderInfo& info)
 {
-    RenderWeapon(pos, dir, W_PRG, WeaponConstants::Instance.PRGAnimSpeed,
-                 &texPRG, info);
+    RenderWeapon(pos, dir, W_PRG, WeaponConstants::Instance.PRGMaterial, &texPRG, info);
 }
 void WeaponContent::RenderTerribleShotgun(Vector3f pos, Vector3f dir, const RenderInfo& info)
 {
-    RenderWeapon(pos, dir, W_TERRIBLE_SHOTGUN, WeaponConstants::Instance.TerribleShotgunAnimSpeed,
+    RenderWeapon(pos, dir, W_TERRIBLE_SHOTGUN, WeaponConstants::Instance.TerribleShotgunMaterial,
                  &texTerribleShotgun, info);
 }
 void WeaponContent::RenderSprayNPray(Vector3f pos, Vector3f dir, const RenderInfo& info)
 {
-    RenderWeapon(pos, dir, W_SPRAY_N_PRAY, WeaponConstants::Instance.SprayNPrayAnimSpeed,
+    RenderWeapon(pos, dir, W_SPRAY_N_PRAY, WeaponConstants::Instance.SprayNPrayMaterial,
                  &texSprayNPray, info);
 }
 void WeaponContent::RenderCluster(Vector3f pos, Vector3f dir, const RenderInfo& info)
 {
-    RenderWeapon(pos, dir, W_CLUSTER, WeaponConstants::Instance.ClusterAnimSpeed,
-                 &texCluster, info);
+    RenderWeapon(pos, dir, W_CLUSTER, WeaponConstants::Instance.ClusterMaterial, &texCluster, info);
 }
 void WeaponContent::RenderPOS(Vector3f pos, Vector3f dir, const RenderInfo& info)
 {
-    RenderWeapon(pos, dir, W_POS, WeaponConstants::Instance.POSAnimSpeed,
-                 &texPOS, info);
+    RenderWeapon(pos, dir, W_POS, WeaponConstants::Instance.POSMaterial, &texPOS, info);
 }
 
 void WeaponContent::RenderWeapon(Vector3f pos, Vector3f dir, unsigned int subMesh,
-                                 float animSpeed, MTexture2D* tex, const RenderInfo& info)
+                                 WeaponConstants::MaterialParams& matData,
+                                 MTexture2D* tex, const RenderInfo& info)
 {
     weaponMesh.CurrentSubMesh = subMesh;
 
     TransformObject& trans = weaponMesh.Transform;
     trans.SetPosition(pos);
-    trans.SetRotation(Quaternion(WEAPON_BASE_DIR, dir));
+    trans.SetRotation(Vector3f(0.0f,
+                               -atan2f(dir.z, dir.XY().Length()),
+                               atan2f(dir.y, dir.x)));
 
     weaponParams.Texture2Ds[UNIFORM_TEXTURE].Texture = tex->GetTextureHandle();
-    weaponParams.Floats[UNIFORM_ANIMSPEED].SetValue(animSpeed);
+    weaponParams.Floats[UNIFORM_ANIMSPEED].SetValue(matData.AnimSpeed);
+    weaponParams.Floats[UNIFORM_GRIDSCALE].SetValue(matData.GridScale);
+    weaponParams.Floats[UNIFORM_GRIDTHINNESS].SetValue(matData.GridThinness);
 
     weaponMat->Render(info, &weaponMesh, weaponParams);
 }

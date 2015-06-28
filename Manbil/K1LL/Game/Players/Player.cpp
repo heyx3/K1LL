@@ -7,7 +7,8 @@
 
 
 Player::Player(Level* level, Vector2f pos, Weapon::Ptr weapons[3])
-    : Lvl(level), LookDir(LevelConstants::Instance.PlayerStartLookDir), Pos(pos)
+    : Lvl(level), LookDir(LevelConstants::Instance.PlayerStartLookDir),
+      Pos(pos), currentWeapon(WT_LIGHT)
 {
     Weapons[WT_LIGHT] = weapons[WT_LIGHT];
     Weapons[WT_LIGHT]->Owner = this;
