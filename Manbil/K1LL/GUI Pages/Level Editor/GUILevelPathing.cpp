@@ -127,6 +127,7 @@ void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
         LevelGraphPather pather(&graph);
         GraphSearchGoal<LevelNode> goal = GraphSearchGoal<LevelNode>(LevelNode(Vector2u()));
         std::vector<LevelNode> dummyPath;
+        float dummyTraverseCost, dummySearchCost;
 
         for (unsigned int i = 0; i < openSpacePairs.size(); ++i)
         {
@@ -135,7 +136,7 @@ void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
 
             dummyPath.clear();
             goal.SpecificEnd.SetValue(end);
-            if (pather.Search(start, goal, dummyPath))
+            if (pather.Search(start, goal, dummyTraverseCost, dummySearchCost, dummyPath))
             {
                 totalSteps += dummyPath.size();
                 nPaths += 1;
@@ -174,7 +175,8 @@ void GUILevelPathing::CustomUpdate(float elapsedTime, Vector2f relativeMouse)
 
             //The pather may fail if a room isn't connected to anything.
             float& nSteps = nStepsFromRoomToTeamBases[roomsToPath - 1][i];
-            if (pather.Search(startNode, goal, path))
+            float dummyTraverseCost, dummySearchCost;
+            if (pather.Search(startNode, goal, dummyTraverseCost, dummySearchCost, path))
             {
                 nSteps = 0.0f;
                 for (unsigned int j = 0; j < path.size(); ++j)

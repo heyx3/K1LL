@@ -51,12 +51,14 @@ public:
         RR_FLOOR,
         RR_WALL,
         RR_CEILING,
+        RR_NOTHING,
     };
 
     //Casts the given ray into this level.
     //Outputs the position/time of the hit into "hitPos" and "hitT" respectively.
     //Also returns what kind of surface was hit.
-    RaycastResults CastWallRay(Vector3f start, Vector3f dir, Vector3f& hitPos, float& hitT);
+    RaycastResults CastWallRay(Vector3f start, Vector3f dir, Vector3f& hitPos, float& hitT,
+                               float maxT = std::numeric_limits<float>::max());
     
 
 private:

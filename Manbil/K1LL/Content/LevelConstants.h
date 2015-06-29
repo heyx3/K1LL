@@ -31,6 +31,9 @@ public:
     float PlayerFriction = 50.0f;
 
 
+    Vector3f GetPlayerEyePos(Vector2f pos, Vector3f lookDir) const;
+
+
     virtual void WriteData(DataWriter* writer) const override;
     virtual void ReadData(DataReader* reader) override;
 

@@ -227,7 +227,6 @@ in vec2 fIn_UV;\
         MaterialUsageFlags fUse;
         fUse.EnableFlag(MaterialUsageFlags::DNF_USES_TIME);
 
-        //TODO: Parameterize "gridSizeScale" and the pow exponent for "gridVals".
         std::string u_time = MaterialConstants::ElapsedTimeName;
         std::string fShader = MaterialConstants::GetFragmentHeader(fIns, fOuts, fUse) +
 R"(

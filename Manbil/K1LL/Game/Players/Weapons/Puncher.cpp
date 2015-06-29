@@ -34,7 +34,6 @@ void Puncher::TryFire(void)
     {
         timeSinceFire = 0.0f;
 
-        //TODO: Ray-cast forward from the weapon to the nearest object (just walls?) and point the weapon to that.
         auto posAndDir = Owner->GetWeaponPosAndDir();
         Vector3f pos = posAndDir.first + (posAndDir.second * WeaponConstants::Instance.WeaponLength);
         Vector3f vel = posAndDir.second * WeaponConstants::Instance.PuncherBulletSpeed;

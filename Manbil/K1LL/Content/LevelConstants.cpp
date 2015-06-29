@@ -7,6 +7,12 @@
 LevelConstants LevelConstants::Instance = LevelConstants();
 
 
+Vector3f LevelConstants::GetPlayerEyePos(Vector2f pos, Vector3f lookDir) const
+{
+    return Vector3f(pos, PlayerEyeHeight) +
+           Vector3f(lookDir.XY().Normalized() * PlayerEyeForward, 0.0f);
+}
+
 void LevelConstants::WriteData(DataWriter* writer) const
 {
     writer->WriteFloat(CeilingHeight, "Ceiling height");

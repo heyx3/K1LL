@@ -33,9 +33,18 @@ void Player::SetCurrentWeaponType(WeaponTypes newType)
 
 std::pair<Vector3f, Vector3f> Player::GetWeaponPosAndDir(void) const
 {
+    //Rotate the weapon's base offset.
     Quaternion rot(Vector3f(0.0f, 0.0f, 1.0f), atan2f(LookDir.y, LookDir.x));
     Vector3f offset = rot.Rotated(WeaponConstants::Instance.WeaponOffset);
-    return std::pair<Vector3f, Vector3f>(Vector3f(Pos, 0.0f) + offset, LookDir);
+
+    //Ray-cast forward from the player to the nearest wall.
+    Vector3f eyePos = LevelConstants::Instance.GetPlayerEyePos(Pos, LookDir);
+    Vector3f outHit;
+    float outT;
+    auto rayCast = Lvl->CastWallRay(eyePos, LookDir, outHit, outT);
+
+    Vector3f weaponPos = Vector3f(Pos, 0.0f) + offset;
+    return std::pair<Vector3f, Vector3f>(weaponPos, (outHit - weaponPos).Normalized());
 }
 
 void Player::Update(float elapsed)

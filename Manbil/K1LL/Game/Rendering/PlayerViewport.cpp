@@ -69,8 +69,7 @@ void PlayerViewport::Render(float frameSeconds, const RenderInfo& screenRenderIn
     ScreenClearer(true, true, false, Vector4f(1.0f, 0.0f, 1.0f, 0.0f)).ClearScreen();
     glViewport(0, 0, worldRendTarg.GetWidth(), worldRendTarg.GetHeight());
     
-    Vector3f camPos(Target->Pos, LevelConstants::Instance.PlayerEyeHeight);
-    camPos += Vector3f(Target->LookDir.XY().Normalized() * LevelConstants::Instance.PlayerEyeForward, 0.0f);
+    Vector3f camPos = LevelConstants::Instance.GetPlayerEyePos(Target->Pos, Target->LookDir);
     Camera cam(camPos, Target->LookDir, Vector3f(0.0f, 0.0f, 1.0f), false);
     cam.PerspectiveInfo.SetFOVDegrees(Settings::Instance.FOVDegrees);
     cam.PerspectiveInfo.Width = (float)worldRendTarg.GetWidth();

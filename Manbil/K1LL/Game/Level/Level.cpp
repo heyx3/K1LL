@@ -81,7 +81,8 @@ bool Level::IsGridPosBlocked(Vector2i gridPos) const
             BlockGrid[ToV2u(gridPos)] == BT_WALL);
 }
 
-Level::RaycastResults Level::CastWallRay(Vector3f start, Vector3f dir, Vector3f& hitPos, float& hitT)
+Level::RaycastResults Level::CastWallRay(Vector3f start, Vector3f dir, Vector3f& hitPos, float& hitT,
+                                         float maxT)
 {
     assert(dir.Length() > 0.0f);
 
@@ -144,7 +145,7 @@ Level::RaycastResults Level::CastWallRay(Vector3f start, Vector3f dir, Vector3f&
     
     //Step the ray through every grid spot it hits until it leaves the grid or hits the floor/ceiling.
 
-    Vector2f startXY = start.XY(),
+    Vector2f startXY = start.XY() - (dir.XY().Normalized() * 2.0f),
              dirXY = dir.XY();
 
     const float epsilonT = 0.001f;
@@ -155,7 +156,7 @@ Level::RaycastResults Level::CastWallRay(Vector3f start, Vector3f dir, Vector3f&
     Vector2f hitPos2D = start.XY();
     hitT = 0.0f;
 
-    while (hitT < verticalHit.t &&
+    while (hitT < verticalHit.t && hitT < maxT &&
            hitPos2D.x > 0.0f && hitPos2D.y > 0.0f &&
            hitPos2D.x < maxPos.x && hitPos2D.y < maxPos.y)
     {
@@ -181,8 +182,16 @@ Level::RaycastResults Level::CastWallRay(Vector3f start, Vector3f dir, Vector3f&
     }
 
 
-    //We either hit the floor/ceiling or left the bounds of the level.
-    if (hitT >= verticalHit.t)
+    //We either hit the max "t" value, hit the floor/ceiling, or left the bounds of the level.
+    if ((maxT >= verticalHit.t && hitT >= maxT) ||
+        (maxT < verticalHit.t && hitT >= maxT && hitT < verticalHit.t))
+    {
+        hitT = maxT;
+        hitPos = start + (dir * hitT);
+        return RR_NOTHING;
+    }
+    else if ((verticalHit.t >= maxT && hitT >= verticalHit.t) ||
+             (verticalHit.t < maxT && hitT >= verticalHit.t && hitT < maxT))
     {
         hitPos = verticalHit.Point;
         hitT = verticalHit.t;
