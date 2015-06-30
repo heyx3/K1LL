@@ -134,6 +134,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="IO\tinyxml2.cpp" />
     <ClCompile Include="IO\XmlSerialization.cpp" />
     <ClCompile Include="K1LL\Content\ActorContent.cpp" />
+    <ClCompile Include="K1LL\Content\BulletContent.cpp" />
     <ClCompile Include="K1LL\Content\LevelConstants.cpp" />
     <ClCompile Include="K1LL\Content\ContentLoader.cpp" />
     <ClCompile Include="K1LL\Content\MenuContent.cpp" />
@@ -334,6 +335,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="IO\tinyxml2.h" />
     <ClInclude Include="IO\XmlSerialization.h" />
     <ClInclude Include="K1LL\Content\ActorContent.h" />
+    <ClInclude Include="K1LL\Content\BulletContent.h" />
     <ClInclude Include="K1LL\Content\LevelConstants.h" />
     <ClInclude Include="K1LL\Content\ContentLoader.h" />
     <ClInclude Include="K1LL\Content\MenuContent.h" />

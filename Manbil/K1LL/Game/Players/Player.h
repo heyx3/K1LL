@@ -27,6 +27,11 @@ public:
     virtual ~Player(void) { }
 
 
+    inline Box2D GetBoundingBox2D(void) const
+    {
+        return Box2D(Pos, Vector2f(LevelConstants::Instance.PlayerCollisionRadius,
+                                   LevelConstants::Instance.PlayerCollisionRadius));
+    }
     inline Sphere GetBroadCollision3D(void) const
     {
         const float radius = Mathf::Max(LevelConstants::Instance.PlayerCollisionRadius,

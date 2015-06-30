@@ -13,11 +13,13 @@ public:
         float AnimSpeed = 0.15f;
         float GridThinness = 45.0f;
         float GridScale = 6.5f;
+        Vector3f BulletColor = Vector3f(1.0f, 1.0f, 1.0f);
 
 
         MaterialParams(void) { }
-        MaterialParams(float animSpeed, float gridThinness, float gridScale)
-            : AnimSpeed(animSpeed), GridThinness(gridThinness), GridScale(gridScale) { }
+        MaterialParams(float animSpeed, float gridThinness, float gridScale, Vector3f bulletCol)
+            : AnimSpeed(animSpeed), GridThinness(gridThinness),
+              GridScale(gridScale), BulletColor(bulletCol) { }
 
 
         virtual void WriteData(DataWriter* writer) const override;
@@ -36,8 +38,13 @@ public:
     float PuncherBulletSpeed = 5.0f;
     unsigned int PuncherBufferSize = 100;
 
-    MaterialParams PuncherMaterial, LightGunMaterial, PRGMaterial, TerribleShotgunMaterial,
-                   SprayNPrayMaterial, ClusterMaterial, POSMaterial;
+    MaterialParams PuncherMaterial = MaterialParams(0.15f, 45.0f, 6.5f, Vector3f(0.5f, 0.5f, 1.0f)),
+                   LightGunMaterial = MaterialParams(0.15f, 45.0f, 6.5f, Vector3f(1.0f, 1.0f, 1.0f)),
+                   PRGMaterial = MaterialParams(0.15f, 45.0f, 6.5f, Vector3f(1.0f, 1.0f, 1.0f)),
+                   TerribleShotgunMaterial = MaterialParams(0.15f, 45.0f, 6.5f, Vector3f(1.0f, 1.0f, 1.0f)),
+                   SprayNPrayMaterial = MaterialParams(0.15f, 45.0f, 6.5f, Vector3f(1.0f, 1.0f, 1.0f)),
+                   ClusterMaterial = MaterialParams(0.15f, 45.0f, 6.5f, Vector3f(1.0f, 1.0f, 1.0f)),
+                   POSMaterial = MaterialParams(0.15f, 45.0f, 6.5f, Vector3f(1.0f, 1.0f, 1.0f));
 
 
     virtual void WriteData(DataWriter* writer) const override;

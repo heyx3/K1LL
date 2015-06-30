@@ -101,7 +101,8 @@ bool WeaponContent::Initialize(std::string& err)
                     file += "Personal Orbital Strike.obj";
                     break;
 
-                default: assert(false);
+                default:
+                    assert(false);
             }
 
             const aiScene* scene = importer.ReadFile(file, flags);
@@ -154,7 +155,6 @@ bool WeaponContent::Initialize(std::string& err)
                     return false;
                 }
 
-                
                 indices[(j * 3)] = fce.mIndices[0];
                 indices[(j * 3) + 1] = fce.mIndices[1];
                 indices[(j * 3) + 2] = fce.mIndices[2];
@@ -194,10 +194,8 @@ bool WeaponContent::Initialize(std::string& err)
     {
         //Vertex shader.
         std::string vOuts =
-R"(\
-out vec3 fIn_Pos, fIn_Normal, fIn_Tangent, fIn_Bitangent;
-out vec2 fIn_UV;\
-)";
+R"(out vec3 fIn_Pos, fIn_Normal, fIn_Tangent, fIn_Bitangent;
+out vec2 fIn_UV;)";
         MaterialUsageFlags vUse;
         vUse.EnableFlag(MaterialUsageFlags::DNF_USES_WVP_MAT);
         vUse.EnableFlag(MaterialUsageFlags::DNF_USES_WORLD_MAT);
@@ -219,10 +217,8 @@ void main()
 
         //Fragment shader.
         std::string fIns =
-R"(\
-in vec3 fIn_Pos, fIn_Normal, fIn_Tangent, fIn_Bitangent;
-in vec2 fIn_UV;\
-)";
+R"(in vec3 fIn_Pos, fIn_Normal, fIn_Tangent, fIn_Bitangent;
+in vec2 fIn_UV;)";
         std::string fOuts = "out vec4 fOut_Color;";
         MaterialUsageFlags fUse;
         fUse.EnableFlag(MaterialUsageFlags::DNF_USES_TIME);

@@ -10,12 +10,14 @@ void WeaponConstants::MaterialParams::WriteData(DataWriter* writer) const
     writer->WriteFloat(AnimSpeed, "Animation speed");
     writer->WriteFloat(GridThinness, "Grid thinness");
     writer->WriteFloat(GridScale, "Grid scale");
+    writer->WriteDataStructure(Vector3f_Writable(BulletColor), "Bullet color");
 }
 void WeaponConstants::MaterialParams::ReadData(DataReader* reader)
 {
     reader->ReadFloat(AnimSpeed);
     reader->ReadFloat(GridThinness);
     reader->ReadFloat(GridScale);
+    reader->ReadDataStructure(Vector3f_Readable(BulletColor));
 }
 
 

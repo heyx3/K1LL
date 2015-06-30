@@ -5,9 +5,10 @@
 #include "LevelConstants.h"
 #include "WeaponConstants.h"
 #include "Settings.h"
+#include "MenuContent.h"
 #include "ActorContent.h"
 #include "WeaponContent.h"
-#include "MenuContent.h"
+#include "BulletContent.h"
 
 
 void ContentLoader::LoadContent(std::string& err)
@@ -50,6 +51,11 @@ void ContentLoader::LoadContent(std::string& err)
     Settings::Instance.Initialize();
 
     //Content.
+    if (!MenuContent::Instance.Initialize(err))
+    {
+        err = "Error loading menu content: " + err;
+        return;
+    }
     if (!ActorContent::Instance.Initialize(err))
     {
         err = "Error loading actor content: " + err;
@@ -60,17 +66,18 @@ void ContentLoader::LoadContent(std::string& err)
         err = "Error loading weapon content: " + err;
         return;
     }
-    if (!MenuContent::Instance.Initialize(err))
+    if (!BulletContent::Instance.Initialize(err))
     {
-        err = "Error loading menu content: " + err;
+        err = "Error loading bullet content: " + err;
         return;
     }
 }
 void ContentLoader::DestroyContent(void)
 {
+    MenuContent::Instance.Destroy();
     ActorContent::Instance.Destroy();
     WeaponContent::Instance.Destroy();
-    MenuContent::Instance.Destroy();
+    BulletContent::Instance.Destroy();
 
     TextRenderer::DestroySystem();
     DrawingQuad::DestroyQuad();
