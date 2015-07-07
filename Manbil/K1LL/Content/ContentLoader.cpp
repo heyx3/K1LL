@@ -9,6 +9,7 @@
 #include "ActorContent.h"
 #include "WeaponContent.h"
 #include "BulletContent.h"
+#include "ParticleContent.h"
 
 
 void ContentLoader::LoadContent(std::string& err)
@@ -71,6 +72,11 @@ void ContentLoader::LoadContent(std::string& err)
         err = "Error loading bullet content: " + err;
         return;
     }
+    if (!ParticleContent::Instance.Initialize(err))
+    {
+        err = "Error loading particle content: " + err;
+        return;
+    }
 }
 void ContentLoader::DestroyContent(void)
 {
@@ -78,6 +84,7 @@ void ContentLoader::DestroyContent(void)
     ActorContent::Instance.Destroy();
     WeaponContent::Instance.Destroy();
     BulletContent::Instance.Destroy();
+    ParticleContent::Instance.Destroy();
 
     TextRenderer::DestroySystem();
     DrawingQuad::DestroyQuad();
