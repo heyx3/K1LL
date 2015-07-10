@@ -540,6 +540,9 @@
     <ClCompile Include="K1LL\Content\ParticleContent.cpp">
       <Filter>K1LL\Content</Filter>
     </ClCompile>
+    <ClCompile Include="K1LL\Game\Rendering\ParticleManager.cpp">
+      <Filter>K1LL\Game\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input\Input Objects\KeyboardBoolInput.h">
@@ -1209,6 +1212,9 @@
     </ClInclude>
     <ClInclude Include="K1LL\Content\ParticleContent.h">
       <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\Rendering\ParticleManager.h">
+      <Filter>K1LL\Game\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

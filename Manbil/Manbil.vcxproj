@@ -152,6 +152,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\Game\Players\Weapons\Puncher.cpp" />
     <ClCompile Include="K1LL\Game\Players\Weapons\Weapon.cpp" />
     <ClCompile Include="K1LL\Game\Rendering\LevelGeometry.cpp" />
+    <ClCompile Include="K1LL\Game\Rendering\ParticleManager.cpp" />
     <ClCompile Include="K1LL\Game\Rendering\PlayerViewport.cpp" />
     <ClCompile Include="K1LL\GUI Pages\ChooseLevelEditor.cpp" />
     <ClCompile Include="K1LL\GUI Pages\Level Editor\ContextMenu.cpp" />
@@ -356,6 +357,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Game\Players\Weapons\Puncher.h" />
     <ClInclude Include="K1LL\Game\Players\Weapons\Weapon.h" />
     <ClInclude Include="K1LL\Game\Rendering\LevelGeometry.h" />
+    <ClInclude Include="K1LL\Game\Rendering\ParticleManager.h" />
     <ClInclude Include="K1LL\Game\Rendering\PlayerViewport.h" />
     <ClInclude Include="K1LL\GUI Pages\ChooseLevelEditor.h" />
     <ClInclude Include="K1LL\GUI Pages\Level Editor\ContextMenu.h" />

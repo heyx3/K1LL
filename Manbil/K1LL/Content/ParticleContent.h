@@ -4,24 +4,21 @@
 
 
 
-//The vertices used for rendering particles.
-//Just has an "ID" value corresponding to an integer.
-struct ParticleVertex
+struct RenderPassVertex
 {
-    static RenderIOAttributes GetVertexAttributes(void)
-    {
-        return RenderIOAttributes(RenderIOAttributes::Attribute(2, false, "vIn_ID"));
-    }
-
+    //Integer values indicating the particle's pixel coordinate offset in the texture data.
     Vector2f ID;
+    RenderPassVertex(Vector2f id = Vector2f()) : ID(id) { }
 
-    ParticleVertex(Vector2f id = Vector2f()) : ID(id) { }
+    static const RenderIOAttributes VertexAttrs;
 };
 
 
 //A set of "burst", "update", and "render" materials.
 struct ParticleMaterial
 {
+    static const std::string UNIFORM_TEX1, UNIFORM_TEX2;
+
     Material *BurstMat = 0,
              *UpdateMat = 0,
              *RenderMat = 0;
@@ -29,6 +26,7 @@ struct ParticleMaterial
 };
 
 
+//Handles bursting, updating, and rendering particles.
 class ParticleContent
 {
 public:
@@ -42,6 +40,9 @@ public:
     //Returns whether initialization succeeded.
     bool Initialize(std::string& outError);
     void Destroy(void);
+
+
+    void PuncherFire_Burst(Vector3f pos, Vector3f dir, Vector3f tangent, Vector3f bitangent);
 
 
 private:

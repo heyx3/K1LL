@@ -1,6 +1,7 @@
 #include "ParticleContent.h"
 
 #include "../../Rendering/Primitives/DrawingQuad.h"
+#include "../Game/Rendering/ParticleManager.h"
 
 
 namespace
@@ -10,9 +11,7 @@ namespace
     //    for the particles currently being simulated.
     //"n pixels inv" is 1.0 / the number of pixels along one axis in the full texture data.
     //"time step" is the elapsed time this update frame, in seconds.
-    const std::string UNIFORM_TEX1 = "u_tex1",
-                      UNIFORM_TEX2 = "u_tex2",
-                      UNIFORM_TEXEL_SIZE = "u_texelSize",
+    const std::string UNIFORM_TEXEL_SIZE = "u_texelSize",
                       UNIFORM_PARTICLE_TEXEL_MIN = "u_particleTexelMin",
                       UNIFORM_PARTICLE_TEXEL_MAX = "u_particleTexelMax",
                       UNIFORM_TIME_STEP = "u_timeStep";
@@ -58,7 +57,8 @@ void main()
                                                     MaterialUsageFlags(MaterialUsageFlags::DNF_USES_TIME)) +
                (isBurstMaterial ?
                     "" :
-                    ("uniform sampler2D" + UNIFORM_TEX1 + ", " + UNIFORM_TEX2 + ";\n" +
+                    ("uniform sampler2D" + ParticleMaterial::UNIFORM_TEX1 + ", " +
+                                           ParticleMaterial::UNIFORM_TEX2 + ";\n" +
                      "uniform float " + UNIFORM_TIME_STEP + ";\n\n")) +
                "\n\n" + shaderBody;
     }
@@ -73,8 +73,10 @@ void main()
         if (!isBurst)
         {
             params.Floats[UNIFORM_TIME_STEP] = UniformValueF(0.0f, UNIFORM_TIME_STEP);
-            params.Texture2Ds[UNIFORM_TEX1] = UniformValueSampler2D(0, UNIFORM_TEX1);
-            params.Texture2Ds[UNIFORM_TEX2] = UniformValueSampler2D(0, UNIFORM_TEX2);
+            params.Texture2Ds[ParticleMaterial::UNIFORM_TEX1] =
+                UniformValueSampler2D(0, ParticleMaterial::UNIFORM_TEX1);
+            params.Texture2Ds[ParticleMaterial::UNIFORM_TEX2] =
+                UniformValueSampler2D(0, ParticleMaterial::UNIFORM_TEX2);
         }
 
         *outM = new Material(GetVertexShader_Update(), fragmentShader, params,
@@ -94,8 +96,10 @@ void main()
         if (!isBurst)
         {
             assert(particleTexData1 != 0 && particleTexData2 != 0);
-            params.Texture2Ds[UNIFORM_TEX1].Texture = particleTexData1->GetTextureHandle();
-            params.Texture2Ds[UNIFORM_TEX2].Texture = particleTexData2->GetTextureHandle();
+            params.Texture2Ds[ParticleMaterial::UNIFORM_TEX1].Texture =
+                particleTexData1->GetTextureHandle();
+            params.Texture2Ds[ParticleMaterial::UNIFORM_TEX2].Texture =
+                particleTexData2->GetTextureHandle();
 
             params.Floats[UNIFORM_TIME_STEP].SetValue(timeStep);
         }
@@ -104,17 +108,6 @@ void main()
 
     //Render pass.
 
-    struct RenderPassVertex
-    {
-        //Integer values indicating the particle's pixel coordinate offset in the texture data.
-        Vector2f ID;
-        RenderPassVertex(Vector2f id = Vector2f()) : ID(id) { }
-
-        static const RenderIOAttributes VertexAttrs;
-    };
-    const RenderIOAttributes RenderPassVertex::VertexAttrs =
-        RenderIOAttributes(RenderIOAttributes::Attribute(2, false, "vIn_ID"));
-    
     //Creates the vertex shader for the "render" pass.
     //The parameters should provide code for the following things, respectively:
     //     -Declarations of any custom outputs -- if you wish to sample from extra particle data textures,
@@ -145,15 +138,15 @@ void main()
 R"(
 uniform float )" + UNIFORM_TEXEL_SIZE + R"(;
 uniform vec2 )" + UNIFORM_PARTICLE_TEXEL_MIN + R"(;
-uniform sampler2D )" + UNIFORM_TEX1 + ", " + UNIFORM_TEX2 + R"(;
+uniform sampler2D )" + ParticleMaterial::UNIFORM_TEX1 + ", " + ParticleMaterial::UNIFORM_TEX2 + R"(;
 
 void main()
 {
     vec2 uv = )" + UNIFORM_PARTICLE_TEXEL_MIN +
                    " + (" + RenderPassVertex::VertexAttrs.GetAttribute(0).Name +
                         " * " + UNIFORM_TEXEL_SIZE + R"( );
-    gIn_Tex1 = texture2D( )" + UNIFORM_TEX1 + R"( , uv);
-    gIn_Tex2 = texture2D( )" + UNIFORM_TEX2 + R"( , uv);
+    gIn_Tex1 = texture2D( )" + ParticleMaterial::UNIFORM_TEX1 + R"( , uv);
+    gIn_Tex2 = texture2D( )" + ParticleMaterial::UNIFORM_TEX2 + R"( , uv);
 
     //TODO: See if this line is needed.
     gl_Position = vec4(1.0);
@@ -274,8 +267,10 @@ void main()
     {
         params.Floats[UNIFORM_TEXEL_SIZE] = UniformValueF(0.0f, UNIFORM_TEXEL_SIZE);
         params.Floats[UNIFORM_PARTICLE_TEXEL_MIN] = UniformValueF(Vector2f(), UNIFORM_PARTICLE_TEXEL_MIN);
-        params.Texture2Ds[UNIFORM_TEX1] = UniformValueSampler2D(0, UNIFORM_TEX1);
-        params.Texture2Ds[UNIFORM_TEX2] = UniformValueSampler2D(0, UNIFORM_TEX2);
+        params.Texture2Ds[ParticleMaterial::UNIFORM_TEX1] =
+            UniformValueSampler2D(0, ParticleMaterial::UNIFORM_TEX1);
+        params.Texture2Ds[ParticleMaterial::UNIFORM_TEX2] =
+            UniformValueSampler2D(0, ParticleMaterial::UNIFORM_TEX2);
 
         *outM = new Material(GetVertexShader_Update(), fragmentShader, params,
                              DrawingQuad::GetVertexInputData(), BlendMode::GetOpaque(),
@@ -288,8 +283,10 @@ void main()
     {
         params.Floats[UNIFORM_TEXEL_SIZE].SetValue(texelSize);
         params.Floats[UNIFORM_PARTICLE_TEXEL_MIN].SetValue(particleTexelMin);
-        params.Texture2Ds[UNIFORM_TEX1].Texture = particleTexData1->GetTextureHandle();
-        params.Texture2Ds[UNIFORM_TEX2].Texture = particleTexData2->GetTextureHandle();
+        params.Texture2Ds[ParticleMaterial::UNIFORM_TEX1].Texture =
+            particleTexData1->GetTextureHandle();
+        params.Texture2Ds[ParticleMaterial::UNIFORM_TEX2].Texture =
+            particleTexData2->GetTextureHandle();
     }
 
 
@@ -319,6 +316,14 @@ void main()
 }
 
 
+const std::string ParticleMaterial::UNIFORM_TEX1 = "u_tex1",
+                  ParticleMaterial::UNIFORM_TEX2 = "u_tex2";
+
+
+const RenderIOAttributes RenderPassVertex::VertexAttrs =
+        RenderIOAttributes(RenderIOAttributes::Attribute(2, false, "vIn_ID"));
+
+
 ParticleContent ParticleContent::Instance = ParticleContent();
 
 
@@ -328,7 +333,7 @@ bool ParticleContent::Initialize(std::string& outError)
     const std::string update_pos = updateVertIns.GetAttribute(0).Name,
                       update_id = updateVertIns.GetAttribute(0).Name;
 
-    RenderIOAttributes renderVertIns = ParticleVertex::GetVertexAttributes();
+    const RenderIOAttributes& renderVertIns = RenderPassVertex::VertexAttrs;
     const std::string vertInID = renderVertIns.GetAttribute(0).Name;
 
     #pragma region Puncher bullet fire
@@ -365,8 +370,8 @@ void main()
         fShader = GetFragmentShader_Update(false, R"(
 void main()
 {
-    vec4 tex1 = texture2D( )" + UNIFORM_TEX1 + R"(, fIn_UV),
-         tex2 = texture2D( )" + UNIFORM_TEX2 + R"(, fIn_UV);
+    vec4 tex1 = texture2D( )" + ParticleMaterial::UNIFORM_TEX1 + R"(, fIn_UV),
+         tex2 = texture2D( )" + ParticleMaterial::UNIFORM_TEX2 + R"(, fIn_UV);
 
     fOut_Tex1 = vec4(tex1.rgb + (tex2.rgb * )" + UNIFORM_TIME_STEP + R"(), tex1.a);
     fOut_Tex2 = vec4(tex2.rgb * 0.999, tex2.a);
@@ -380,14 +385,31 @@ void main()
 
 
         //Render:
-        //TODO: Finish.
+        vShader = GetVertexShader_Render("", "", "gIn_WorldPos = gIn_Tex1.rgb;");
+        gShader = GetGeometryShader_Render("", "", "", "", "up *= 0.01; side *= 0.01;");
+        fShader = GetFragmentShader_Render("", "void main() { fOut_Color = vec4(vec3(0.5), 1.0); }");
+        GenerateRenderPass(vShader, gShader, fShader,
+                           PuncherFire.RenderParams, &PuncherFire.RenderMat,
+                           outError);
+        if (!outError.empty())
+        {
+            outError = "Error creating render for puncher fire: " + outError;
+            return false;
+        }
     }
 
     #pragma endregion
+
 
     return true;
 }
 void ParticleContent::Destroy(void)
 {
     DestroyMat(PuncherFire);
+}
+
+
+void ParticleContent::PuncherFire_Burst(Vector3f pos, Vector3f dir, Vector3f tangent, Vector3f bitangent)
+{
+    
 }
