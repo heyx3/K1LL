@@ -5,41 +5,51 @@
 #include "../Level/Level.h"
 
 
-using namespace ParticleConstants;
-
-
 namespace
 {
     //The number of particle sets that can be fit along one axis of the texture.
     const unsigned int NParticleSets[3] =
     {
-        TextureSize[0] / ParticlesLength[0],
-        TextureSize[1] / ParticlesLength[1],
-        TextureSize[2] / ParticlesLength[2],
+        ParticleManager::TextureSize[0] / ParticleManager::ParticlesLength[0],
+        ParticleManager::TextureSize[1] / ParticleManager::ParticlesLength[1],
+        ParticleManager::TextureSize[2] / ParticleManager::ParticlesLength[2],
     };
 
     std::string errMsg;
 }
 
+//Particles are stored in square regions on a set of textures.
+//This holds the number of particles along each side for the three different sizes.
+const unsigned int ParticleManager::ParticlesLength[3] =
+{
+    8,
+    32,
+    64,
+};
+//The size of each texture used to store all particles of a certain size.
+const unsigned int ParticleManager::TextureSize[3] =
+{
+    64,
+    256,
+    512,
+};
+
+
+ParticleManager* ParticleManager::instance = 0;
 
 
 void ParticleManager::InitializeInstance(Level* lvl)
 {
-    lvl->Actors.push_back(ActorPtr(new ParticleManager(lvl)));
+    //Note that the manager's memory is entirely managed by the level.
+    instance = new ParticleManager(lvl);
+    lvl->Actors.push_back(ActorPtr(instance));
 }
 
 
 ParticleManager::ParticleManager(Level* lvl)
-    : particlesInTexture{Array2D<ParticleSet>(NParticleSets[0], NParticleSets[0]),
-                         Array2D<ParticleSet>(NParticleSets[1], NParticleSets[1]),
-                         Array2D<ParticleSet>(NParticleSets[2], NParticleSets[2])},
-      updateRendTarg(PS_16U_DEPTH, errMsg),
+    : updateRendTarg(PS_16U_DEPTH, errMsg),
       Actor(lvl)
 {
-    //Don't worry about managing the memory of the previous instance; that's handled by the Level class.
-    instance = this;
-
-
     if (!errMsg.empty())
     {
         std::cout << "Error initializing particle manager's render target: " << errMsg << "\n";
@@ -109,6 +119,8 @@ bool ParticleManager::Update(float frameSeconds)
     }
 
     pingPong = pongPing;
+
+    return false;
 }
 void ParticleManager::Render(float frameSeconds, const RenderInfo& info)
 {

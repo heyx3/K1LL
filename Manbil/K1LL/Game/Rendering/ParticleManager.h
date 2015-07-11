@@ -7,26 +7,6 @@
 
 
 
-namespace ParticleConstants
-{
-    //Particles are stored in square regions on a set of textures.
-    //This holds the number of particles along each side for the three different sizes.
-    static const unsigned int ParticlesLength[3] =
-    {
-        8,
-        32,
-        64,
-    };
-    //The size of each texture used to store all particles of a certain size.
-    static const unsigned int TextureSize[3] =
-    {
-        64,
-        256,
-        512,
-    };
-}
-
-
 //An actor that handles all particle updating/rendering.
 //Only one instance exists at a time, and it's statically-accessible.
 class ParticleManager : public Actor
@@ -40,6 +20,13 @@ public:
         S_MEDIUM,
         S_LARGE,
     };
+
+
+    //Particles are stored in square regions on a set of textures.
+    //This holds the number of particles along each side for the three different sizes.
+    static const unsigned int ParticlesLength[3];
+    //The size of each texture used to store all particles of a certain size.
+    static const unsigned int TextureSize[3];
 
 
     static ParticleManager& GetInstance(void) { return *instance; }
@@ -59,7 +46,7 @@ private:
     //A single burst of active particles.
     struct ParticleSet
     {
-        ParticleMaterial* Mat;
+        ParticleMaterial* Mat = 0;
         float Lifetime;
         
         float ElapsedTime = 0.0f;
@@ -73,33 +60,35 @@ private:
             : Mat(mat), Lifetime(lifetime), StartPixel(startPixel), Size(size) { }
     };
 
-    //All textures needed for a set of particles.
-    typedef std::pair<MTexture2D, MTexture2D> ParticleTextures;
+    //A workaround because C++ doesn't allow anything other than default constructors for array elements.
+    //How the fuck is that a thing??
+    class ParticleSet2DArray : public Array2D<ParticleSet>
+    {
+    public:
+
+        ParticleSet2DArray(void) : Array2D<ParticleSet>(1, 1) { }
+    };
+    //Another workaround for the "default constructor for array elements" issue.
+    //The set of textures needed to fully describe particle data.
+    class ParticleTextures : public std::pair<MTexture2D, MTexture2D>
+    {
+    public:
+#define TEX_SETTINGS TextureSampleSettings2D(FT_NEAREST, WT_CLAMP), PS_32F, false
+        ParticleTextures(void)
+            : std::pair<MTexture2D, MTexture2D>(MTexture2D(TEX_SETTINGS), MTexture2D(TEX_SETTINGS)) { }
+#undef TEX_SETTINGS
+    };
 
 
     static ParticleManager* instance;
 
 
     //The currently-active small, medium, and large particle bursts.
-    Array2D<ParticleSet> particlesInTexture[3];
+    ParticleSet2DArray particlesInTexture[3];
 
     //Ping-pong between two different sets of textures for particle updating.
     //Have different sets of particle textures for each size.
-    ParticleTextures Textures[2][3] =
-    {
-#define TEX_SETTINGS TextureSampleSettings2D(FT_NEAREST, WT_CLAMP), PS_32F, false
-        {
-            ParticleTextures(MTexture2D(TEX_SETTINGS), MTexture2D(TEX_SETTINGS)),
-            ParticleTextures(MTexture2D(TEX_SETTINGS), MTexture2D(TEX_SETTINGS)),
-            ParticleTextures(MTexture2D(TEX_SETTINGS), MTexture2D(TEX_SETTINGS)),
-        },
-        {
-            ParticleTextures(MTexture2D(TEX_SETTINGS), MTexture2D(TEX_SETTINGS)),
-            ParticleTextures(MTexture2D(TEX_SETTINGS), MTexture2D(TEX_SETTINGS)),
-            ParticleTextures(MTexture2D(TEX_SETTINGS), MTexture2D(TEX_SETTINGS)),
-        },
-#undef TEX_SETTINGS
-    };
+    ParticleTextures Textures[2][3];
 
     RenderTarget updateRendTarg;
     Mesh particleMesh;

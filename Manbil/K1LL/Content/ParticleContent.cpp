@@ -25,7 +25,7 @@ namespace
     std::string GetVertexShader_Update(void)
     {
         RenderIOAttributes vertIns = UpdatePassVertex::GetVertexAttributes();
-        return MaterialConstants::GetVertexHeader("out vec2 fin_UV;\n", vertIns,
+        return MaterialConstants::GetVertexHeader("out vec2 fIn_UV;\n", vertIns,
                                                   MaterialUsageFlags()) +
 R"(
 uniform float )" + UNIFORM_TEXEL_SIZE + R"(;
@@ -57,8 +57,8 @@ void main()
                                                     MaterialUsageFlags(MaterialUsageFlags::DNF_USES_TIME)) +
                (isBurstMaterial ?
                     "" :
-                    ("uniform sampler2D" + ParticleMaterial::UNIFORM_TEX1 + ", " +
-                                           ParticleMaterial::UNIFORM_TEX2 + ";\n" +
+                    ("uniform sampler2D " + ParticleMaterial::UNIFORM_TEX1 + ", " +
+                                            ParticleMaterial::UNIFORM_TEX2 + ";\n" +
                      "uniform float " + UNIFORM_TIME_STEP + ";\n\n")) +
                "\n\n" + shaderBody;
     }
@@ -255,7 +255,7 @@ void main()
     std::string GetFragmentShader_Render(const std::string& customInputs, const std::string& mainFunction)
     {
         return MaterialConstants::GetFragmentHeader("in vec4 fIn_Tex1, fIn_Tex2;\n" + customInputs,
-                                                    "out vec4 fOut_Color", MaterialUsageFlags()) + "\n\n" +
+                                                    "out vec4 fOut_Color;\n", MaterialUsageFlags()) + "\n\n" +
                mainFunction;
     }
 
