@@ -18,10 +18,11 @@ public:
     Material *StaticColorGUIMat = 0,
              *StaticColorGUIMatNoTex = 0,
              *AnimatedColorGUIMat = 0,
-             *LabelGUIMat = 0;
+             *LabelGUIMat = 0,
+             *StaticOpaqueColorMat = 0;
     UniformDictionary StaticColorGUIParams, StaticColorGUINoTexParams,
                       AnimatedColorGUIParams,
-                      LabelGUIParams;
+                      LabelGUIParams, StaticOpaqueColorParams;
 
     //General-purpose textures.
     MTexture2D PageBackground, TextBoxBackground, BackButton;

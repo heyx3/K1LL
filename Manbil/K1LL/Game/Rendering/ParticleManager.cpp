@@ -2,7 +2,10 @@
 
 #include <iostream>
 
+#include "../../../Rendering/Primitives/DrawingQuad.h"
+
 #include "../Level/Level.h"
+#include "../../Content/ParticleContent.h"
 
 
 namespace
@@ -13,6 +16,12 @@ namespace
         ParticleManager::TextureSize[0] / ParticleManager::ParticlesLength[0],
         ParticleManager::TextureSize[1] / ParticleManager::ParticlesLength[1],
         ParticleManager::TextureSize[2] / ParticleManager::ParticlesLength[2],
+    };
+    const float TexelSize[3] =
+    {
+        1.0f / ParticleManager::TextureSize[0],
+        1.0f / ParticleManager::TextureSize[1],
+        1.0f / ParticleManager::TextureSize[2],
     };
 
     std::string errMsg;
@@ -57,11 +66,18 @@ ParticleManager::ParticleManager(Level* lvl)
         errMsg.clear();
     }
 
+    //Set up the particle sets.
+    for (unsigned int i = S_SMALL; i <= S_LARGE; ++i)
+    {
+        particlesInTexture[i].Reset(NParticleSets[i], NParticleSets[i],
+                                    ParticleManager::ParticleSet(0, 0.0f, Vector2u(), (Sizes)i));
+    }
+
 
     //Set up the textures.
-    for (int i = 0; i < 2; ++i)
+    for (unsigned int i = 0; i < 2; ++i)
     {
-        for (int j = S_SMALL; j <= S_LARGE; ++j)
+        for (unsigned int j = S_SMALL; j <= S_LARGE; ++j)
         {
             Textures[i][j].first.Create();
             Textures[i][j].first.ClearData(TextureSize[j], TextureSize[j]);
@@ -87,6 +103,8 @@ ParticleManager::ParticleManager(Level* lvl)
     //Finally, generate the rest of the particles to fill out large bursts.
     ADD_RANGE(ParticlesLength[1], ParticlesLength[2], 0, ParticlesLength[2]);
     ADD_RANGE(0, ParticlesLength[1], ParticlesLength[1], ParticlesLength[2]);
+
+    m.SetVertexData(vertices, MeshData::BUF_STATIC, RenderPassVertex::VertexAttrs);
 }
 
 bool ParticleManager::Update(float frameSeconds)
@@ -110,9 +128,17 @@ bool ParticleManager::Update(float frameSeconds)
                 ParticleSet& particles = particlesInTexture[i][count];
                 if (particles.Mat != 0)
                 {
+                    info.TotalElapsedSeconds = particles.ElapsedTime;
+
                     RunUpdate((ParticleManager::Sizes)i,
                               particles.Mat->UpdateMat, particles.Mat->UpdateParams,
-                              info, false, renderTo, sampleFrom);
+                              info, false, count, renderTo, frameSeconds, sampleFrom);
+
+                    particles.ElapsedTime += frameSeconds;
+                    if (particles.ElapsedTime >= particles.Lifetime)
+                    {
+                        particles.Mat = 0;
+                    }
                 }
             }
         }
@@ -136,7 +162,7 @@ void ParticleManager::Render(float frameSeconds, const RenderInfo& info)
                 ParticleSet& particles = particlesInTexture[i][count];
                 if (particles.Mat != 0)
                 {
-                    RunRender((ParticleManager::Sizes)i, info, *particles.Mat, sampleFrom);
+                    RunRender((ParticleManager::Sizes)i, info, count, *particles.Mat, sampleFrom);
                 }
             }
         }
@@ -167,39 +193,57 @@ void ParticleManager::Burst(Sizes burstSize, ParticleMaterial* material, float l
     Matrix4f viewM, projM;
     RenderInfo info(0.0f, &cam, &viewM, &projM);
     RunUpdate(burstSize, material->BurstMat, material->BurstParams, info,
-              true, Textures[pingPong][burstSize]);
+              true, toUse, Textures[(pingPong + 1) % 2][burstSize]);
 }
 
 void ParticleManager::RunUpdate(Sizes size, Material* mat, UniformDictionary& params, const RenderInfo& in,
-                                bool isBurst, ParticleTextures& renderTo, ParticleTextures* sampleFrom)
+                                bool isBurst, Vector2u particleSetIndex, ParticleTextures& renderTo,
+                                float timeStep, ParticleTextures* sampleFrom)
 {
-    if (!isBurst)
-    {
-        params.Texture2Ds[ParticleMaterial::UNIFORM_TEX1].Texture = sampleFrom->first.GetTextureHandle();
-        params.Texture2Ds[ParticleMaterial::UNIFORM_TEX2].Texture = sampleFrom->second.GetTextureHandle();
-    }
+    Vector2u startPixel = particleSetIndex * ParticlesLength[size],
+             endPixel = startPixel + Vector2u(ParticlesLength[size], ParticlesLength[size]);
+    ParticleContent::Instance.SetUpdatePassParams(params, isBurst,
+                                                  ToV2f(startPixel) * TexelSize[size],
+                                                  ToV2f(endPixel) * TexelSize[size],
+                                                  timeStep,
+                                                  (isBurst ? 0 : &sampleFrom->first),
+                                                  (isBurst ? 0 : &sampleFrom->second));
+
+    //TODO: Pull out all render target and scissor stuff below into the code that calls this function.
+
+    const RenderTarget* oldTarg = RenderTarget::GetCurrentTarget();
+
 
     RenderTargetTex texes[2] = { RenderTargetTex(&renderTo.first), RenderTargetTex(&renderTo.second) };
     updateRendTarg.SetColorAttachments(texes, 2, true);
 
-    updateRendTarg.EnableDrawingInto();
+    assert(updateRendTarg.GetWidth() == TextureSize[size] &&
+           updateRendTarg.GetHeight() == TextureSize[size]);
 
-    glViewport(0, 0, TextureSize[size], TextureSize[size]);
-    RenderingState(RenderingState::C_NONE, false, false).EnableState();
+    Viewport::EnableScissor();
+    Viewport v(startPixel.x, startPixel.y, ParticlesLength[size], ParticlesLength[size]);
+    updateRendTarg.EnableDrawingInto(v);
+    v.SetAsScissor();
+
     ScreenClearer().ClearScreen();
+    RenderingState(RenderingState::C_NONE, false, false).EnableState();
 
-    particleMesh.SubMeshes[0].SetUseRange(0, ParticlesLength[size] * ParticlesLength[size]);
-    mat->Render(in, &particleMesh, params);
+    DrawingQuad::GetInstance()->Render(in, params, *mat);
 
     updateRendTarg.DisableDrawingInto();
+    Viewport::DisableScissor();
+
+    if (oldTarg != 0)
+    {
+        oldTarg->EnableDrawingInto();
+    }
 }
-void ParticleManager::RunRender(Sizes size, const RenderInfo& info,
+void ParticleManager::RunRender(Sizes size, const RenderInfo& info, Vector2u particleSetIndex,
                                 ParticleMaterial& mat, ParticleTextures& sampleFrom)
 {
-    mat.RenderParams.Texture2Ds[ParticleMaterial::UNIFORM_TEX1].Texture =
-        sampleFrom.first.GetTextureHandle();
-    mat.RenderParams.Texture2Ds[ParticleMaterial::UNIFORM_TEX2].Texture =
-        sampleFrom.second.GetTextureHandle();
+    ParticleContent::Instance.SetRenderPassParams(mat.RenderParams, TexelSize[size],
+                                                  ToV2f(particleSetIndex) * TexelSize[size],
+                                                  &sampleFrom.first, &sampleFrom.second);
 
     particleMesh.SubMeshes[0].SetUseRange(0, ParticlesLength[size] * ParticlesLength[size]);
     mat.RenderMat->Render(info, &particleMesh, mat.RenderParams);

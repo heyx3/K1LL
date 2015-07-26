@@ -17,8 +17,6 @@ struct RenderPassVertex
 //A set of "burst", "update", and "render" materials.
 struct ParticleMaterial
 {
-    static const std::string UNIFORM_TEX1, UNIFORM_TEX2;
-
     Material *BurstMat = 0,
              *UpdateMat = 0,
              *RenderMat = 0;
@@ -41,6 +39,15 @@ public:
     bool Initialize(std::string& outError);
     void Destroy(void);
 
+    //Sets the basic parameters for a burst or update pass.
+    void SetUpdatePassParams(UniformDictionary& params, bool isBurst,
+                             Vector2f particleTexelMin, Vector2f particleTexelMax,
+                             float timeStep = 0.0f,
+                             MTexture2D* particleTexData1 = 0, MTexture2D* particleTexData2 = 0);
+    //Sets up the basic uniforms used by the given render pass.
+    void SetRenderPassParams(UniformDictionary& params,
+                             float texelSize, Vector2f particleTexelMin,
+                             MTexture2D* particleTexData1, MTexture2D* particleTexData2);
 
     void PuncherFire_Burst(Vector3f pos, Vector3f dir, Vector3f tangent, Vector3f bitangent);
 

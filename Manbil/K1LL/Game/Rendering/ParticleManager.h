@@ -100,9 +100,11 @@ private:
 
 
     //Runs an "update" or "burst" pass.
+    //"sampleFrom" and "frameLength" only apply to "update" passes, not "burst" passes.
     void RunUpdate(Sizes particleSetSize, Material* mat, UniformDictionary& params, const RenderInfo& info,
-                   bool isBurst, ParticleTextures& renderTo, ParticleTextures* sampleFrom = 0);
+                   bool isBurst, Vector2u particleSetIndex, ParticleTextures& renderTo,
+                   float frameLength = 0.0f, ParticleTextures* sampleFrom = 0);
     //Runs a "render" pass.
-    void RunRender(Sizes particleSize, const RenderInfo& info,
+    void RunRender(Sizes particleSize, const RenderInfo& info, Vector2u particleSetIndex,
                    ParticleMaterial& mat, ParticleTextures& sampleFrom);
 };
