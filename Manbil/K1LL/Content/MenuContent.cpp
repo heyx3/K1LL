@@ -175,10 +175,10 @@ void MenuContent::Destroy(void)
     LabelGUIMat = 0;
     StaticOpaqueColorMat = 0;
 
-    StaticColorGUIParams.ClearUniforms();
-    StaticColorGUINoTexParams.ClearUniforms();
-    AnimatedColorGUIParams.ClearUniforms();
-    LabelGUIParams.ClearUniforms();
+    StaticColorGUIParams.clear();
+    StaticColorGUINoTexParams.clear();
+    AnimatedColorGUIParams.clear();
+    LabelGUIParams.clear();
 
 
     PageBackground.DeleteIfValid();

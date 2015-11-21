@@ -114,9 +114,6 @@
     <ClCompile Include="Rendering\GUI\GUIManager.cpp">
       <Filter>Rendering\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Asset Packaging\AssetPackage.cpp">
-      <Filter>Asset Packaging</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\GUI\GUI Elements\GUIFormattedPanel.cpp">
       <Filter>Rendering\GUI\GUI Elements</Filter>
     </ClCompile>
@@ -159,9 +156,6 @@
     <ClCompile Include="Math\Lower Math\Vectors.cpp">
       <Filter>Math\Lower Math</Filter>
     </ClCompile>
-    <ClCompile Include="Oculus Rift\OculusDevice.cpp">
-      <Filter>Oculus Rift</Filter>
-    </ClCompile>
     <ClCompile Include="Math\Lower Math\Mathf.cpp">
       <Filter>Math\Lower Math</Filter>
     </ClCompile>
@@ -176,9 +170,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\GPU Particles\GPUParticleNodes.cpp">
       <Filter>Rendering\GPU Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\Serialization.cpp">
-      <Filter>IO</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Basic Rendering\GLVectors.cpp">
       <Filter>Rendering\Basic Rendering</Filter>
@@ -209,9 +200,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Basic Rendering\Vertices.cpp">
       <Filter>Rendering\Basic Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Management\RenderTargetManager.cpp">
-      <Filter>Rendering\Management</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Textures\MTexture2D.cpp">
       <Filter>Rendering\Textures</Filter>
@@ -375,17 +363,8 @@
     <ClCompile Include="Rendering\Primitives\PrimitiveGenerator.cpp">
       <Filter>Rendering\Primitives</Filter>
     </ClCompile>
-    <ClCompile Include="Sample Worlds\SimpleRenderWorld.cpp">
-      <Filter>Sample Worlds</Filter>
-    </ClCompile>
     <ClCompile Include="Rendering\Basic Rendering\MaterialConstants.cpp">
       <Filter>Rendering\Basic Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Sample Worlds\DataNodeRenderWorld.cpp">
-      <Filter>Sample Worlds</Filter>
-    </ClCompile>
-    <ClCompile Include="Sample Worlds\WaterWorld.cpp">
-      <Filter>Sample Worlds</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Data Nodes\Miscellaneous\ApplyNormalMapNode.cpp">
       <Filter>Rendering\Data Nodes\Miscellaneous</Filter>
@@ -401,9 +380,6 @@
     </ClCompile>
     <ClCompile Include="Rendering\Data Nodes\Parameters\FragCoordNode.cpp">
       <Filter>Rendering\Data Nodes\Parameters</Filter>
-    </ClCompile>
-    <ClCompile Include="Sample Worlds\GUIWorld.cpp">
-      <Filter>Sample Worlds</Filter>
     </ClCompile>
     <ClCompile Include="Rendering\Data Nodes\MaterialOutputs.cpp">
       <Filter>Rendering\Data Nodes</Filter>
@@ -423,20 +399,11 @@
     <ClCompile Include="IO\XmlSerialization.cpp">
       <Filter>IO\Serializers</Filter>
     </ClCompile>
-    <ClCompile Include="Sample Worlds\SerializationWorld.cpp">
-      <Filter>Sample Worlds</Filter>
+    <ClCompile Include="IO\SerializationWrappers.cpp">
+      <Filter>IO</Filter>
     </ClCompile>
-    <ClCompile Include="Sample Worlds\TerrainWorld.cpp">
-      <Filter>Sample Worlds</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Room Editor\RoomEditor.cpp">
-      <Filter>K1LL\Room Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Content\ActorContent.cpp">
-      <Filter>K1LL\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Room Editor\RoomCollection.cpp">
-      <Filter>K1LL\Room Editor</Filter>
+    <ClCompile Include="Rendering\Textures\RenderTargetManager.cpp">
+      <Filter>Rendering\Textures</Filter>
     </ClCompile>
     <ClCompile Include="K1LL\Room Editor\RoomEditorPane.cpp">
       <Filter>K1LL\Room Editor</Filter>
@@ -444,11 +411,56 @@
     <ClCompile Include="K1LL\Room Editor\RoomEditorView.cpp">
       <Filter>K1LL\Room Editor</Filter>
     </ClCompile>
+    <ClCompile Include="K1LL\Room Editor\RoomCollection.cpp">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Room Editor\RoomEditor.cpp">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\MenuContent.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\ParticleContent.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\Settings.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\WeaponConstants.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\WeaponContent.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\ActorContent.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\BulletContent.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\ContentLoader.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Content\LevelConstants.cpp">
+      <Filter>K1LL\Content</Filter>
+    </ClCompile>
     <ClCompile Include="K1LL\Level Info\RoomInfo.cpp">
       <Filter>K1LL\Level Info</Filter>
     </ClCompile>
     <ClCompile Include="K1LL\Level Info\LevelInfo.cpp">
       <Filter>K1LL\Level Info</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\InputHandler.cpp">
+      <Filter>K1LL\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\Rendering\ParticleManager.cpp">
+      <Filter>K1LL\Game\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\Rendering\PlayerViewport.cpp">
+      <Filter>K1LL\Game\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\Rendering\LevelGeometry.cpp">
+      <Filter>K1LL\Game\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="K1LL\Game\Level\RoomsGraph.cpp">
       <Filter>K1LL\Game\Level</Filter>
@@ -459,40 +471,37 @@
     <ClCompile Include="K1LL\Game\Level\LevelGraph.cpp">
       <Filter>K1LL\Game\Level</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\Game\Players\HumanPlayer.cpp">
-      <Filter>K1LL\Game\Players</Filter>
-    </ClCompile>
     <ClCompile Include="K1LL\Game\Players\Player.cpp">
       <Filter>K1LL\Game\Players</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\Game\Rendering\LevelGeometry.cpp">
-      <Filter>K1LL\Game\Rendering</Filter>
+    <ClCompile Include="K1LL\Game\Players\HumanPlayer.cpp">
+      <Filter>K1LL\Game\Players</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\Players\Projectiles\PuncherBullet.cpp">
+      <Filter>K1LL\Game\Players\Projectiles</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\Players\Weapons\Weapon.cpp">
+      <Filter>K1LL\Game\Players\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\Game\Players\Weapons\Puncher.cpp">
+      <Filter>K1LL\Game\Players\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="K1LL\GUI Pages\PageManager.cpp">
-      <Filter>K1LL\GUI Pages</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Content\ContentLoader.cpp">
-      <Filter>K1LL\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\GUI Pages\Page.cpp">
-      <Filter>K1LL\GUI Pages</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Content\MenuContent.cpp">
-      <Filter>K1LL\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\GUI Pages\MainMenu.cpp">
       <Filter>K1LL\GUI Pages</Filter>
     </ClCompile>
     <ClCompile Include="K1LL\GUI Pages\ChooseLevelEditor.cpp">
       <Filter>K1LL\GUI Pages</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\GUI Pages\Level Editor\LevelEditor.cpp">
-      <Filter>K1LL\GUI Pages\Level Editor</Filter>
+    <ClCompile Include="K1LL\GUI Pages\LevelTest.cpp">
+      <Filter>K1LL\GUI Pages</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\GUI Pages\Level Editor\GUIEditorGrid.cpp">
-      <Filter>K1LL\GUI Pages\Level Editor</Filter>
+    <ClCompile Include="K1LL\GUI Pages\MainMenu.cpp">
+      <Filter>K1LL\GUI Pages</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\GUI Pages\Level Editor\ContextMenu.cpp">
+    <ClCompile Include="K1LL\GUI Pages\Page.cpp">
+      <Filter>K1LL\GUI Pages</Filter>
+    </ClCompile>
+    <ClCompile Include="K1LL\GUI Pages\Level Editor\GUILevelPathing.cpp">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClCompile>
     <ClCompile Include="K1LL\GUI Pages\Level Editor\GUIRoom.cpp">
@@ -501,47 +510,14 @@
     <ClCompile Include="K1LL\GUI Pages\Level Editor\GUIRoomSelection.cpp">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\GUI Pages\Level Editor\GUILevelPathing.cpp">
+    <ClCompile Include="K1LL\GUI Pages\Level Editor\LevelEditor.cpp">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\GUI Pages\LevelTest.cpp">
-      <Filter>K1LL\GUI Pages</Filter>
+    <ClCompile Include="K1LL\GUI Pages\Level Editor\ContextMenu.cpp">
+      <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClCompile>
-    <ClCompile Include="K1LL\Game\InputHandler.cpp">
-      <Filter>K1LL\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Content\Settings.cpp">
-      <Filter>K1LL\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Game\Rendering\PlayerViewport.cpp">
-      <Filter>K1LL\Game\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Game\Players\Weapons\Weapon.cpp">
-      <Filter>K1LL\Game\Players\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Content\WeaponConstants.cpp">
-      <Filter>K1LL\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Game\Players\Weapons\Puncher.cpp">
-      <Filter>K1LL\Game\Players\Weapons</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Game\Players\Projectiles\PuncherBullet.cpp">
-      <Filter>K1LL\Game\Players\Projectiles</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Content\WeaponContent.cpp">
-      <Filter>K1LL\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Content\LevelConstants.cpp">
-      <Filter>K1LL\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Content\BulletContent.cpp">
-      <Filter>K1LL\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Content\ParticleContent.cpp">
-      <Filter>K1LL\Content</Filter>
-    </ClCompile>
-    <ClCompile Include="K1LL\Game\Rendering\ParticleManager.cpp">
-      <Filter>K1LL\Game\Rendering</Filter>
+    <ClCompile Include="K1LL\GUI Pages\Level Editor\GUIEditorGrid.cpp">
+      <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -712,9 +688,6 @@
     <ClInclude Include="Rendering\GUI\GUIManager.h">
       <Filter>Rendering\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Asset Packaging\AssetPackage.h">
-      <Filter>Asset Packaging</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\GUI\GUI Elements\GUIFormattedPanel.h">
       <Filter>Rendering\GUI\GUI Elements</Filter>
     </ClInclude>
@@ -745,12 +718,6 @@
     <ClInclude Include="Editor\Editor Panels\ColorEditor.h">
       <Filter>Rendering\Editors\Editor Panels</Filter>
     </ClInclude>
-    <ClInclude Include="Editor\DAG Editor\DAGNode.h">
-      <Filter>Rendering\Editors\DAG Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Editor\DAG Editor\DAGInput.h">
-      <Filter>Rendering\Editors\DAG Editor</Filter>
-    </ClInclude>
     <ClInclude Include="Math\Shapes\Circle.h">
       <Filter>Math\Shapes</Filter>
     </ClInclude>
@@ -775,9 +742,6 @@
     <ClInclude Include="Math\Lower Math/Array2D.h">
       <Filter>Math\Lower Math</Filter>
     </ClInclude>
-    <ClInclude Include="Oculus Rift\OculusDevice.h">
-      <Filter>Oculus Rift</Filter>
-    </ClInclude>
     <ClInclude Include="Math\Lower Math\Mathf.h">
       <Filter>Math\Lower Math</Filter>
     </ClInclude>
@@ -795,9 +759,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\GPU Particles\GPUParticleNodes.h">
       <Filter>Rendering\GPU Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\Serialization.h">
-      <Filter>IO</Filter>
     </ClInclude>
     <ClInclude Include="Game Loop\SFMLOpenGLWorld.h">
       <Filter>Game Loop</Filter>
@@ -828,9 +789,6 @@
     </ClInclude>
     <ClInclude Include="Rendering\Basic Rendering\Vertices.h">
       <Filter>Rendering\Basic Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Management\RenderTargetManager.h">
-      <Filter>Rendering\Management</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Textures\MTexture2D.h">
       <Filter>Rendering\Textures</Filter>
@@ -1012,17 +970,8 @@
     <ClInclude Include="Rendering\Primitives\PrimitiveGenerator.h">
       <Filter>Rendering\Primitives</Filter>
     </ClInclude>
-    <ClInclude Include="Sample Worlds\SimpleRenderWorld.h">
-      <Filter>Sample Worlds</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Basic Rendering\MaterialConstants.h">
       <Filter>Rendering\Basic Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Sample Worlds\DataNodeRenderWorld.h">
-      <Filter>Sample Worlds</Filter>
-    </ClInclude>
-    <ClInclude Include="Sample Worlds\WaterWorld.h">
-      <Filter>Sample Worlds</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Data Nodes\Miscellaneous\ApplyNormalMapNode.h">
       <Filter>Rendering\Data Nodes\Miscellaneous</Filter>
@@ -1054,25 +1003,13 @@
     <ClInclude Include="Graph\GraphSearchGoal.h">
       <Filter>Graph</Filter>
     </ClInclude>
-    <ClInclude Include="Sample Worlds\GUIWorld.h">
-      <Filter>Sample Worlds</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Data Nodes\MaterialOutputs.h">
       <Filter>Rendering\Data Nodes</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Basic Rendering\UniformCollections.h">
       <Filter>Rendering\Basic Rendering\Uniform Definitions</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\Basic Rendering\UniformValueVector.h">
-      <Filter>Rendering\Basic Rendering\Uniform Definitions</Filter>
-    </ClInclude>
     <ClInclude Include="Rendering\Basic Rendering\UniformValueVectorArray.h">
-      <Filter>Rendering\Basic Rendering\Uniform Definitions</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Basic Rendering\UniformValueMatrix4f.h">
-      <Filter>Rendering\Basic Rendering\Uniform Definitions</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Basic Rendering\UniformValueSamplers.h">
       <Filter>Rendering\Basic Rendering\Uniform Definitions</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Basic Rendering\UniformValueSubroutine.h">
@@ -1084,20 +1021,14 @@
     <ClInclude Include="IO\XmlSerialization.h">
       <Filter>IO\Serializers</Filter>
     </ClInclude>
-    <ClInclude Include="Sample Worlds\SerializationWorld.h">
-      <Filter>Sample Worlds</Filter>
+    <ClInclude Include="IO\SerializationWrappers.h">
+      <Filter>IO</Filter>
     </ClInclude>
-    <ClInclude Include="Sample Worlds\TerrainWorld.h">
-      <Filter>Sample Worlds</Filter>
+    <ClInclude Include="Rendering\Basic Rendering\Viewport.h">
+      <Filter>Rendering\Basic Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\Room Editor\RoomEditor.h">
-      <Filter>K1LL\Room Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Content\ActorContent.h">
-      <Filter>K1LL\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Room Editor\RoomCollection.h">
-      <Filter>K1LL\Room Editor</Filter>
+    <ClInclude Include="Rendering\Textures\RenderTargetManager.h">
+      <Filter>Rendering\Textures</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\Room Editor\RoomEditorPane.h">
       <Filter>K1LL\Room Editor</Filter>
@@ -1105,19 +1036,73 @@
     <ClInclude Include="K1LL\Room Editor\RoomEditorView.h">
       <Filter>K1LL\Room Editor</Filter>
     </ClInclude>
+    <ClInclude Include="K1LL\Room Editor\RoomCollection.h">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Room Editor\RoomEditor.h">
+      <Filter>K1LL\Room Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\LevelConstants.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\MenuContent.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\ParticleContent.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\Settings.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\WeaponConstants.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\WeaponContent.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\ActorContent.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\BulletContent.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Content\ContentLoader.h">
+      <Filter>K1LL\Content</Filter>
+    </ClInclude>
     <ClInclude Include="K1LL\Level Info\LevelInfo.h">
       <Filter>K1LL\Level Info</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\Level Info\RoomInfo.h">
       <Filter>K1LL\Level Info</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\Game\Level\Level.h">
+    <ClInclude Include="K1LL\Level Info\ItemTypes.h">
+      <Filter>K1LL\Level Info</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\InputHandler.h">
+      <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\MatchInfo.h">
+      <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\Actor.h">
+      <Filter>K1LL\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\Rendering\ParticleManager.h">
+      <Filter>K1LL\Game\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\Rendering\PlayerViewport.h">
+      <Filter>K1LL\Game\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\Rendering\LevelGeometry.h">
+      <Filter>K1LL\Game\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="K1LL\Game\Level\LevelGraph.h">
       <Filter>K1LL\Game\Level</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\Game\Level\RoomsGraph.h">
       <Filter>K1LL\Game\Level</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\Game\Level\LevelGraph.h">
+    <ClInclude Include="K1LL\Game\Level\Level.h">
       <Filter>K1LL\Game\Level</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\Game\Players\HumanPlayer.h">
@@ -1126,44 +1111,35 @@
     <ClInclude Include="K1LL\Game\Players\Player.h">
       <Filter>K1LL\Game\Players</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\Game\Rendering\LevelGeometry.h">
-      <Filter>K1LL\Game\Rendering</Filter>
+    <ClInclude Include="K1LL\Game\Players\Projectiles\PuncherBullet.h">
+      <Filter>K1LL\Game\Players\Projectiles</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\Game\Actor.h">
-      <Filter>K1LL\Game</Filter>
+    <ClInclude Include="K1LL\Game\Players\Weapons\Weapon.h">
+      <Filter>K1LL\Game\Players\Weapons</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\GUI Pages\PageManager.h">
-      <Filter>K1LL\GUI Pages</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Content\ContentLoader.h">
-      <Filter>K1LL\Content</Filter>
+    <ClInclude Include="K1LL\Game\Players\Weapons\Puncher.h">
+      <Filter>K1LL\Game\Players\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\GUI Pages\Page.h">
       <Filter>K1LL\GUI Pages</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\Content\MenuContent.h">
-      <Filter>K1LL\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\GUI Pages\MainMenu.h">
+    <ClInclude Include="K1LL\GUI Pages\PageManager.h">
       <Filter>K1LL\GUI Pages</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\GUI Pages\ChooseLevelEditor.h">
       <Filter>K1LL\GUI Pages</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\tinydir.h">
-      <Filter>K1LL</Filter>
+    <ClInclude Include="K1LL\GUI Pages\LevelTest.h">
+      <Filter>K1LL\GUI Pages</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\GUI Pages\Level Editor\LevelEditor.h">
-      <Filter>K1LL\GUI Pages\Level Editor</Filter>
+    <ClInclude Include="K1LL\GUI Pages\MainMenu.h">
+      <Filter>K1LL\GUI Pages</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\GUI Pages\Level Editor\GUIEditorGrid.h">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\GUI Pages\Level Editor\ContextMenu.h">
+    <ClInclude Include="K1LL\GUI Pages\Level Editor\GUILevelPathing.h">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Level Info\ItemTypes.h">
-      <Filter>K1LL\Level Info</Filter>
     </ClInclude>
     <ClInclude Include="K1LL\GUI Pages\Level Editor\GUIRoom.h">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
@@ -1171,53 +1147,11 @@
     <ClInclude Include="K1LL\GUI Pages\Level Editor\GUIRoomSelection.h">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\GUI Pages\Level Editor\GUILevelPathing.h">
+    <ClInclude Include="K1LL\GUI Pages\Level Editor\LevelEditor.h">
       <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClInclude>
-    <ClInclude Include="K1LL\GUI Pages\LevelTest.h">
-      <Filter>K1LL\GUI Pages</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Game\InputHandler.h">
-      <Filter>K1LL\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Content\Settings.h">
-      <Filter>K1LL\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Game\Rendering\PlayerViewport.h">
-      <Filter>K1LL\Game\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Game\Players\Weapons\Weapon.h">
-      <Filter>K1LL\Game\Players\Weapons</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Game\MatchInfo.h">
-      <Filter>K1LL\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Game\Players\Weapons\Puncher.h">
-      <Filter>K1LL\Game\Players\Weapons</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Content\WeaponConstants.h">
-      <Filter>K1LL\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Game\Players\Projectiles\PuncherBullet.h">
-      <Filter>K1LL\Game\Players\Projectiles</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Content\WeaponContent.h">
-      <Filter>K1LL\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Content\LevelConstants.h">
-      <Filter>K1LL\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Content\BulletContent.h">
-      <Filter>K1LL\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Content\ParticleContent.h">
-      <Filter>K1LL\Content</Filter>
-    </ClInclude>
-    <ClInclude Include="K1LL\Game\Rendering\ParticleManager.h">
-      <Filter>K1LL\Game\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Basic Rendering\Viewport.h">
-      <Filter>Rendering\Basic Rendering</Filter>
+    <ClInclude Include="K1LL\GUI Pages\Level Editor\ContextMenu.h">
+      <Filter>K1LL\GUI Pages\Level Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1272,14 +1206,8 @@
     <Filter Include="Rendering\GUI\GUI Elements">
       <UniqueIdentifier>{ec92b068-e8ad-47a7-befa-6d2057a7ab49}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Asset Packaging">
-      <UniqueIdentifier>{6ac83a61-b2e1-4f2a-bf8f-d1eb1e9ae1cf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Math\Lower Math">
       <UniqueIdentifier>{65986f31-c477-4577-a486-3d5206df0a9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Oculus Rift">
-      <UniqueIdentifier>{b2f214a1-17d3-4baa-adc6-64d16b442ad0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Rendering\Basic Rendering">
       <UniqueIdentifier>{8ad55c55-4ca2-43dd-bfea-912c2bee8b5c}</UniqueIdentifier>
@@ -1314,12 +1242,6 @@
     <Filter Include="Rendering\Editors\Editor Panels">
       <UniqueIdentifier>{27d624c8-459b-41ab-bb82-b8940f4d7ec6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Editors\DAG Editor">
-      <UniqueIdentifier>{d6c6e1ca-c0d4-48f4-a73e-f538fbdb9b8e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sample Worlds">
-      <UniqueIdentifier>{4ab065bd-152d-485c-bdf3-a1e684e0dfe5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Graph">
       <UniqueIdentifier>{a8c5d9ce-e6a4-4586-ba36-d7608a67ba8d}</UniqueIdentifier>
     </Filter>
@@ -1330,41 +1252,43 @@
       <UniqueIdentifier>{952e8ef2-61c0-4da5-9ffc-de31d8f4f3cd}</UniqueIdentifier>
     </Filter>
     <Filter Include="K1LL">
-      <UniqueIdentifier>{f2d16223-563f-49ed-a8b9-f1ad2934b566}</UniqueIdentifier>
+      <UniqueIdentifier>{87f13b64-e55b-466e-b744-f94babf275e8}</UniqueIdentifier>
     </Filter>
     <Filter Include="K1LL\Room Editor">
-      <UniqueIdentifier>{3b9f408f-2cb8-4da0-8991-5b534cf82822}</UniqueIdentifier>
+      <UniqueIdentifier>{2f12fd91-9c2c-480d-a9f3-73055413dae1}</UniqueIdentifier>
     </Filter>
     <Filter Include="K1LL\Content">
-      <UniqueIdentifier>{dee9f723-a7b5-4b48-b45a-2a6e1ad9a594}</UniqueIdentifier>
+      <UniqueIdentifier>{d1d0ccaf-8e8c-4eeb-b59f-39b5bd7cc49e}</UniqueIdentifier>
     </Filter>
     <Filter Include="K1LL\Level Info">
-      <UniqueIdentifier>{f535a645-5e70-4da5-a78a-4784229eb3ab}</UniqueIdentifier>
+      <UniqueIdentifier>{488c4fd8-b397-4e79-b693-d42835b27e41}</UniqueIdentifier>
     </Filter>
     <Filter Include="K1LL\Game">
-      <UniqueIdentifier>{5459893a-e155-4c3a-bcda-65fbde237048}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="K1LL\Game\Players">
-      <UniqueIdentifier>{7665b2d8-2d74-4c7f-916a-0880b3b14703}</UniqueIdentifier>
+      <UniqueIdentifier>{57aca55d-bf14-404c-bd8c-fe93d1c6daa6}</UniqueIdentifier>
     </Filter>
     <Filter Include="K1LL\Game\Level">
-      <UniqueIdentifier>{8f0a399f-739d-481d-81ae-e34bee794c64}</UniqueIdentifier>
+      <UniqueIdentifier>{b6508dba-6ca3-4ebb-a0b2-40d1b9e70f0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\Game\Players">
+      <UniqueIdentifier>{86cd5d4e-3324-49f9-bad0-64b9793423c2}</UniqueIdentifier>
     </Filter>
     <Filter Include="K1LL\Game\Rendering">
-      <UniqueIdentifier>{d867f14f-fe24-492c-b6b0-bf13702b0c72}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="K1LL\GUI Pages">
-      <UniqueIdentifier>{0a0d2409-f4e8-445f-baed-098384fa57ac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="K1LL\GUI Pages\Level Editor">
-      <UniqueIdentifier>{891d5344-5529-4c68-8d7f-b10f79ced694}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="K1LL\Game\Players\Weapons">
-      <UniqueIdentifier>{92b45fed-e10c-4fa6-bb17-215aa0174a50}</UniqueIdentifier>
+      <UniqueIdentifier>{2a48f064-5a97-4d08-90c4-7dacd4d52d25}</UniqueIdentifier>
     </Filter>
     <Filter Include="K1LL\Game\Players\Projectiles">
-      <UniqueIdentifier>{7ffdb3e3-802b-4edd-9b0a-79e261e9a8ca}</UniqueIdentifier>
+      <UniqueIdentifier>{71f07e29-0c23-4e41-a49e-9e92a7f3588e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="K1LL\Game\Players\Weapons">
+      <UniqueIdentifier>{97a3dbbe-1b8a-4e3e-9f1e-0e3262705730}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\GUI Pages">
+      <UniqueIdentifier>{b781d2d7-1eed-4118-a5ff-dc188d3d3384}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="K1LL\GUI Pages\Level Editor">
+      <UniqueIdentifier>{cdcc4f92-dcb2-4903-856f-bdaaaa016783}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
     <Filter Include="IO\Serializers\tinyxml Library">
       <UniqueIdentifier>{e4f7dc4f-85f9-4536-b6db-5f9c56013c8a}</UniqueIdentifier>
     </Filter>

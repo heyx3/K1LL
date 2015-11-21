@@ -11,9 +11,14 @@
 
 
 
+sf::ContextSettings PageManager::GenerateContext(void)
+{
+    return sf::ContextSettings();
+}
+
 PageManager::PageManager(void)
     : windowSize(800, 900),
-      SFMLOpenGLWorld(800, 900, sf::ContextSettings())
+      SFMLOpenGLWorld(800, 900)
 {
 
 }
@@ -76,7 +81,8 @@ void PageManager::UpdateWorld(float frameSeconds)
 }
 void PageManager::RenderOpenGL(float frameSeconds)
 {
-    glViewport(0, 0, windowSize.x, windowSize.y);
+    //PRIORITY: Try setting as scissor as well. May fix particle effects?
+    Viewport(0, 0, windowSize.x, windowSize.y).SetAsViewport();
 
     currentPage->Render(frameSeconds);
 }

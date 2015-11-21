@@ -242,10 +242,15 @@ void main()
     vec3 texRGB = texture2D( )" + UNIFORM_TEXTURE + R"(, fIn_UV).xyz;
     fOut_Color = vec4(texRGB * max(gridVals.x, gridVals.y), 1.0);
 })";
-        weaponParams.Texture2Ds[UNIFORM_TEXTURE] = UniformValueSampler2D(0, UNIFORM_TEXTURE);
-        weaponParams.Floats[UNIFORM_ANIMSPEED] = UniformValueF(0.0f, UNIFORM_ANIMSPEED);
-        weaponParams.Floats[UNIFORM_GRIDSCALE] = UniformValueF(1.0f, UNIFORM_GRIDSCALE);
-        weaponParams.Floats[UNIFORM_GRIDTHINNESS] = UniformValueF(45.0f, UNIFORM_GRIDTHINNESS);
+
+        weaponParams[UNIFORM_TEXTURE] = Uniform(UNIFORM_TEXTURE, UT_VALUE_SAMPLER2D);
+        weaponParams[UNIFORM_ANIMSPEED] = Uniform(UNIFORM_ANIMSPEED, UT_VALUE_F);
+        weaponParams[UNIFORM_ANIMSPEED].Float().SetValue(0.0f);
+        weaponParams[UNIFORM_GRIDSCALE] = Uniform(UNIFORM_GRIDSCALE, UT_VALUE_F);
+        weaponParams[UNIFORM_GRIDSCALE].Float().SetValue(1.0f);
+        weaponParams[UNIFORM_GRIDTHINNESS] = Uniform(UNIFORM_GRIDTHINNESS, UT_VALUE_F);
+        weaponParams[UNIFORM_GRIDTHINNESS].Float().SetValue(45.0f);
+
         weaponMat = new Material(vShader, fShader, weaponParams, weaponVertIns,
                                  BlendMode::GetOpaque(), err);
         if (!err.empty())
@@ -277,7 +282,7 @@ void WeaponContent::Destroy(void)
 
     weaponMesh.SubMeshes.clear();
     weaponMesh.CurrentSubMesh = 0;
-    weaponParams.ClearUniforms();
+    weaponParams.clear();
 }
 
 void WeaponContent::RenderPuncher(Vector3f pos, Vector3f dir, const RenderInfo& info)
@@ -323,10 +328,10 @@ void WeaponContent::RenderWeapon(Vector3f pos, Vector3f dir, unsigned int subMes
                                -atan2f(dir.z, dir.XY().Length()),
                                atan2f(dir.y, dir.x)));
 
-    weaponParams.Texture2Ds[UNIFORM_TEXTURE].Texture = tex->GetTextureHandle();
-    weaponParams.Floats[UNIFORM_ANIMSPEED].SetValue(matData.AnimSpeed);
-    weaponParams.Floats[UNIFORM_GRIDSCALE].SetValue(matData.GridScale);
-    weaponParams.Floats[UNIFORM_GRIDTHINNESS].SetValue(matData.GridThinness);
+    weaponParams[UNIFORM_TEXTURE].Tex() = tex->GetTextureHandle();
+    weaponParams[UNIFORM_ANIMSPEED].Float().SetValue(matData.AnimSpeed);
+    weaponParams[UNIFORM_GRIDSCALE].Float().SetValue(matData.GridScale);
+    weaponParams[UNIFORM_GRIDTHINNESS].Float().SetValue(matData.GridThinness);
 
     weaponMat->Render(info, &weaponMesh, weaponParams);
 }

@@ -1,6 +1,7 @@
 #include "LevelConstants.h"
 
 
+#include "../../IO/SerializationWrappers.h"
 #include "../../IO/XmlSerialization.h"
 
 

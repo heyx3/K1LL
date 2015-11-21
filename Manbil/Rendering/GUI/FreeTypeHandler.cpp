@@ -407,6 +407,7 @@ FreeTypeHandler::FreeTypeHandler(void)
     if (err != 0)
     {
         errorMsg = std::string("Error initializing FreeType library: ") + std::to_string(err);
+        std::cout << errorMsg << "\n\n";
     }
 }
 FreeTypeHandler::~FreeTypeHandler(void)

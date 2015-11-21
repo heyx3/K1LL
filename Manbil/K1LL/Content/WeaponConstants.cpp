@@ -1,6 +1,7 @@
 #include "WeaponConstants.h"
 
 
+#include "../../IO/SerializationWrappers.h"
 #include "../../IO/XmlSerialization.h"
 
 

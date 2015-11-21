@@ -10,7 +10,7 @@ class RoomsGraph;
 
 
 //Information about a level, defined as a collection of rooms plus some meta-data.
-//Note that room can never pass below the origin.
+//Note that rooms can never pass below the origin.
 struct LevelInfo : public ISerializable
 {
     //All information about a room in this level.
@@ -29,39 +29,13 @@ struct LevelInfo : public ISerializable
         RoomData(void) : Walls(1, 1, BT_NONE) { }
 
         RoomData(const Array2D<BlockTypes>& walls, Vector2u minCornerPos,
-                 ItemTypes spawnedItem, float avgLength)
-            : Walls(walls.GetWidth(), walls.GetHeight()), MinCornerPos(minCornerPos),
-              SpawnedItem(spawnedItem), AverageLength(avgLength)
-        {
-            walls.MemCopyInto(Walls.GetArray());
-        }
+                 ItemTypes spawnedItem, float avgLength);
 
-        RoomData(const RoomData& cpy) : Walls(cpy.Walls.GetWidth(), cpy.Walls.GetHeight()) { *this = cpy; }
-        RoomData& operator=(const RoomData& cpy)
-        {
-            Walls.Resize(cpy.Walls.GetWidth(), cpy.Walls.GetHeight(), BT_NONE);
-            cpy.Walls.MemCopyInto(Walls.GetArray());
+        RoomData(const RoomData& cpy);
+        RoomData& operator=(const RoomData& cpy);
 
-            MinCornerPos = cpy.MinCornerPos;
-            SpawnedItem = cpy.SpawnedItem;
-            AverageLength = cpy.AverageLength;
-
-            return *this;
-        }
-
-        RoomData(RoomData&& other)
-            : Walls(std::move(other.Walls)), MinCornerPos(other.MinCornerPos),
-              SpawnedItem(other.SpawnedItem), AverageLength(other.AverageLength) { }
-
-        RoomData& operator=(RoomData&& other)
-        {
-            Walls = std::move(other.Walls);
-            MinCornerPos = other.MinCornerPos;
-            SpawnedItem = other.SpawnedItem;
-            AverageLength = other.AverageLength;
-
-            return *this;
-        }
+        RoomData(RoomData&& other);
+        RoomData& operator=(RoomData&& other);
 
 
         //Gets whether this room has any spawn blocks.

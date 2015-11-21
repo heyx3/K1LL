@@ -1,12 +1,53 @@
 #include "LevelInfo.h"
 
-#include "../../IO/Serialization.h"
+#include "../../IO/SerializationWrappers.h"
 
 #include "../Game/Level/RoomsGraph.h"
 
 
 
 const std::string LevelInfo::LevelFilesPath = "Content/Levels/";
+
+
+
+
+LevelInfo::RoomData::RoomData(const Array2D<BlockTypes>& walls, Vector2u minCornerPos,
+                              ItemTypes spawnedItem, float avgLength)
+    : Walls(walls.GetWidth(), walls.GetHeight()), MinCornerPos(minCornerPos),
+      SpawnedItem(spawnedItem), AverageLength(avgLength)
+{
+    walls.MemCopyInto(Walls.GetArray());
+}
+
+LevelInfo::RoomData::RoomData(const RoomData& cpy)
+    : Walls(cpy.Walls.GetWidth(), cpy.Walls.GetHeight())
+{
+    *this = cpy;
+}
+LevelInfo::RoomData& LevelInfo::RoomData::operator=(const RoomData& cpy)
+{
+    Walls.Resize(cpy.Walls.GetWidth(), cpy.Walls.GetHeight(), BT_NONE);
+    cpy.Walls.MemCopyInto(Walls.GetArray());
+
+    MinCornerPos = cpy.MinCornerPos;
+    SpawnedItem = cpy.SpawnedItem;
+    AverageLength = cpy.AverageLength;
+
+    return *this;
+}
+
+LevelInfo::RoomData::RoomData(RoomData&& other)
+    : Walls(std::move(other.Walls)), MinCornerPos(other.MinCornerPos),
+      SpawnedItem(other.SpawnedItem), AverageLength(other.AverageLength) { }
+LevelInfo::RoomData& LevelInfo::RoomData::operator=(RoomData&& other)
+{
+    Walls = std::move(other.Walls);
+    MinCornerPos = other.MinCornerPos;
+    SpawnedItem = other.SpawnedItem;
+    AverageLength = other.AverageLength;
+
+    return *this;
+}
 
 
 bool LevelInfo::RoomData::GetHasSpawns(void) const

@@ -33,7 +33,7 @@ namespace
 
 RoomEditor::RoomEditor(void)
     : windowSize(1500, 600), editorMaterials(0), textRenderer(0),
-      SFMLOpenGLWorld(1500, 600, sf::ContextSettings())
+      SFMLOpenGLWorld(1500, 600)
 {
 }
 

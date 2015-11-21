@@ -114,7 +114,6 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Asset Packaging\AssetPackage.cpp" />
     <ClCompile Include="DebugAssist.cpp" />
     <ClCompile Include="Editor\Editor Panels\ColorEditor.cpp" />
     <ClCompile Include="Editor\EditorMaterialSet.cpp" />
@@ -130,13 +129,13 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="Input\LookRotation.cpp" />
     <ClCompile Include="Input\MovingCamera.cpp" />
     <ClCompile Include="IO\BinarySerialization.cpp" />
-    <ClCompile Include="IO\Serialization.cpp" />
+    <ClCompile Include="IO\SerializationWrappers.cpp" />
     <ClCompile Include="IO\tinyxml2.cpp" />
     <ClCompile Include="IO\XmlSerialization.cpp" />
     <ClCompile Include="K1LL\Content\ActorContent.cpp" />
     <ClCompile Include="K1LL\Content\BulletContent.cpp" />
-    <ClCompile Include="K1LL\Content\LevelConstants.cpp" />
     <ClCompile Include="K1LL\Content\ContentLoader.cpp" />
+    <ClCompile Include="K1LL\Content\LevelConstants.cpp" />
     <ClCompile Include="K1LL\Content\MenuContent.cpp" />
     <ClCompile Include="K1LL\Content\ParticleContent.cpp" />
     <ClCompile Include="K1LL\Content\Settings.cpp" />
@@ -167,10 +166,10 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\GUI Pages\PageManager.cpp" />
     <ClCompile Include="K1LL\Level Info\LevelInfo.cpp" />
     <ClCompile Include="K1LL\Level Info\RoomInfo.cpp" />
-    <ClCompile Include="K1LL\Room Editor\RoomEditorView.cpp" />
     <ClCompile Include="K1LL\Room Editor\RoomCollection.cpp" />
     <ClCompile Include="K1LL\Room Editor\RoomEditor.cpp" />
     <ClCompile Include="K1LL\Room Editor\RoomEditorPane.cpp" />
+    <ClCompile Include="K1LL\Room Editor\RoomEditorView.cpp" />
     <ClCompile Include="Math\Higher Math\BumpmapToNormalmap.cpp" />
     <ClCompile Include="Math\Higher Math\Camera.cpp" />
     <ClCompile Include="Math\Higher Math\Terrain.cpp" />
@@ -195,7 +194,6 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="Math\Shapes\Boxes.cpp" />
     <ClCompile Include="Math\Shapes\Circle.cpp" />
     <ClCompile Include="Math\Shapes\ThreeDShapes.cpp" />
-    <ClCompile Include="Oculus Rift\OculusDevice.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Rendering\Basic Rendering\BlendMode.cpp" />
     <ClCompile Include="Rendering\Basic Rendering\GLVectors.cpp" />
@@ -277,7 +275,6 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="Rendering\GUI\GUIManager.cpp" />
     <ClCompile Include="Rendering\GUI\GUIMaterials.cpp" />
     <ClCompile Include="Rendering\GUI\TextRenderer.cpp" />
-    <ClCompile Include="Rendering\Management\RenderTargetManager.cpp" />
     <ClCompile Include="Rendering\NoiseToTexture.cpp" />
     <ClCompile Include="Rendering\Primitives\BezierCurve.cpp" />
     <ClCompile Include="Rendering\Primitives\CurveVertex.cpp" />
@@ -287,21 +284,13 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="Rendering\Textures\MTexture3D.cpp" />
     <ClCompile Include="Rendering\Textures\MTextureCubemap.cpp" />
     <ClCompile Include="Rendering\Textures\RenderTarget.cpp" />
+    <ClCompile Include="Rendering\Textures\RenderTargetManager.cpp" />
     <ClCompile Include="Rendering\Textures\TextureSettings.cpp" />
     <ClCompile Include="Rendering\Water\Water.cpp" />
     <ClCompile Include="Rendering\Water\WaterRendering.cpp" />
-    <ClCompile Include="Sample Worlds\DataNodeRenderWorld.cpp" />
-    <ClCompile Include="Sample Worlds\GUIWorld.cpp" />
-    <ClCompile Include="Sample Worlds\SerializationWorld.cpp" />
-    <ClCompile Include="Sample Worlds\SimpleRenderWorld.cpp" />
-    <ClCompile Include="Sample Worlds\TerrainWorld.cpp" />
-    <ClCompile Include="Sample Worlds\WaterWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Asset Packaging\AssetPackage.h" />
     <ClInclude Include="DebugAssist.h" />
-    <ClInclude Include="Editor\DAG Editor\DAGInput.h" />
-    <ClInclude Include="Editor\DAG Editor\DAGNode.h" />
     <ClInclude Include="Editor\Editor Panels\ColorEditor.h" />
     <ClInclude Include="Editor\EditorMaterialSet.h" />
     <ClInclude Include="Editor\EditorObject.h" />
@@ -333,13 +322,13 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="Input\Vector2Input.h" />
     <ClInclude Include="IO\BinarySerialization.h" />
     <ClInclude Include="IO\DataSerialization.h" />
-    <ClInclude Include="IO\Serialization.h" />
+    <ClInclude Include="IO\SerializationWrappers.h" />
     <ClInclude Include="IO\tinyxml2.h" />
     <ClInclude Include="IO\XmlSerialization.h" />
     <ClInclude Include="K1LL\Content\ActorContent.h" />
     <ClInclude Include="K1LL\Content\BulletContent.h" />
-    <ClInclude Include="K1LL\Content\LevelConstants.h" />
     <ClInclude Include="K1LL\Content\ContentLoader.h" />
+    <ClInclude Include="K1LL\Content\LevelConstants.h" />
     <ClInclude Include="K1LL\Content\MenuContent.h" />
     <ClInclude Include="K1LL\Content\ParticleContent.h" />
     <ClInclude Include="K1LL\Content\Settings.h" />
@@ -373,11 +362,10 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Level Info\ItemTypes.h" />
     <ClInclude Include="K1LL\Level Info\LevelInfo.h" />
     <ClInclude Include="K1LL\Level Info\RoomInfo.h" />
-    <ClInclude Include="K1LL\Room Editor\RoomEditorView.h" />
-    <ClInclude Include="K1LL\Room Editor\RoomEditor.h" />
     <ClInclude Include="K1LL\Room Editor\RoomCollection.h" />
+    <ClInclude Include="K1LL\Room Editor\RoomEditor.h" />
     <ClInclude Include="K1LL\Room Editor\RoomEditorPane.h" />
-    <ClInclude Include="K1LL\tinydir.h" />
+    <ClInclude Include="K1LL\Room Editor\RoomEditorView.h" />
     <ClInclude Include="Math\Lower Math/Array2D.h" />
     <ClInclude Include="Math\Higher Math\BumpmapToNormalmap.h" />
     <ClInclude Include="Math\Higher Math\Camera.h" />
@@ -412,7 +400,6 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="Math\Shapes\Boxes.h" />
     <ClInclude Include="Math\Shapes\Circle.h" />
     <ClInclude Include="Math\Shapes\ThreeDShapes.h" />
-    <ClInclude Include="Oculus Rift\OculusDevice.h" />
     <ClInclude Include="OptionalValue.h" />
     <ClInclude Include="Rendering\Basic Rendering\BlendMode.h" />
     <ClInclude Include="Rendering\Basic Rendering\GLVectors.h" />
@@ -427,10 +414,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="Rendering\Basic Rendering\RenderIOAttributes.h" />
     <ClInclude Include="Rendering\Basic Rendering\ScreenClearer.h" />
     <ClInclude Include="Rendering\Basic Rendering\UniformCollections.h" />
-    <ClInclude Include="Rendering\Basic Rendering\UniformValueMatrix4f.h" />
-    <ClInclude Include="Rendering\Basic Rendering\UniformValueSamplers.h" />
     <ClInclude Include="Rendering\Basic Rendering\UniformValueSubroutine.h" />
-    <ClInclude Include="Rendering\Basic Rendering\UniformValueVector.h" />
     <ClInclude Include="Rendering\Basic Rendering\UniformValueVectorArray.h" />
     <ClInclude Include="Rendering\Basic Rendering\Vertices.h" />
     <ClInclude Include="Rendering\Basic Rendering\Viewport.h" />
@@ -502,7 +486,6 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="Rendering\GUI\GUIManager.h" />
     <ClInclude Include="Rendering\GUI\GUIMaterials.h" />
     <ClInclude Include="Rendering\GUI\TextRenderer.h" />
-    <ClInclude Include="Rendering\Management\RenderTargetManager.h" />
     <ClInclude Include="Rendering\NoiseToTexture.h" />
     <ClInclude Include="Rendering\Primitives\BezierCurve.h" />
     <ClInclude Include="Rendering\Primitives\CurveVertex.h" />
@@ -514,16 +497,11 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="Rendering\Textures\MTexture3D.h" />
     <ClInclude Include="Rendering\Textures\MTextureCubemap.h" />
     <ClInclude Include="Rendering\Textures\RenderTarget.h" />
+    <ClInclude Include="Rendering\Textures\RenderTargetManager.h" />
     <ClInclude Include="Rendering\Textures\TextureChannels.h" />
     <ClInclude Include="Rendering\Textures\TextureSettings.h" />
     <ClInclude Include="Rendering\Water\Water.h" />
     <ClInclude Include="Rendering\Water\WaterRendering.h" />
-    <ClInclude Include="Sample Worlds\DataNodeRenderWorld.h" />
-    <ClInclude Include="Sample Worlds\GUIWorld.h" />
-    <ClInclude Include="Sample Worlds\SerializationWorld.h" />
-    <ClInclude Include="Sample Worlds\SimpleRenderWorld.h" />
-    <ClInclude Include="Sample Worlds\TerrainWorld.h" />
-    <ClInclude Include="Sample Worlds\WaterWorld.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

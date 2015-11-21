@@ -24,6 +24,7 @@ public:
     //Gets all intersections between this circle and the given line segment.
     //Stores the intersections in "outIntersections" and returns the number of them (0-2).
     unsigned int GetIntersections(Vector2f segment1, Vector2f segment2, Vector2f outIntersections[2]) const;
+
     //Gets whether the given line segment touches this circle at all.
     bool DoesIntersect(Vector2f segment1, Vector2f segment2) const;
 };

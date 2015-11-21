@@ -190,7 +190,7 @@ void BulletContent::Destroy(void)
 
     delete bulletMat;
 
-    bulletParams.ClearUniforms();
+    bulletParams.clear();
 
     defaultTex.DeleteIfValid();
 }
@@ -202,8 +202,8 @@ void BulletContent::RenderPuncherBullet(Vector3f pos, Vector3f dir, const Render
 
     bulletMesh.CurrentSubMesh = B_PUNCHER;
 
-    bulletParams.Texture2Ds[UNIFORM_TEXTURE].Texture = defaultTex.GetTextureHandle();
-    bulletParams.Floats[UNIFORM_COLOR].SetValue(WeaponConstants::Instance.PuncherMaterial.BulletColor);
+    bulletParams[UNIFORM_TEXTURE].Tex() = defaultTex.GetTextureHandle();
+    bulletParams[UNIFORM_COLOR].Float().SetValue(WeaponConstants::Instance.PuncherMaterial.BulletColor);
 
     bulletMat->Render(info, &bulletMesh, bulletParams);
 }

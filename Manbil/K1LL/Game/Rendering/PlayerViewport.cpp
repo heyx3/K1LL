@@ -83,7 +83,8 @@ void PlayerViewport::Render(float frameSeconds, const RenderInfo& screenRenderIn
     RenderInfo worldRenderInfo(Lvl.GetTimeSinceGameStart(), &cam, &viewM, &projM);
     Lvl.Render(frameSeconds, worldRenderInfo);
 
-    worldRendTarg.DisableDrawingInto(World->GetWindow()->getSize().x, World->GetWindow()->getSize().y);
+    worldRendTarg.DisableDrawingInto();
+    Viewport(0, 0, World->GetWindow()->getSize().x, World->GetWindow()->getSize().y).Use();
     if (current != 0)
     {
         current->EnableDrawingInto();

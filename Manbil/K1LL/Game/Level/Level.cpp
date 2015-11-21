@@ -39,7 +39,7 @@ Level::Level(const LevelInfo& level, MatchInfo info, std::string& err)
     level.GetConnections(RoomGraph);
 
 
-    #pragma region Set up important Actors
+    #pragma region Create important Actors
 
     Actors.push_back(ActorPtr(new LevelGeometry(this, err)));
     Actors.push_back(PuncherBulletPool::CreatePool(this));

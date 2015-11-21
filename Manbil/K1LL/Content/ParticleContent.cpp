@@ -68,13 +68,16 @@ void main()
     void GenerateUpdatePass(const std::string& fragmentShader, bool isBurst,
                             UniformDictionary& params, Material** outM, std::string& outErrorMsg)
     {
-        params.Floats[UNIFORM_PARTICLE_TEXEL_MIN] = UniformValueF(Vector2f(), UNIFORM_PARTICLE_TEXEL_MIN);
-        params.Floats[UNIFORM_PARTICLE_TEXEL_MAX] = UniformValueF(Vector2f(), UNIFORM_PARTICLE_TEXEL_MAX);
+        params[UNIFORM_PARTICLE_TEXEL_MIN] = Uniform(UNIFORM_PARTICLE_TEXEL_MIN, UT_VALUE_F);
+        params[UNIFORM_PARTICLE_TEXEL_MIN].Float().SetValue(Vector2f());
+        params[UNIFORM_PARTICLE_TEXEL_MAX] = Uniform(UNIFORM_PARTICLE_TEXEL_MAX, UT_VALUE_F);
+        params[UNIFORM_PARTICLE_TEXEL_MAX].Float().SetValue(Vector2f());
         if (!isBurst)
         {
-            params.Floats[UNIFORM_TIME_STEP] = UniformValueF(0.0f, UNIFORM_TIME_STEP);
-            params.Texture2Ds[UNIFORM_TEX1] = UniformValueSampler2D(0, UNIFORM_TEX1);
-            params.Texture2Ds[UNIFORM_TEX2] = UniformValueSampler2D(0, UNIFORM_TEX2);
+            params[UNIFORM_TIME_STEP] = Uniform(UNIFORM_TIME_STEP, UT_VALUE_F);
+            params[UNIFORM_TIME_STEP].Float() = 0.0f;   
+            params[UNIFORM_TEX1] = Uniform(UNIFORM_TEX1, UT_VALUE_SAMPLER2D);
+            params[UNIFORM_TEX2] = Uniform(UNIFORM_TEX2, UT_VALUE_SAMPLER2D);
         }
 
         *outM = new Material(GetVertexShader_Update(), fragmentShader, params,
@@ -242,10 +245,12 @@ void main()
                             const std::string& fragmentShader,
                             UniformDictionary& params, Material** outM, std::string& outErrorMsg)
     {
-        params.Floats[UNIFORM_TEXEL_SIZE] = UniformValueF(0.0f, UNIFORM_TEXEL_SIZE);
-        params.Floats[UNIFORM_PARTICLE_TEXEL_MIN] = UniformValueF(Vector2f(), UNIFORM_PARTICLE_TEXEL_MIN);
-        params.Texture2Ds[UNIFORM_TEX1] = UniformValueSampler2D(0, UNIFORM_TEX1);
-        params.Texture2Ds[UNIFORM_TEX2] = UniformValueSampler2D(0, UNIFORM_TEX2);
+        params[UNIFORM_TEXEL_SIZE] = Uniform(UNIFORM_TEXEL_SIZE, UT_VALUE_F);
+        params[UNIFORM_TEXEL_SIZE].Float().SetValue(0.0f);
+        params[UNIFORM_PARTICLE_TEXEL_MIN] = Uniform(UNIFORM_PARTICLE_TEXEL_MIN, UT_VALUE_F);
+        params[UNIFORM_PARTICLE_TEXEL_MIN].Float().SetValue(Vector2f());
+        params[UNIFORM_TEX1] = Uniform(UNIFORM_TEX1, UT_VALUE_SAMPLER2D);
+        params[UNIFORM_TEX2] = Uniform(UNIFORM_TEX2, UT_VALUE_SAMPLER2D);
 
         *outM = new Material(GetVertexShader_Update(), fragmentShader, params,
                              DrawingQuad::GetVertexInputData(), BlendMode::GetOpaque(),
@@ -272,9 +277,9 @@ void main()
             mat.RenderMat = 0;
         }
 
-        mat.BurstParams.ClearUniforms();
-        mat.UpdateParams.ClearUniforms();
-        mat.RenderParams.ClearUniforms();
+        mat.BurstParams.clear();
+        mat.UpdateParams.clear();
+        mat.RenderParams.clear();
     }
 }
 
@@ -316,10 +321,14 @@ void main()
     fOut_Tex2 = vec4((pos - u_shootOrigin) * 1.0, 0.0);
 }
 )");
-        PuncherFire.BurstParams.Floats["u_shootDir"] = UniformValueF(Vector3f(), "u_shootDir");
-        PuncherFire.BurstParams.Floats["u_shootTangent"] = UniformValueF(Vector3f(), "u_shootTangent");
-        PuncherFire.BurstParams.Floats["u_shootBitangent"] = UniformValueF(Vector3f(), "u_shootBitangent");
-        PuncherFire.BurstParams.Floats["u_shootOrigin"] = UniformValueF(Vector3f(), "u_shootOrigin");
+        PuncherFire.BurstParams["u_shootDir"] = Uniform("u_shootDir", UT_VALUE_F);
+        PuncherFire.BurstParams["u_shootDir"].Float().SetValue(Vector3f());
+        PuncherFire.BurstParams["u_shootTangent"] = Uniform("u_shootTangent", UT_VALUE_F);
+        PuncherFire.BurstParams["u_shootTangent"].Float().SetValue(Vector3f());
+        PuncherFire.BurstParams["u_shootBitangent"] = Uniform("u_shootBitangent", UT_VALUE_F);
+        PuncherFire.BurstParams["u_shootBitangent"].Float().SetValue(Vector3f());
+        PuncherFire.BurstParams["u_shootOrigin"] = Uniform("u_shootOrigin", UT_VALUE_F);
+        PuncherFire.BurstParams["u_shootOrigin"].Float().SetValue(Vector3f());
         GenerateUpdatePass(fShader, true, PuncherFire.BurstParams, &PuncherFire.BurstMat, outError);
         if (!outError.empty())
         {
@@ -376,33 +385,33 @@ void ParticleContent::SetUpdatePassParams(UniformDictionary& params, bool isBurs
                                           float timeStep,
                                           MTexture2D* particleTexData1, MTexture2D* particleTexData2)
 {
-    params.Floats[UNIFORM_PARTICLE_TEXEL_MIN].SetValue(particleTexelMin);
-    params.Floats[UNIFORM_PARTICLE_TEXEL_MAX].SetValue(particleTexelMax);
+    params[UNIFORM_PARTICLE_TEXEL_MIN].Float().SetValue(particleTexelMin);
+    params[UNIFORM_PARTICLE_TEXEL_MAX].Float().SetValue(particleTexelMax);
     if (!isBurst)
     {
         assert(particleTexData1 != 0 && particleTexData2 != 0);
-        params.Texture2Ds[UNIFORM_TEX1].Texture = particleTexData1->GetTextureHandle();
-        params.Texture2Ds[UNIFORM_TEX2].Texture = particleTexData2->GetTextureHandle();
+        params[UNIFORM_TEX1].Tex() = particleTexData1->GetTextureHandle();
+        params[UNIFORM_TEX2].Tex() = particleTexData2->GetTextureHandle();
 
-        params.Floats[UNIFORM_TIME_STEP].SetValue(timeStep);
+        params[UNIFORM_TIME_STEP].Float().SetValue(timeStep);
     }
 }
 void ParticleContent::SetRenderPassParams(UniformDictionary& params,
                                           float texelSize, Vector2f particleTexelMin,
                                           MTexture2D* particleTexData1, MTexture2D* particleTexData2)
 {
-    params.Floats[UNIFORM_TEXEL_SIZE].SetValue(texelSize);
-    params.Floats[UNIFORM_PARTICLE_TEXEL_MIN].SetValue(particleTexelMin);
-    params.Texture2Ds[UNIFORM_TEX1].Texture = particleTexData1->GetTextureHandle();
-    params.Texture2Ds[UNIFORM_TEX2].Texture = particleTexData2->GetTextureHandle();
+    params[UNIFORM_TEXEL_SIZE].Float().SetValue(texelSize);
+    params[UNIFORM_PARTICLE_TEXEL_MIN].Float().SetValue(particleTexelMin);
+    params[UNIFORM_TEX1].Tex() = particleTexData1->GetTextureHandle();
+    params[UNIFORM_TEX2].Tex() = particleTexData2->GetTextureHandle();
 }
 
 void ParticleContent::PuncherFire_Burst(Vector3f pos, Vector3f dir, Vector3f tangent, Vector3f bitangent)
 {
-    PuncherFire.BurstParams.Floats["u_shootDir"].SetValue(dir);
-    PuncherFire.BurstParams.Floats["u_shootTangent"].SetValue(tangent);
-    PuncherFire.BurstParams.Floats["u_shootBitangent"].SetValue(bitangent);
-    PuncherFire.BurstParams.Floats["u_shootOrigin"].SetValue(pos);
+    PuncherFire.BurstParams["u_shootDir"].Float().SetValue(dir);
+    PuncherFire.BurstParams["u_shootTangent"].Float().SetValue(tangent);
+    PuncherFire.BurstParams["u_shootBitangent"].Float().SetValue(bitangent);
+    PuncherFire.BurstParams["u_shootOrigin"].Float().SetValue(pos);
 
     ParticleManager::GetInstance().Burst(ParticleManager::S_MEDIUM, &PuncherFire, 3.0f);
 }
