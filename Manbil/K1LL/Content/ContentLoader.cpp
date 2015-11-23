@@ -5,6 +5,7 @@
 #include "LevelConstants.h"
 #include "WeaponConstants.h"
 #include "Settings.h"
+#include "QualitySettings.h"
 #include "MenuContent.h"
 #include "ActorContent.h"
 #include "WeaponContent.h"
@@ -50,6 +51,7 @@ void ContentLoader::LoadContent(std::string& err)
 
     //Settings.
     Settings::Instance.Initialize();
+    QualitySettings::Instance.Initialize();
 
     //Content.
     if (!MenuContent::Instance.Initialize(err))
@@ -96,6 +98,13 @@ void ContentLoader::DestroyContent(void)
     if (!err.empty())
     {
         std::cout << "Error saving settings file: " << err;
+        char pause;
+        std::cin >> pause;
+    }
+    QualitySettings::Instance.SaveToFile(err);
+    if (!err.empty())
+    {
+        std::cout << "Error saving quality settings file: " << err;
         char pause;
         std::cin >> pause;
     }

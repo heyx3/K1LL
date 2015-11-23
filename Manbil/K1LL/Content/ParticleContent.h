@@ -2,6 +2,11 @@
 
 #include "../../Rendering/Rendering.hpp"
 
+#include "../Game/Rendering/ParticleManager.h"
+
+
+//PRIORITY: Fix to use updated particle texture data system. Generate a noise texture for random values when bursting.
+
 
 
 struct RenderPassVertex
@@ -11,16 +16,6 @@ struct RenderPassVertex
     RenderPassVertex(Vector2f id = Vector2f()) : ID(id) { }
 
     static const RenderIOAttributes VertexAttrs;
-};
-
-
-//A set of "burst", "update", and "render" materials.
-struct ParticleMaterial
-{
-    Material *BurstMat = 0,
-             *UpdateMat = 0,
-             *RenderMat = 0;
-    UniformDictionary BurstParams, UpdateParams, RenderParams;
 };
 
 

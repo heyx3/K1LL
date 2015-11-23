@@ -7,9 +7,9 @@
 namespace
 {
     //"tex 1" and "tex 2" are the particle texture data. They are floating-point textures.
-    //"pixel min" is the UV coordinate of the min corner of the sub-rectangle
+    //"texel min" is the UV coordinate of the min corner of the sub-rectangle
     //    for the particles currently being simulated.
-    //"n pixels inv" is 1.0 / the number of pixels along one axis in the full texture data.
+    //"texel size" is 1.0 / the number of pixels along one axis in the texture data.
     //"time step" is the elapsed time this update frame, in seconds.
     const std::string UNIFORM_TEXEL_SIZE = "u_texelSize",
                       UNIFORM_PARTICLE_TEXEL_MIN = "u_particleTexelMin",
