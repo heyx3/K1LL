@@ -9,6 +9,7 @@
 #include "../../Content/QualitySettings.h"
 
 
+/*
 namespace
 {
     //The number of particle sets that can be fit along one axis of the texture.
@@ -249,7 +250,7 @@ void ParticleManager::RunRender(Sizes size, const RenderInfo& info, Vector2u par
     particleMesh.SubMeshes[0].SetUseRange(0, ParticlesLength[size] * ParticlesLength[size]);
     mat.RenderMat->Render(info, &particleMesh, mat.RenderParams);
 }
-
+*/
 
 
 
@@ -275,6 +276,7 @@ void main()
 {
     fIn_UVx = mix(u_texel_min, u_texel_max, )" + uvName + R"( .x);
     gl_Position = vec4( )" + posName + R"( , 1.0);
+}
 )";
 
         std::string fragShader = MaterialConstants::GetFragmentHeader("in float fIn_UVx;\n",
@@ -328,6 +330,7 @@ void main()
 
 
 ParticleManager2* ParticleManager2::instance = 0;
+std::string ParticleManager2::initErrorMsg = "";
 
 const std::string& ParticleManager2::CreateInstance(Level* lvl)
 {
@@ -365,9 +368,9 @@ ParticleManager2::ParticleManager2(Level* lvl)
     for (unsigned int i = 0; i < 2; ++i)
     {
         particleData1[i].Create();
-        particleData1[i].ClearData(QualitySettings::Instance.MaxParticles, 2);
+        particleData1[i].ClearData(QualitySettings::Instance.MaxParticles, 1);
         particleData2[i].Create();
-        particleData2[i].ClearData(QualitySettings::Instance.MaxParticles, 2);
+        particleData2[i].ClearData(QualitySettings::Instance.MaxParticles, 1);
     }
 
     texelSize = 1.0f / (float)(QualitySettings::Instance.MaxParticles);
@@ -377,7 +380,7 @@ ParticleManager2::ParticleManager2(Level* lvl)
     
     std::vector<RenderPassVertex> vertices;
     for (unsigned int i = 0; i < QualitySettings::Instance.MaxParticles; ++i)
-        vertices.push_back(RenderPassVertex(Vector2f((float)i, 0.0f)));
+        vertices.push_back(RenderPassVertex((float)i));
     
     burstRenderMesh.SubMeshes.push_back(MeshData(false, PT_POINTS));
     burstRenderMesh.SubMeshes[0].SetVertexData(vertices, MeshData::BUF_STATIC,
@@ -426,12 +429,10 @@ unsigned int ParticleManager2::Burst(unsigned int nParticles, ParticleMaterial* 
     assert(rendTarg.GetHeight() == 1);
 
     Viewport::EnableScissor();
-    rendTarg.EnableDrawingInto();
-
     Viewport(startX, 0, nParticles, 1).Use();
 
-    ScreenClearer().ClearScreen();
     RenderingState(RenderingState::C_NONE, false, false).EnableState();
+    ScreenClearer().ClearScreen();
 
 
     //Note that the vertex shader for particle "burst" materials
@@ -442,8 +443,8 @@ unsigned int ParticleManager2::Burst(unsigned int nParticles, ParticleMaterial* 
 
     //Burst.
     ParticleContent::Instance.SetUpdatePassParams(mat->BurstParams, true,
-                                                  Vector2f((float)startX * texelSize, 0.0f),
-                                                  Vector2f((float)(startX + nParticles - 1), 0.0f));
+                                                  (float)startX * texelSize,
+                                                  (float)(startX + nParticles - 1));
     DrawingQuad::GetInstance()->Render(rInfo, mat->BurstParams, *mat->BurstMat);
     bursts.push_back(ParticleBurst(mat, lifetime, startX, nParticles));
 
@@ -477,10 +478,9 @@ bool ParticleManager2::Update(float elapsedSeconds)
     assert(rendTarg.GetHeight() == 1);
 
     Viewport::EnableScissor();
-    rendTarg.EnableDrawingInto();
 
-    ScreenClearer().ClearScreen();
     RenderingState(RenderingState::C_NONE, false, false).EnableState();
+    ScreenClearer().ClearScreen();
 
 
     //Run each burst's "update" material and check whether it should be destroyed.
@@ -524,14 +524,13 @@ bool ParticleManager2::Update(float elapsedSeconds)
         colTexes[0].MTex = &particleData1[renderTo];
         colTexes[1].MTex = &particleData2[renderTo];
         rendTarg.SetColorAttachments(colTexes, 2, true);
-
         assert(rendTarg.GetWidth() == QualitySettings::Instance.MaxParticles);
         assert(rendTarg.GetHeight() == 1);
         
-        rendTarg.EnableDrawingInto();
+        //rendTarg.EnableDrawingInto();
 
-        ScreenClearer().ClearScreen();
         RenderingState(RenderingState::C_NONE, false, false).EnableState();
+        ScreenClearer().ClearScreen();
 
 
         //Move each burst backwards in the texture to fill the holes.
@@ -566,8 +565,8 @@ bool ParticleManager2::Update(float elapsedSeconds)
 
     //Reset the rendering state.
     Viewport::DisableScissor();
-    //TODO: Remove this resetting of render target; code that runs during Update() shouldn't effect code that runs during Render(). Also remove it from Burst().
     rendTarg.DisableDrawingInto();
+    //TODO: Remove this resetting of render target; code that runs during Update() shouldn't effect code that runs during Render(). Also remove it from Burst().
     if (oldTarg != 0)
     {
         oldTarg->EnableDrawingInto();
@@ -583,8 +582,8 @@ bool ParticleManager2::Update(ParticleBurst& burst, const RenderInfo& info,
     unsigned int endPixel = burst.StartPixel + burst.NParticles - 1;
 
     ParticleContent::Instance.SetUpdatePassParams(burst.Mat->UpdateParams, false,
-                                                  Vector2f((float)burst.StartPixel * texelSize, 0.0f),
-                                                  Vector2f((float)endPixel * texelSize, 0.0f),
+                                                  (float)burst.StartPixel * texelSize,
+                                                  (float)endPixel * texelSize,
                                                   frameLength,
                                                   &particleData1[renderFrom], &particleData2[renderFrom]);
 
@@ -629,7 +628,7 @@ void ParticleManager2::Render(const ParticleBurst& burst, const RenderInfo& info
     UniformDictionary& params = burst.Mat->RenderParams;
 
     ParticleContent::Instance.SetRenderPassParams(params, texelSize,
-                                                  Vector2f((float)burst.StartPixel * texelSize, 0.0f),
+                                                  (float)burst.StartPixel * texelSize,
                                                   &particleData1[renderFrom], &particleData2[renderFrom]);
     burstRenderMesh.SubMeshes[0].SetUseRange(0, burst.NParticles);
     mat->Render(info, &burstRenderMesh, params);

@@ -13,7 +13,7 @@ public:
 
 
     //TODO: Check this value against the max texture size according to the OpenGL context.
-    unsigned int MaxParticles = 8192;
+    unsigned int MaxParticles = 4096;
 
 
     virtual void WriteData(DataWriter* writer) const override;

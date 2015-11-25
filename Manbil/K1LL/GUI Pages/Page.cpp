@@ -45,8 +45,8 @@ void Page::Render(float frameSeconds)
         return;
     }
 
-    ScreenClearer(true, true, false, Vector4f(0.02f, 0.02f, 0.15f, 0.0f)).ClearScreen();
     RenderingState(RenderingState::C_NONE).EnableState();
+    ScreenClearer(true, true, false, Vector4f(0.02f, 0.02f, 0.15f, 0.0f)).ClearScreen();
 
     Vector2f windowSize = ToV2f(Manager->GetWindowSize());
 

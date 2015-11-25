@@ -1,5 +1,7 @@
 #include "Level.h"
 
+#include <iostream>
+
 #include "../../../Math/Higher Math/Geometryf.h"
 #include "../../Content/LevelConstants.h"
 #include "../Players/Player.h"
@@ -43,7 +45,8 @@ Level::Level(const LevelInfo& level, MatchInfo info, std::string& err)
 
     Actors.push_back(ActorPtr(new LevelGeometry(this, err)));
     Actors.push_back(PuncherBulletPool::CreatePool(this));
-    ParticleManager::InitializeInstance(this);
+    
+    err = ParticleManager2::CreateInstance(this);
 
     #pragma endregion
 }

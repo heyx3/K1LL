@@ -81,7 +81,6 @@ void PageManager::UpdateWorld(float frameSeconds)
 }
 void PageManager::RenderOpenGL(float frameSeconds)
 {
-    //PRIORITY: Try setting as scissor as well. May fix particle effects?
     Viewport(0, 0, windowSize.x, windowSize.y).SetAsViewport();
 
     currentPage->Render(frameSeconds);

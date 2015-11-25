@@ -84,10 +84,15 @@ void PlayerViewport::Render(float frameSeconds, const RenderInfo& screenRenderIn
     Lvl.Render(frameSeconds, worldRenderInfo);
 
     worldRendTarg.DisableDrawingInto();
-    Viewport(0, 0, World->GetWindow()->getSize().x, World->GetWindow()->getSize().y).Use();
     if (current != 0)
     {
         current->EnableDrawingInto();
+    }
+    else
+    {
+        Viewport(0, 0,
+                 World->GetWindow()->getSize().x,
+                 World->GetWindow()->getSize().y).Use();
     }
 
 
@@ -95,6 +100,7 @@ void PlayerViewport::Render(float frameSeconds, const RenderInfo& screenRenderIn
 
 
     //Render the final render target to the screen.
+    RenderingState(RenderingState::C_NONE).EnableState();
     SetTex(&worldRendColor); // TODO: use whatever texture the post-processing system says to use.
     GUITexture::Render(frameSeconds, screenRenderInfo);
 }

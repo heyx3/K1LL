@@ -32,7 +32,7 @@ struct ParticleBurst
 };
 
 
-
+/*
 //An actor that handles all particle updating/rendering.
 //Only one instance exists at a time, and it's accessible as a Singleton.
 class ParticleManager : public Actor
@@ -134,7 +134,7 @@ private:
     void RunRender(Sizes particleSize, const RenderInfo& info, Vector2u particleSetIndex,
                    ParticleMaterial& mat, ParticleTextures& sampleFrom);
 };
-
+*/
 
 
 //An actor that handles all particle updating/rendering.
@@ -148,6 +148,9 @@ public:
     //Creates the instance of this singleton actor and puts it into the given level.
     //Returns an error message if something went wrong, or the empty string if everything went OK.
     static const std::string& CreateInstance(Level* lvl);
+
+
+    ~ParticleManager2(void);
 
 
     //Attempts to emit the given number of particles using the given shaders.
@@ -197,7 +200,6 @@ private:
     std::vector<std::pair<unsigned int, unsigned int>> holeStartsAndLengths;
 
     ParticleManager2(Level* lvl);
-    ~ParticleManager2(void);
 
 
     //Updates the given burst and returns whether it should be destroyed.
