@@ -54,6 +54,7 @@ void Puncher::TryFire(void)
             bitangent = tangent.Cross(posAndDir.second);
         }
 
-        ParticleContent::Instance.PuncherFire_Burst(pos, posAndDir.second, tangent, bitangent);
+        ParticleContent::Instance.PuncherFire_Burst(pos, posAndDir.second, tangent, bitangent,
+                                                    Vector3f(Owner->Velocity, 0.0f));
     }
 }

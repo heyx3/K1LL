@@ -46,7 +46,7 @@ Level::Level(const LevelInfo& level, MatchInfo info, std::string& err)
     Actors.push_back(ActorPtr(new LevelGeometry(this, err)));
     Actors.push_back(PuncherBulletPool::CreatePool(this));
     
-    err = ParticleManager2::CreateInstance(this);
+    err = ParticleManager::CreateInstance(this);
 
     #pragma endregion
 }

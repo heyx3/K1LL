@@ -2,20 +2,32 @@
 
 #include "../../Rendering/Primitives/DrawingQuad.h"
 #include "../Game/Rendering/ParticleManager.h"
+#include "QualitySettings.h"
 
 
 namespace
 {
-    //"tex 1" and "tex 2" are the particle texture data. They are floating-point textures.
-    //"texel min" is the min x coordinate in the texture data for the range of particles being simulated.
-    //"texel size" is 1.0 / the number of pixels along the X axis in the texture data.
-    //"time step" is the elapsed time this update frame, in seconds.
+    //UNIFORM_TEX1 and UNIFORM_TEX2 are the particle texture data. They are floating-point textures.
+    //UNIFORM_TEX_RAND is a texture filled with random data,
+    //    with the same size as the particle data textures.
+    //UNIFORM_PARTICLE_TEXEL_MIN is the min x coordinate in the texture data
+    //    for the range of particles being simulated.
+    //UNIFORM_PARTICLE_TEXEL_MAX is the max x coordinate in the texture data
+    //    for the range of particles being simulated.
+    //UNIFORM_TEXEL_SIZE is (1.0 / the number of pixels along the X axis in the texture data).
+    //UNIFORM_TIME_STEP is the elapsed time this update frame, in seconds.
+    //UNIFORM_FLOAT_RAND is a random value between 0 and 1 that changes constantly.
+    //UNIFORM_SOURCE_SPEED is the current velocity of the object that created the particles.
+    //    This is only usable during a burst.
     const std::string UNIFORM_TEXEL_SIZE = "u_texelSize",
                       UNIFORM_PARTICLE_TEXEL_MIN = "u_particleTexelMin",
                       UNIFORM_PARTICLE_TEXEL_MAX = "u_particleTexelMax",
                       UNIFORM_TIME_STEP = "u_timeStep",
+                      UNIFORM_SOURCE_SPEED = "u_source_speed",
                       UNIFORM_TEX1 = "u_tex1",
-                      UNIFORM_TEX2 = "u_tex2";
+                      UNIFORM_TEX2 = "u_tex2",
+                      UNIFORM_TEX_RAND = "u_texRand",
+                      UNIFORM_FLOAT_RAND = "u_floatRand";
 
 
     //Update/burst passes.
@@ -49,6 +61,10 @@ void main()
     //   -"fIn_UV": the UV coordinates of the particle for the data textures.
     //   -UNIFORM_TEX1: the first particle data texture (if not a "burst" material).
     //   -UNIFORM_TEX2: the second particle data texture (if not a "burst" material).
+    //   -UNIFORM_TEX_RAND: the random noise lookup texture.
+    //   -UNIFORM_FLOAT_RAND: a random float value between 0 and 1 that changes constantly.
+    //   -UNIFORM_SOURCE_SPEED: the current speed of the object that burst these particles.
+    //        Only usable during a burst, not an update.
     //The following outputs should be written to:
     //   -"fOut_Tex1": the XYZW values for the first particle data texture.
     //   -"fOut_Tex2": the XYZW values for the second particle data texture.
@@ -57,11 +73,12 @@ void main()
         return MaterialConstants::GetFragmentHeader("in vec2 fIn_UV;\n", "out vec4 fOut_Tex1, fOut_Tex2;\n",
                                                     MaterialUsageFlags(MaterialUsageFlags::DNF_USES_TIME)) +
                (isBurstMaterial ?
-                    "" :
+                    ("uniform vec3 " + UNIFORM_SOURCE_SPEED + ";\n\n") :
                     ("uniform sampler2D " + UNIFORM_TEX1 + ", " +
                                             UNIFORM_TEX2 + ";\n" +
                      "uniform float " + UNIFORM_TIME_STEP + ";\n\n")) +
-               "\n\n" + shaderBody;
+               "uniform sampler2D " + UNIFORM_TEX_RAND + ";\n" +
+               "uniform float " + UNIFORM_FLOAT_RAND + ";\n\n" + shaderBody;
     }
 
     //Sets up the material and parameter dictionary for an update/burst pass with the given fragment shader.
@@ -72,7 +89,15 @@ void main()
         params[UNIFORM_PARTICLE_TEXEL_MIN].Float() = 0.0f;
         params[UNIFORM_PARTICLE_TEXEL_MAX] = Uniform(UNIFORM_PARTICLE_TEXEL_MAX, UT_VALUE_F);
         params[UNIFORM_PARTICLE_TEXEL_MAX].Float() = 0.0f;
-        if (!isBurst)
+        params[UNIFORM_TEX_RAND] = Uniform(UNIFORM_TEX_RAND, UT_VALUE_SAMPLER2D);
+        params[UNIFORM_FLOAT_RAND] = Uniform(UNIFORM_FLOAT_RAND, UT_VALUE_F);
+        params[UNIFORM_FLOAT_RAND].Float() = 0.0f;
+        if (isBurst)
+        {
+            params[UNIFORM_SOURCE_SPEED] = Uniform(UNIFORM_SOURCE_SPEED, UT_VALUE_F);
+            params[UNIFORM_SOURCE_SPEED].Float() = Vector3f();
+        }
+        else
         {
             params[UNIFORM_TIME_STEP] = Uniform(UNIFORM_TIME_STEP, UT_VALUE_F);
             params[UNIFORM_TIME_STEP].Float() = 0.0f;   
@@ -171,9 +196,9 @@ void main()
                                  MaterialUsageFlags::DNF_USES_CAM_FORWARD,
                                  MaterialUsageFlags::DNF_USES_CAM_SIDEWAYS,
                                  MaterialUsageFlags::DNF_USES_CAM_UPWARDS);
-        return MaterialConstants::GetGeometryHeader("in vec4 gIn_Tex1[1], gIn_Tex2[1];\nin vec3 gIn_WorldPos[1]" +
+        return MaterialConstants::GetGeometryHeader("in vec4 gIn_Tex1[1], gIn_Tex2[1];\nin vec3 gIn_WorldPos[1];\n" +
                                                       customInputs + "\n\n" +
-                                                     "out vec4 fIn_Tex1, fIn_Tex2;\n" +
+                                                     "out vec4 fIn_Tex1, fIn_Tex2;\nout vec2 fIn_UV;\n" +
                                                       customOutputs + "\n\n",
                                                     PT_POINTS, PT_TRIANGLE_STRIP, 4, usage) +
                declarations + R"(
@@ -184,7 +209,7 @@ vec4 makeQuat(vec3 axis, float angle)
 }
 vec3 applyQuat(vec4 quat, vec3 point)
 {
-    return point + (2.0 * cross(cross(point, quat.xyz) + (pos * quat.w),
+    return point + (2.0 * cross(cross(point, quat.xyz) + (point * quat.w),
                                 quat.xyz));
 }
 
@@ -202,24 +227,28 @@ void main()
     gl_Position = )" + MaterialConstants::ViewProjMatName + R"( * vec4(plusSide + up, 1.0);
     fIn_Tex1 = gIn_Tex1[0];
     fIn_Tex2 = gIn_Tex2[0];
+    fIn_UV = vec2(1.0, 1.0);
     )" + setOutputs + R"(
     EmitVertex();
 
     gl_Position = )" + MaterialConstants::ViewProjMatName + R"( * vec4(plusSide - up, 1.0);
     fIn_Tex1 = gIn_Tex1[0];
     fIn_Tex2 = gIn_Tex2[0];
+    fIn_UV = vec2(1.0, 0.0);
     )" + setOutputs + R"(
     EmitVertex();
 
     gl_Position = )" + MaterialConstants::ViewProjMatName + R"( * vec4(minusSide + up, 1.0);
     fIn_Tex1 = gIn_Tex1[0];
     fIn_Tex2 = gIn_Tex2[0];
+    fIn_UV = vec2(0.0, 1.0);
     )" + setOutputs + R"(
     EmitVertex();
 
     gl_Position = )" + MaterialConstants::ViewProjMatName + R"( * vec4(minusSide - up, 1.0);
     fIn_Tex1 = gIn_Tex1[0];
     fIn_Tex2 = gIn_Tex2[0];
+    fIn_UV = vec2(0.0, 0.0);
     )" + setOutputs + R"(
     EmitVertex();
 }
@@ -232,10 +261,11 @@ void main()
     //The following fields are available for the code's body:
     //     -"fIn_Tex1": The first particle data texture value.
     //     -"fIn_Tex2": The second particle data texture value.
+    //     -"fIn_UV": The UV coordinates of this fragment.
     //     -Whatever custom inputs you declared.
     std::string GetFragmentShader_Render(const std::string& customInputs, const std::string& mainFunction)
     {
-        return MaterialConstants::GetFragmentHeader("in vec4 fIn_Tex1, fIn_Tex2;\n" + customInputs,
+        return MaterialConstants::GetFragmentHeader("in vec4 fIn_Tex1, fIn_Tex2;\nin vec2 fIn_UV;\n" + customInputs,
                                                     "out vec4 fOut_Color;\n", MaterialUsageFlags()) + "\n\n" +
                mainFunction;
     }
@@ -244,6 +274,7 @@ void main()
     void GenerateRenderPass(const std::string& vertexShader,
                             const std::string& geoShader,
                             const std::string& fragmentShader,
+                            BlendMode blendMode,
                             UniformDictionary& params, Material** outM, std::string& outErrorMsg)
     {
         params[UNIFORM_TEXEL_SIZE] = Uniform(UNIFORM_TEXEL_SIZE, UT_VALUE_F);
@@ -253,9 +284,9 @@ void main()
         params[UNIFORM_TEX1] = Uniform(UNIFORM_TEX1, UT_VALUE_SAMPLER2D);
         params[UNIFORM_TEX2] = Uniform(UNIFORM_TEX2, UT_VALUE_SAMPLER2D);
 
-        *outM = new Material(GetVertexShader_Update(), fragmentShader, params,
-                             DrawingQuad::GetVertexInputData(), BlendMode::GetOpaque(),
-                             outErrorMsg);
+        *outM = new Material(vertexShader, fragmentShader, params,
+                             RenderPassVertex::VertexAttrs, blendMode,
+                             outErrorMsg, geoShader);
     }
 
 
@@ -301,6 +332,27 @@ bool ParticleContent::Initialize(std::string& outError)
     const std::string vertInID = renderVertIns.GetAttribute(0).Name;
 
 
+    #pragma region Initialize Rand Texture
+
+    {
+        unsigned int size = QualitySettings::Instance.MaxParticles;
+
+        RandTex.Create(TextureSampleSettings2D(FT_NEAREST, WT_WRAP), false, PS_8U);
+        
+        Array2D<Vector4f> vals(size, 1);
+        FastRand fr(2351341);
+        Vector2u v;
+        for (v.x = 0; v.x < size; ++v.x)
+        {
+            vals[v] = Vector4f(fr.GetZeroToOne(), fr.GetZeroToOne(),
+                               fr.GetZeroToOne(), fr.GetZeroToOne());
+        }
+        RandTex.SetColorData(vals);
+    }
+
+    #pragma endregion
+
+
     #pragma region Puncher bullet fire
 
     //Texture1.rgb is the position.
@@ -315,13 +367,15 @@ bool ParticleContent::Initialize(std::string& outError)
 uniform vec3 u_shootDir, u_shootTangent, u_shootBitangent, u_shootOrigin;
 void main()
 {
-    //TODO: Fix the distribution of positions; use a random value instead of the UV values.
+    vec4 rands = texture2D( )" + UNIFORM_TEX_RAND + R"( , fIn_UV + )" + UNIFORM_FLOAT_RAND + R"( );
     vec3 pos = u_shootOrigin +
-               (mix(-u_shootTangent, u_shootTangent, fIn_UV.x) * 0.15) +
-               (mix(-u_shootBitangent, u_shootBitangent, fIn_UV.y) * 0.15) +
-               u_shootDir * 0.15;
+               (mix(-u_shootTangent, u_shootTangent, rands.x) * 0.1) +
+               (mix(-u_shootBitangent, u_shootBitangent, rands.y) * 0.1) +
+               (u_shootDir * 0.15);
     fOut_Tex1 = vec4(pos, 0.0);
-    fOut_Tex2 = vec4((pos - u_shootOrigin) * 1.0, 0.0);
+    fOut_Tex2 = vec4( (25.0 * )" + UNIFORM_SOURCE_SPEED + R"( ) +
+                      (25.0 * normalize(pos - u_shootOrigin)),
+                     0.0);
 }
 )");
         PuncherFire.BurstParams["u_shootDir"] = Uniform("u_shootDir", UT_VALUE_F);
@@ -349,7 +403,7 @@ void main()
          tex2 = texture2D( )" + UNIFORM_TEX2 + R"(, fIn_UV);
 
     fOut_Tex1 = vec4(tex1.rgb + (tex2.rgb * )" + UNIFORM_TIME_STEP + R"(), tex1.a);
-    fOut_Tex2 = vec4(tex2.rgb * 0.999, tex2.a);
+    fOut_Tex2 = vec4(tex2.rgb * 0.9, tex2.a);
 })");
         GenerateUpdatePass(fShader, false, PuncherFire.UpdateParams, &PuncherFire.UpdateMat, outError);
         if (!outError.empty())
@@ -362,8 +416,15 @@ void main()
         //Render:
         vShader = GetVertexShader_Render("", "", "gIn_WorldPos = gIn_Tex1.rgb;");
         gShader = GetGeometryShader_Render("", "", "", "", "up *= 0.01; side *= 0.01;");
-        fShader = GetFragmentShader_Render("", "void main() { fOut_Color = vec4(vec3(0.5), 1.0); }");
-        GenerateRenderPass(vShader, gShader, fShader,
+        fShader = GetFragmentShader_Render("", R"(
+void main()
+{
+    float dist = distance(fIn_UV, vec2(0.5, 0.5));
+    const float max = 0.5;
+    float distLerp = 1.0 - clamp(dist / max, 0.0, 1.0);
+    fOut_Color = vec4(vec3(distLerp), distLerp);
+})");
+        GenerateRenderPass(vShader, gShader, fShader, BlendMode::GetTransparent(),
                            PuncherFire.RenderParams, &PuncherFire.RenderMat,
                            outError);
         if (!outError.empty())
@@ -380,25 +441,36 @@ void main()
 }
 void ParticleContent::Destroy(void)
 {
+    RandTex.DeleteIfValid();
+
     DestroyMat(PuncherFire);
 }
 
 
-void ParticleContent::SetUpdatePassParams(UniformDictionary& params, bool isBurst,
+void ParticleContent::SetUpdatePassParams(UniformDictionary& params,
                                           float particleTexelMin, float particleTexelMax,
-                                          float timeStep,
+                                          float randVal, float timeStep,
                                           MTexture2D* particleTexData1, MTexture2D* particleTexData2)
 {
     params[UNIFORM_PARTICLE_TEXEL_MIN].Float() = particleTexelMin;
     params[UNIFORM_PARTICLE_TEXEL_MAX].Float() = particleTexelMax;
-    if (!isBurst)
-    {
-        assert(particleTexData1 != 0 && particleTexData2 != 0);
-        params[UNIFORM_TEX1].Tex() = particleTexData1->GetTextureHandle();
-        params[UNIFORM_TEX2].Tex() = particleTexData2->GetTextureHandle();
+    params[UNIFORM_FLOAT_RAND].Float() = randVal;
+    params[UNIFORM_TIME_STEP].Float() = timeStep;
 
-        params[UNIFORM_TIME_STEP].Float().SetValue(timeStep);
-    }
+    params[UNIFORM_TEX1].Tex() = particleTexData1->GetTextureHandle();
+    params[UNIFORM_TEX2].Tex() = particleTexData2->GetTextureHandle();
+    params[UNIFORM_TEX_RAND].Tex() = RandTex.GetTextureHandle();
+}
+void ParticleContent::SetBurstPassParams(UniformDictionary& params,
+                                         float particleTexelMin, float particleTexelMax,
+                                         float randVal, Vector3f sourceVelocity)
+{
+    params[UNIFORM_PARTICLE_TEXEL_MIN].Float() = particleTexelMin;
+    params[UNIFORM_PARTICLE_TEXEL_MAX].Float() = particleTexelMax;
+    params[UNIFORM_FLOAT_RAND].Float() = randVal;
+    params[UNIFORM_SOURCE_SPEED].Float() = sourceVelocity;
+
+    params[UNIFORM_TEX_RAND].Tex() = RandTex.GetTextureHandle();
 }
 void ParticleContent::SetRenderPassParams(UniformDictionary& params,
                                           float texelSize, float particleTexelMin,
@@ -410,12 +482,13 @@ void ParticleContent::SetRenderPassParams(UniformDictionary& params,
     params[UNIFORM_TEX2].Tex() = particleTexData2->GetTextureHandle();
 }
 
-void ParticleContent::PuncherFire_Burst(Vector3f pos, Vector3f dir, Vector3f tangent, Vector3f bitangent)
+void ParticleContent::PuncherFire_Burst(Vector3f pos, Vector3f dir, Vector3f tangent, Vector3f bitangent,
+                                        Vector3f playerVel)
 {
     PuncherFire.BurstParams["u_shootDir"].Float() = dir;
     PuncherFire.BurstParams["u_shootTangent"].Float() = tangent;
     PuncherFire.BurstParams["u_shootBitangent"].Float() = bitangent;
     PuncherFire.BurstParams["u_shootOrigin"].Float() = pos;
 
-    ParticleManager2::GetInstance().Burst(32, &PuncherFire, 3.0f);
+    ParticleManager::GetInstance().Burst(32, &PuncherFire, 1.0f, playerVel);
 }
