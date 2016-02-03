@@ -5,10 +5,12 @@
 #include "LevelConstants.h"
 #include "WeaponConstants.h"
 #include "Settings.h"
+#include "QualitySettings.h"
 #include "MenuContent.h"
 #include "ActorContent.h"
 #include "WeaponContent.h"
 #include "BulletContent.h"
+#include "ParticleContent.h"
 
 
 void ContentLoader::LoadContent(std::string& err)
@@ -49,6 +51,7 @@ void ContentLoader::LoadContent(std::string& err)
 
     //Settings.
     Settings::Instance.Initialize();
+    QualitySettings::Instance.Initialize();
 
     //Content.
     if (!MenuContent::Instance.Initialize(err))
@@ -71,6 +74,11 @@ void ContentLoader::LoadContent(std::string& err)
         err = "Error loading bullet content: " + err;
         return;
     }
+    if (!ParticleContent::Instance.Initialize(err))
+    {
+        err = "Error loading particle content: " + err;
+        return;
+    }
 }
 void ContentLoader::DestroyContent(void)
 {
@@ -78,6 +86,7 @@ void ContentLoader::DestroyContent(void)
     ActorContent::Instance.Destroy();
     WeaponContent::Instance.Destroy();
     BulletContent::Instance.Destroy();
+    ParticleContent::Instance.Destroy();
 
     TextRenderer::DestroySystem();
     DrawingQuad::DestroyQuad();
@@ -89,6 +98,13 @@ void ContentLoader::DestroyContent(void)
     if (!err.empty())
     {
         std::cout << "Error saving settings file: " << err;
+        char pause;
+        std::cin >> pause;
+    }
+    QualitySettings::Instance.SaveToFile(err);
+    if (!err.empty())
+    {
+        std::cout << "Error saving quality settings file: " << err;
         char pause;
         std::cin >> pause;
     }

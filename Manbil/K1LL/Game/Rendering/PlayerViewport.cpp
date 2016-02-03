@@ -9,8 +9,8 @@ PlayerViewport::PlayerViewport(Level& lvl, Player* target, SFMLWorld* world, std
       worldRendColor(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PS_32F, false),
       worldRendDepth(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PS_32F_DEPTH, false),
       worldRendTarg(PS_16U_DEPTH, err),
-      GUITexture(MenuContent::Instance.StaticColorGUIParams,
-                 &worldRendColor, MenuContent::Instance.StaticColorGUIMat)
+      GUITexture(MenuContent::Instance.StaticOpaqueColorParams,
+                 &worldRendColor, MenuContent::Instance.StaticOpaqueColorMat)
 {
     if (!err.empty())
     {
@@ -24,17 +24,17 @@ PlayerViewport::PlayerViewport(Level& lvl, Player* target, SFMLWorld* world, std
 
     worldRendDepth.Create();
     
+    const RenderTarget* old = RenderTarget::GetCurrentTarget();
     if (!worldRendTarg.SetDepthAttachment(RenderTargetTex(&worldRendDepth)) ||
         !worldRendTarg.SetColorAttachment(RenderTargetTex(&worldRendColor), true))
     {
         err = "Unable to set depth/color attachments for world render target";
         return;
     }
-
-    if (RenderTarget::GetCurrentTarget() != 0)
+    worldRendTarg.DisableDrawingInto();
+    if (old != 0)
     {
-        RenderTarget::GetCurrentTarget()->DisableDrawingInto(world->GetWindow()->getSize().x,
-                                                             world->GetWindow()->getSize().y);
+        old->EnableDrawingInto();
     }
 }
 
@@ -63,11 +63,10 @@ void PlayerViewport::Render(float frameSeconds, const RenderInfo& screenRenderIn
 
     //Render the world.
     worldRendTarg.EnableDrawingInto();
-    
+
     //TODO: Fix culling.
     RenderingState(RenderingState::C_NONE).EnableState();
     ScreenClearer(true, true, false, Vector4f(1.0f, 0.0f, 1.0f, 0.0f)).ClearScreen();
-    glViewport(0, 0, worldRendTarg.GetWidth(), worldRendTarg.GetHeight());
     
     Vector3f camPos = LevelConstants::Instance.GetPlayerEyePos(Target->Pos, Target->LookDir);
     Camera cam(camPos, Target->LookDir, Vector3f(0.0f, 0.0f, 1.0f), false);
@@ -84,17 +83,24 @@ void PlayerViewport::Render(float frameSeconds, const RenderInfo& screenRenderIn
     RenderInfo worldRenderInfo(Lvl.GetTimeSinceGameStart(), &cam, &viewM, &projM);
     Lvl.Render(frameSeconds, worldRenderInfo);
 
-    worldRendTarg.DisableDrawingInto(World->GetWindow()->getSize().x, World->GetWindow()->getSize().y);
+    worldRendTarg.DisableDrawingInto();
+    if (current != 0)
+    {
+        current->EnableDrawingInto();
+    }
+    else
+    {
+        Viewport(0, 0,
+                 World->GetWindow()->getSize().x,
+                 World->GetWindow()->getSize().y).Use();
+    }
 
 
     //TODO: Pass world render tex into Post-processing system.
 
 
     //Render the final render target to the screen.
+    RenderingState(RenderingState::C_NONE).EnableState();
     SetTex(&worldRendColor); // TODO: use whatever texture the post-processing system says to use.
-    if (current != 0)
-    {
-        current->EnableDrawingInto();
-    }
     GUITexture::Render(frameSeconds, screenRenderInfo);
 }

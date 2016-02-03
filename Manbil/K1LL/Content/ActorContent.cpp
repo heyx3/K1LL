@@ -163,8 +163,8 @@ bool ActorContent::Initialize(std::string& err)
         }
 
         assert(playerTex.IsValidTexture());
-        playerParams.Texture2Ds[uniform_playerTex].Texture = playerTex.GetTextureHandle();
-        playerParams.Floats[uniform_teamColor].SetValue(Vector3f(1.0f, 1.0f, 1.0f));
+        playerParams[uniform_playerTex].Tex() = playerTex.GetTextureHandle();
+        playerParams[uniform_teamColor].Float().SetValue(Vector3f(1.0f, 1.0f, 1.0f));
 
         playerMat = genM.Mat;
     }
@@ -180,7 +180,7 @@ void ActorContent::Destroy(void)
     #define CLEAR_ALL(varNameBase) \
         if (varNameBase ## Mat != 0) { delete varNameBase ## Mat; varNameBase ## Mat = 0; } \
         varNameBase ## Mesh.SubMeshes.clear(); varNameBase ## Mesh.CurrentSubMesh = 0; \
-        varNameBase ## Params.ClearUniforms();
+        varNameBase ## Params.clear();
 
 
     CLEAR_ALL(player);
@@ -199,7 +199,7 @@ void ActorContent::RenderPlayer(Vector2f pos, Vector3f forward, Vector3f color, 
                                 const RenderInfo& info)
 {
     playerMesh.CurrentSubMesh = meshIndex;
-    playerParams.Floats[uniform_teamColor].SetValue(color);
+    playerParams[uniform_teamColor].Float().SetValue(color);
 
     playerMesh.Transform.SetPosition(Vector3f(pos.x, pos.y, 0.0f));
     playerMesh.Transform.SetRotation(Quaternion(Vector3f(0.0f, 0.0f, 1.0f),

@@ -15,8 +15,10 @@ typedef GUIMaterials::GenMat GenM;
 GenM GUIMaterials::GenerateStaticQuadDrawMaterial(UniformDictionary& params, TextureTypes texType,
                                                   RenderIOAttributes vertexAttrs,
                                                   unsigned int posIndex, unsigned int uvIndex,
-                                                  bool useTex)
+                                                  bool useTex, bool isOpaque)
 {
+    BlendMode blendMode = (isOpaque ? BlendMode::GetOpaque() : BlendMode::GetTransparent());
+
     SerializedMaterial matData(vertexAttrs);
 
     //For the vertex shader, output screen position and UVs.
@@ -69,8 +71,8 @@ GenM GUIMaterials::GenerateStaticQuadDrawMaterial(UniformDictionary& params, Tex
         matData.MaterialOuts.FragmentOutputs.push_back(ShaderOutput("fOut_FinalColor", finalColor));
 
         //Try to generate the material.
-        GenM genM = ShaderGenerator::GenerateMaterial(matData, params, BlendMode::GetTransparent());
-        params.Floats[QuadDraw_Color].SetValue(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+        GenM genM = ShaderGenerator::GenerateMaterial(matData, params, blendMode);
+        params[QuadDraw_Color].Float().SetValue(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
         return genM;
     }
     else
@@ -80,8 +82,8 @@ GenM GUIMaterials::GenerateStaticQuadDrawMaterial(UniformDictionary& params, Tex
         matData.MaterialOuts.FragmentOutputs.push_back(ShaderOutput("fOut_FinalColor", finalColor));
 
         //Try to generate the material.
-        GenM genM = ShaderGenerator::GenerateMaterial(matData, params, BlendMode::GetTransparent());
-        params.Floats[QuadDraw_Color].SetValue(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+        GenM genM = ShaderGenerator::GenerateMaterial(matData, params, blendMode);
+        params[QuadDraw_Color].Float().SetValue(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
         return genM;
     }
 }
@@ -90,7 +92,7 @@ GenM GUIMaterials::GenerateDynamicQuadDrawMaterial(UniformDictionary& params, Te
                                                    DataLine endScale, DataLine endColor,
                                                    RenderIOAttributes vertIns,
                                                    unsigned int posIndex, unsigned int uvIndex,
-                                                   bool useTex)
+                                                   bool useTex, bool isOpaque)
 {
     if (endScale.GetSize() != 2)
     {
@@ -100,6 +102,8 @@ GenM GUIMaterials::GenerateDynamicQuadDrawMaterial(UniformDictionary& params, Te
     {
         return GenM("'endColor' parameter isn't size 4");
     }
+
+    BlendMode blendMode = (isOpaque ? BlendMode::GetOpaque() : BlendMode::GetTransparent());
     
     SerializedMaterial matData(vertIns);
 
@@ -157,8 +161,8 @@ GenM GUIMaterials::GenerateDynamicQuadDrawMaterial(UniformDictionary& params, Te
         
         matData.MaterialOuts.FragmentOutputs.push_back(ShaderOutput("fOut_Color4", finalColor));
 
-        GenM genM = ShaderGenerator::GenerateMaterial(matData, params, BlendMode::GetTransparent());
-        params.Floats[QuadDraw_Color].SetValue(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+        GenM genM = ShaderGenerator::GenerateMaterial(matData, params, blendMode);
+        params[QuadDraw_Color].Float().SetValue(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
         return genM;
     }
     else
@@ -167,8 +171,8 @@ GenM GUIMaterials::GenerateDynamicQuadDrawMaterial(UniformDictionary& params, Te
         
         matData.MaterialOuts.FragmentOutputs.push_back(ShaderOutput("fOut_Color4", finalColor));
 
-        GenM genM = ShaderGenerator::GenerateMaterial(matData, params, BlendMode::GetTransparent());
-        params.Floats[QuadDraw_Color].SetValue(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+        GenM genM = ShaderGenerator::GenerateMaterial(matData, params, blendMode);
+        params[QuadDraw_Color].Float().SetValue(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
         return genM;
     }
 }

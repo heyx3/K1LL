@@ -15,8 +15,6 @@
 //Some macros are provided for child classes to expose some simple reflection data
 //    for serialization purposes; this macro is mandatory.
 //All DataNodes have unique names. Specific nodes can be accessed globally by name through "GetNode()".
-//TODO: Get all child nodes that are only used once, and for those nodes directly use the output instead of writing it to a temp variable.
-//TODO: Pull out static data into a "DataNodeMaterialData" struct and have the DataNode contain an instance of it.
 class DataNode : public ISerializable
 {
 public:
@@ -143,7 +141,7 @@ public:
     //Functions to traverse down this node and its inputs.
     void AssertAllInputsValid(void) const;
     void SetFlags(MaterialUsageFlags& flags, unsigned int outputIndex) const;
-    void GetParameterDeclarations(UniformDictionary& outUniforms,
+    void GetParameterDeclarations(UniformList& outUniforms,
                                   std::vector<const DataNode*>& writtenNodes) const;
     void GetFunctionDeclarations(std::vector<std::string>& outDecls,
                                  std::vector<const DataNode*>& writtenNodes) const;
@@ -219,7 +217,7 @@ protected:
     virtual void AssertMyInputsValid(void) const { }
 
     virtual void SetMyFlags(MaterialUsageFlags & flags, unsigned int outputIndex) const { }
-    virtual void GetMyParameterDeclarations(UniformDictionary & outUniforms) const { }
+    virtual void GetMyParameterDeclarations(UniformList & outUniforms) const { }
     virtual void GetMyFunctionDeclarations(std::vector<std::string> & outDecls) const { }
     virtual void WriteMyOutputs(std::string & outCode) const = 0;
 

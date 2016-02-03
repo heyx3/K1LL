@@ -1,8 +1,8 @@
 #include "DrawingQuad.h"
 
 
-
 DrawingQuad* DrawingQuad::instance = 0;
+
 
 void DrawingQuad::SetBounds(Vector2f min, Vector2f max)
 {

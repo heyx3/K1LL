@@ -44,7 +44,7 @@ std::string TR::InitializeSystem(void)
 
     //Material.
 
-    textRendererParams.ClearUniforms();
+    textRendererParams.clear();
     SerializedMaterial matData(DrawingQuad::GetVertexInputData());
 
     //Use a simple vertex shader that just uses world position -- in other words,
@@ -94,7 +94,7 @@ void TR::DestroySystem(void)
 
     delete textRenderer;
     textRenderer = 0;
-    textRendererParams.ClearUniforms();
+    textRendererParams.clear();
     tempTex.DeleteIfValid();
 }
 
@@ -102,9 +102,9 @@ void TR::DestroySystem(void)
 TR::~TR(void)
 {
     //Delete every font.
-    for (auto font = fonts.begin(); font != fonts.end(); ++font)
+    while (!fonts.empty())
     {
-        bool tryDelete = DeleteFont(font->first);
+        bool tryDelete = DeleteFont(fonts.begin()->first);
         assert(tryDelete);
     }
 }
@@ -296,8 +296,7 @@ MTexture2D* TR::GetRenderedString(FontSlot slot) const
 
 
 
-bool TR::RenderString(FontSlot slot, std::string textToRender,
-                      unsigned int backBufferWidth, unsigned int backBufferHeight)
+bool TR::RenderString(FontSlot slot, std::string textToRender)
 {
     //Find the slot to use.
     SlotCollection* slots = TryFindSlotCollection(slot.FontID);
@@ -313,7 +312,7 @@ bool TR::RenderString(FontSlot slot, std::string textToRender,
    
     //Render into the slot.
     if (RenderString(textToRender, slot.FontID, RTManager[slotP->RenderTargetID],
-                     slotP->TextWidth, slotP->TextHeight, backBufferWidth, backBufferHeight))
+                     slotP->TextWidth, slotP->TextHeight))
     {
         slotP->String = textToRender;
         return true;
@@ -323,15 +322,14 @@ bool TR::RenderString(FontSlot slot, std::string textToRender,
 }
 
 bool TR::RenderString(std::string textToRender, unsigned int fontID, RenderTarget* targ,
-                      unsigned int& outTextWidth, unsigned int& outTextHeight,
-                      unsigned int bbWidth, unsigned int bbHeight)
+                      unsigned int& outTextWidth, unsigned int& outTextHeight)
 {
     //Get texture/render target.
     if (targ == 0)
     {
         return false;
     }
-    textRendererParams.Texture2Ds[textSamplerName].Texture = tempTex.GetTextureHandle();
+    textRendererParams[textSamplerName].Tex() = tempTex.GetTextureHandle();
 
     //Set up rendering.
     targ->EnableDrawingInto();
@@ -354,7 +352,7 @@ bool TR::RenderString(std::string textToRender, unsigned int fontID, RenderTarge
         if (FreeTypeHandler::Instance.RenderChar(fontID, ch) ==
             FreeTypeHandler::CharRenderType::CRT_ERROR)
         {
-            targ->DisableDrawingInto(bbWidth, bbHeight, true);
+            targ->DisableDrawingInto(true);
             return false;
         }
 
@@ -395,7 +393,7 @@ bool TR::RenderString(std::string textToRender, unsigned int fontID, RenderTarge
     outTextWidth -= movement.x;
     outTextWidth += size.x;
 
-    targ->DisableDrawingInto(bbWidth, bbHeight, true);
+    targ->DisableDrawingInto(true);
     return true;
 }
 

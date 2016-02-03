@@ -128,6 +128,16 @@ bool MenuContent::Initialize(std::string& err)
     }
     LabelGUIMat = genM.Mat;
 
+    genM = GUIMaterials::GenerateStaticQuadDrawMaterial(StaticOpaqueColorParams, GUIMaterials::TT_COLOR,
+                                                        DrawingQuad::GetVertexInputData(), 0U, 1U,
+                                                        true, true);
+    if (!genM.ErrorMessage.empty())
+    {
+        err = "Error generating opaque GUI mat: " + genM.ErrorMessage;
+        return false;
+    }
+    StaticOpaqueColorMat = genM.Mat;
+
 
     typedef DataNode::Ptr DNP;
     DNP lerpParam(new ParamNode(1, GUIMaterials::DynamicQuadDraw_TimeLerp, "timeLerpParam"));
@@ -157,16 +167,18 @@ void MenuContent::Destroy(void)
     assert(b);
 
 
-    delete StaticColorGUIMat, StaticColorGUIMatNoTex, AnimatedColorGUIMat, LabelGUIMat;
+    delete StaticColorGUIMat, StaticColorGUIMatNoTex, AnimatedColorGUIMat,
+           LabelGUIMat, StaticOpaqueColorMat;
     StaticColorGUIMat = 0;
     StaticColorGUIMatNoTex = 0;
     AnimatedColorGUIMat = 0;
     LabelGUIMat = 0;
+    StaticOpaqueColorMat = 0;
 
-    StaticColorGUIParams.ClearUniforms();
-    StaticColorGUINoTexParams.ClearUniforms();
-    AnimatedColorGUIParams.ClearUniforms();
-    LabelGUIParams.ClearUniforms();
+    StaticColorGUIParams.clear();
+    StaticColorGUINoTexParams.clear();
+    AnimatedColorGUIParams.clear();
+    LabelGUIParams.clear();
 
 
     PageBackground.DeleteIfValid();

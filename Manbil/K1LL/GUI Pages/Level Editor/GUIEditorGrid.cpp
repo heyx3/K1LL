@@ -76,11 +76,14 @@ void main() \n\
 
         //Compile the material.
 
-        gridMatParams.Floats["u_WorldMin"] = UniformValueF(Vector2f(), "u_WorldMin");
-        gridMatParams.Floats["u_WorldMax"] = UniformValueF(Vector2f(1.0f, 1.0f), "u_WorldMax");
-        gridMatParams.Texture2Ds["u_NoiseTex"] = UniformValueSampler2D(0, "u_NoiseTex");
-        gridMatParams.Floats[GUIMaterials::QuadDraw_Color] = UniformValueF(Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
-                                                                           GUIMaterials::QuadDraw_Color);
+        gridMatParams["u_WorldMin"] = Uniform("u_WorldMin", UT_VALUE_F);
+        gridMatParams["u_WorldMin"].Float().SetValue(Vector2f());
+        gridMatParams["u_WorldMax"] = Uniform("u_WorldMax", UT_VALUE_F);
+        gridMatParams["u_WorldMax"].Float().SetValue(Vector2f(1.0f, 1.0f));
+
+        gridMatParams["u_NoiseTex"] = Uniform("u_NoiseTex", UT_VALUE_SAMPLER2D);
+        gridMatParams[GUIMaterials::QuadDraw_Color] = Uniform(GUIMaterials::QuadDraw_Color, UT_VALUE_F);
+        gridMatParams[GUIMaterials::QuadDraw_Color].Float().SetValue(Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
 
         gridMat = new Material(vShader, fShader, gridMatParams, vIns, BlendMode::GetTransparent(), err);
         if (!err.empty())
@@ -109,9 +112,9 @@ GUIEditorGrid::~GUIEditorGrid(void)
 
 void GUIEditorGrid::Render(float elapsedTime, const RenderInfo& info)
 {
-    Params.Floats["u_WorldMin"].SetValue(WorldViewBounds.GetMinCorner());
-    Params.Floats["u_WorldMax"].SetValue(WorldViewBounds.GetMaxCorner());
-    Params.Texture2Ds["u_NoiseTex"].Texture = MenuContent::Instance.EditorNoiseTex.GetTextureHandle();
+    Params["u_WorldMin"].Float().SetValue(WorldViewBounds.GetMinCorner());
+    Params["u_WorldMax"].Float().SetValue(WorldViewBounds.GetMaxCorner());
+    Params["u_NoiseTex"].Tex() = MenuContent::Instance.EditorNoiseTex.GetTextureHandle();
 
     GUITexture::Render(elapsedTime, info);
 }

@@ -172,8 +172,8 @@ void RoomEditorView::Render(float elapsedTime, const RenderInfo& info)
     Box2D worldBounds = GetWorldBounds(GetBounds());
     Vector2f min = worldBounds.GetMinCorner(),
              max = worldBounds.GetMaxCorner();
-    GUIBackground.Params.Floats[uniform_minWorldPos].SetValue(Vector2f(min.x, max.y));
-    GUIBackground.Params.Floats[uniform_maxWorldPos].SetValue(Vector2f(max.x, min.y));
+    GUIBackground.Params[uniform_minWorldPos].Float().SetValue(Vector2f(min.x, max.y));
+    GUIBackground.Params[uniform_maxWorldPos].Float().SetValue(Vector2f(max.x, min.y));
     RenderChild(&GUIBackground, elapsedTime, info);
     
     RoomInfo& rm = GetCurrentRoom();
