@@ -11,6 +11,7 @@
 #include "WeaponContent.h"
 #include "BulletContent.h"
 #include "ParticleContent.h"
+#include "PostProcessing.h"
 
 
 void ContentLoader::LoadContent(std::string& err)
@@ -79,14 +80,20 @@ void ContentLoader::LoadContent(std::string& err)
         err = "Error loading particle content: " + err;
         return;
     }
+    if (!PostProcessing::Instance.Initialize(err))
+    {
+        err = "Error loading post-processing: " + err;
+        return;
+    }
 }
 void ContentLoader::DestroyContent(void)
 {
-    MenuContent::Instance.Destroy();
-    ActorContent::Instance.Destroy();
-    WeaponContent::Instance.Destroy();
-    BulletContent::Instance.Destroy();
+    PostProcessing::Instance.Destroy();
     ParticleContent::Instance.Destroy();
+    BulletContent::Instance.Destroy();
+    WeaponContent::Instance.Destroy();
+    ActorContent::Instance.Destroy();
+    MenuContent::Instance.Destroy();
 
     TextRenderer::DestroySystem();
     DrawingQuad::DestroyQuad();

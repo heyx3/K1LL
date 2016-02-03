@@ -202,7 +202,6 @@ unsigned int ParticleManager::Burst(unsigned int nParticles, ParticleMaterial* m
           texelEnd = (float)(startX + nParticles - 1) * texelSize;
     ParticleContent::Instance.SetBurstPassParams(mat->BurstParams, texelStart, texelEnd,
                                                  randVals.GetZeroToOne(), sourceVel);
-    std::cout << texelStart << ", " << texelEnd << "\n";
     DrawingQuad::GetInstance()->Render(rInfo, mat->BurstParams, *mat->BurstMat);
     bursts.push_back(ParticleBurst(mat, lifetime, startX, nParticles));
 

@@ -39,7 +39,7 @@ class ParticleManager : public Actor
 {
 public:
 
-    static ParticleManager& GetInstance(void) { return *instance; }
+    static ParticleManager* GetInstance(void) { return instance; }
 
     //Creates the instance of this singleton actor and puts it into the given level.
     //Returns an error message if something went wrong, or the empty string if everything went OK.

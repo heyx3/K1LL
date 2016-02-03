@@ -138,6 +138,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClCompile Include="K1LL\Content\LevelConstants.cpp" />
     <ClCompile Include="K1LL\Content\MenuContent.cpp" />
     <ClCompile Include="K1LL\Content\ParticleContent.cpp" />
+    <ClCompile Include="K1LL\Content\PostProcessing.cpp" />
     <ClCompile Include="K1LL\Content\QualitySettings.cpp" />
     <ClCompile Include="K1LL\Content\Settings.cpp" />
     <ClCompile Include="K1LL\Content\WeaponConstants.cpp" />
@@ -332,6 +333,7 @@ xcopy "$(SolutionDir)\Dependencies\Include In Build\Universal" "$(SolutionDir)\B
     <ClInclude Include="K1LL\Content\LevelConstants.h" />
     <ClInclude Include="K1LL\Content\MenuContent.h" />
     <ClInclude Include="K1LL\Content\ParticleContent.h" />
+    <ClInclude Include="K1LL\Content\PostProcessing.h" />
     <ClInclude Include="K1LL\Content\QualitySettings.h" />
     <ClInclude Include="K1LL\Content\Settings.h" />
     <ClInclude Include="K1LL\Content\WeaponConstants.h" />

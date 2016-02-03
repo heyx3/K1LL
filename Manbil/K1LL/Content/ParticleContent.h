@@ -5,9 +5,6 @@
 #include "../Game/Rendering/ParticleManager.h"
 
 
-//PRIORITY: Generate a noise texture for random values when bursting.
-
-
 
 struct RenderPassVertex
 {

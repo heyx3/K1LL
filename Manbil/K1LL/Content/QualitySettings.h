@@ -15,6 +15,8 @@ public:
     //TODO: Check this value against the max texture size according to the OpenGL context.
     unsigned int MaxParticles = 4096;
 
+    //TODO: Add a "PostProcessQualities" enum.
+
 
     virtual void WriteData(DataWriter* writer) const override;
     virtual void ReadData(DataReader* reader) override;

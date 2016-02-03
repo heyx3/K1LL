@@ -2,12 +2,13 @@
 
 #include "../../Content/MenuContent.h"
 #include "../../Content/Settings.h"
+#include "../../Content/PostProcessing.h"
 
 
 PlayerViewport::PlayerViewport(Level& lvl, Player* target, SFMLWorld* world, std::string& err)
     : Lvl(lvl), Target(target), World(world),
       worldRendColor(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PS_32F, false),
-      worldRendDepth(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PS_32F_DEPTH, false),
+      worldRendDepth(TextureSampleSettings2D(FT_LINEAR, WT_CLAMP), PS_24U_DEPTH, false),
       worldRendTarg(PS_16U_DEPTH, err),
       GUITexture(MenuContent::Instance.StaticOpaqueColorParams,
                  &worldRendColor, MenuContent::Instance.StaticOpaqueColorMat)
@@ -48,8 +49,6 @@ void PlayerViewport::SetScale(Vector2f newScale)
     worldRendColor.ClearData(sizeU.x, sizeU.y);
     worldRendTarg.UpdateSize();
 
-    //TODO: Notify the post-process effect of the change.
-
     DidBoundsChange = true;
 }
 void PlayerViewport::ScaleBy(Vector2f scaleAmount)
@@ -84,6 +83,12 @@ void PlayerViewport::Render(float frameSeconds, const RenderInfo& screenRenderIn
     Lvl.Render(frameSeconds, worldRenderInfo);
 
     worldRendTarg.DisableDrawingInto();
+
+
+    //Render post-processing.
+    RenderTarget* finalRnd = PostProcessing::Instance.Apply(worldRendColor, worldRendDepth);
+
+    
     if (current != 0)
     {
         current->EnableDrawingInto();
@@ -96,11 +101,8 @@ void PlayerViewport::Render(float frameSeconds, const RenderInfo& screenRenderIn
     }
 
 
-    //TODO: Pass world render tex into Post-processing system.
-
-
-    //Render the final render target to the screen.
+    //Do the final render to the screen.
     RenderingState(RenderingState::C_NONE).EnableState();
-    SetTex(&worldRendColor); // TODO: use whatever texture the post-processing system says to use.
+    SetTex(finalRnd->GetColorTextures()[0].MTex);
     GUITexture::Render(frameSeconds, screenRenderInfo);
 }

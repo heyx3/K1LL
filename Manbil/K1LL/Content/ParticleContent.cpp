@@ -154,11 +154,10 @@ void main()
     gIn_Tex1 = texture2D( )" + UNIFORM_TEX1 + R"( , uv);
     gIn_Tex2 = texture2D( )" + UNIFORM_TEX2 + R"( , uv);
 
-    //TODO: See if this line is needed.
     gl_Position = vec4(1.0);
 
-    )" + setOutputs +
-"\n}";
+    )" + setOutputs + "\n\
+}";
     }
     //Creates the geometry shader for the "render" pass, which expands each point into a billboard.
     //The parameters should provide code for the following things, respectively:
@@ -373,8 +372,7 @@ void main()
                (mix(-u_shootBitangent, u_shootBitangent, rands.y) * 0.1) +
                (u_shootDir * 0.15);
     fOut_Tex1 = vec4(pos, 0.0);
-    fOut_Tex2 = vec4( (25.0 * )" + UNIFORM_SOURCE_SPEED + R"( ) +
-                      (25.0 * normalize(pos - u_shootOrigin)),
+    fOut_Tex2 = vec4(40.0 * normalize(pos - u_shootOrigin),
                      0.0);
 }
 )");
@@ -403,7 +401,7 @@ void main()
          tex2 = texture2D( )" + UNIFORM_TEX2 + R"(, fIn_UV);
 
     fOut_Tex1 = vec4(tex1.rgb + (tex2.rgb * )" + UNIFORM_TIME_STEP + R"(), tex1.a);
-    fOut_Tex2 = vec4(tex2.rgb * 0.9, tex2.a);
+    fOut_Tex2 = vec4(tex2.rgb - 0.9, tex2.a);
 })");
         GenerateUpdatePass(fShader, false, PuncherFire.UpdateParams, &PuncherFire.UpdateMat, outError);
         if (!outError.empty())
@@ -422,7 +420,8 @@ void main()
     float dist = distance(fIn_UV, vec2(0.5, 0.5));
     const float max = 0.5;
     float distLerp = 1.0 - clamp(dist / max, 0.0, 1.0);
-    fOut_Color = vec4(vec3(distLerp), distLerp);
+    distLerp = pow(distLerp, 5.0);
+    fOut_Color = vec4(vec3(distLerp * 100.0), distLerp);
 })");
         GenerateRenderPass(vShader, gShader, fShader, BlendMode::GetTransparent(),
                            PuncherFire.RenderParams, &PuncherFire.RenderMat,
@@ -441,6 +440,14 @@ void main()
 }
 void ParticleContent::Destroy(void)
 {
+    //Reset the particle manager if one exists.
+    ParticleManager* mng = ParticleManager::GetInstance();
+    if (mng != 0)
+    {
+        //TODO: Tell the particle manager to reset.
+    }
+
+
     RandTex.DeleteIfValid();
 
     DestroyMat(PuncherFire);
@@ -490,5 +497,5 @@ void ParticleContent::PuncherFire_Burst(Vector3f pos, Vector3f dir, Vector3f tan
     PuncherFire.BurstParams["u_shootBitangent"].Float() = bitangent;
     PuncherFire.BurstParams["u_shootOrigin"].Float() = pos;
 
-    ParticleManager::GetInstance().Burst(32, &PuncherFire, 1.0f, playerVel);
+    ParticleManager::GetInstance()->Burst(32, &PuncherFire, 1.0f, playerVel);
 }
