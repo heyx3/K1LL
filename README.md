@@ -20,7 +20,7 @@ Portions of this software (including but not limited to the basic GUI system and
     
 Portions of this software (including but not limited to the "world" system and anything that uses it) make use of the SFML library (http://www.sfml-dev.org/license.php). All rights reserved.
 
-Portions of this software (including but not limited to the "AssImpTestWorld" class) make use of the Open Asset Import Library (http://assimp.sourceforge.net/main_license.html).  All rights reserved.
+Portions of this software (including but not limited to the K1LL Content code) make use of the Open Asset Import Library (http://assimp.sourceforge.net/main_license.html).  All rights reserved.
 
 Portions of this software (including but not limited to the "world" system and anything that uses it) make use of the GLEW library (http://glew.sourceforge.net/credits.html). All rights reserved.
 
