@@ -6,11 +6,11 @@ A simple, arcadey FPS with a level editor, bots and local splitscreen multiplaye
 
 ##Documentation##
 
-The engine used is [Manbil](https://github.com/heyx3/Manbil), available here on Git. The documentation for the engine is available in [a different Git repo](https://github.com/heyx3/ManbilDocumentation).
+The framework used for K1LL is [Manbil](https://github.com/heyx3/Manbil), available here on Git. The documentation for the engine is available in [a different Git repo](https://github.com/heyx3/ManbilDocumentation).
 
 ##Credits/License##
 
-K1LL and Manbil Engine created and owned by William Manning, 2013-2015.
+K1LL and Manbil are created and owned by William Manning, 2013-2016.
 The engine is available under the [Creative Commons 3.0 Attribution license](https://creativecommons.org/licenses/by/3.0/us/).
 K1LL source and content is available under the [Creative Commons 3.0 Attribution Non-Commercial license](https://creativecommons.org/licenses/by-nc/3.0/).
 
